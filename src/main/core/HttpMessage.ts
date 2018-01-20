@@ -25,3 +25,29 @@ export interface HttpMessage {
     bodystring(): string
 
 }
+
+
+export type HttpHandler = (Request) => Response
+
+export interface Router {
+    match(request: Request): Response
+}
+
+
+export interface Filter {
+    invoke(fn: (HttpHandler) => HttpHandler): (HttpHandler) => Filter //takes "next" httpHandler and applies it after fn
+    then(filter: Filter): Filter
+}
+
+
+export enum Method {
+    GET = "GET", POST = "POST"
+}
+
+export class Headers {}
+
+export interface Request extends HttpMessage  {
+    method: string
+}
+
+export interface Response extends HttpMessage {}

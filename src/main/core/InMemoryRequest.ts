@@ -1,31 +1,6 @@
-import {HttpMessage} from "./HttpMessage";
+import {HttpMessage, Request, Headers, Method} from "./HttpMessage";
 
-type HttpHandler = (Request) => Response
-
-interface Response extends HttpMessage {
-
-}
-
-interface Router {
-    match(request: Request): Response
-}
-
-
-interface Filter {
-    invoke(fn: (HttpHandler) => HttpHandler): (HttpHandler) => Filter //takes "next" httpHandler and applies it after fn
-    then(filter: Filter): Filter
-}
-
-
-export enum Method {
-    GET = "GET", POST = "POST"
-}
-
-interface Http4jsRequest extends HttpMessage {
-    method: string
-}
-
-export class InMemoryRequest implements Http4jsRequest {
+export class InMemoryRequest implements Request {
 
     uri: string;
     method: string;

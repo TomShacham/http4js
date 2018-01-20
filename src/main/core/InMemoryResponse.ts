@@ -1,7 +1,14 @@
 import {HttpMessage} from "./HttpMessage";
 
+class Headers {}
+
+
+interface Response extends HttpMessage {
+
+}
+
 export class InMemoryResponse implements HttpMessage {
-    setQuery(name: string, value: string): Request {
+    setQuery(name: string, value: string): Response {
         return undefined;
     }
 
