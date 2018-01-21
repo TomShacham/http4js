@@ -55,3 +55,51 @@ export class InMemoryRequest implements Request {
     }
 
 }
+
+export class HttpRequest implements Request {
+    method: string;
+    headers: Headers;
+    body: string;
+    uri: string;
+
+    setUri(uri: string): HttpMessage {
+        return undefined;
+    }
+
+    getHeader(name: string): string {
+        return undefined;
+    }
+
+    setHeader(name: string, value: string): HttpMessage {
+        return undefined;
+    }
+
+    allHeaders(headers: Headers): HttpMessage {
+        return undefined;
+    }
+
+    replaceHeader(name: string, value: string): HttpMessage {
+        return undefined;
+    }
+
+    removeHeader(name: string): HttpMessage {
+        return undefined;
+    }
+
+    setBody(body: string): HttpMessage {
+        return undefined;
+    }
+
+    setBodystring(body: string): HttpMessage {
+        return undefined;
+    }
+
+    headerValues(name: string): string[] {
+        return undefined;
+    }
+
+    bodystring(): string {
+        return undefined;
+    }
+
+}

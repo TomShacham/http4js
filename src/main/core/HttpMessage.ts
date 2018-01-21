@@ -41,7 +41,8 @@ export interface Filter {
 
 
 export enum Method {
-    GET = "GET", POST = "POST"
+    GET = "GET",
+    POST = "POST"
 }
 
 export class Headers {}
