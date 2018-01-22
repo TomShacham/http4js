@@ -29,26 +29,36 @@ class BasicServer implements Http4jsServer {
 
 }
 
-export function routes(path: string): ResourceRoutingHttpHandler {
-    return new ResourceRoutingHttpHandler(path);
+export function routes(path: string, fn: (Request) => Response): ResourceRoutingHttpHandler {
+    return new ResourceRoutingHttpHandler(path, fn);
 }
 
 class ResourceRoutingHttpHandler implements RoutingHttpHandler {
 
     private path: string;
     private server: Http4jsServer;
+    private fn;
 
-    constructor(path: string) {
-        this.path = path
+    constructor(path: string, fn: (Request) => Response) {
+        this.path = path;
+        this.fn = fn;
     }
 
     asServer(port: number, server: BasicServer = new BasicServer()): ResourceRoutingHttpHandler {
         this.server = server;
         server.start(port);
-        server.server.on("request", (req, res) => {
-            const { headers, method, url } = req;
-            let inMemoryRequest = new InMemoryRequest(method, url);
-            console.log(this.match(inMemoryRequest));
+        server.server.on("request", req => {
+            const {headers, method, url} = req;
+            let body = [];
+            req.on('error', (err) => {
+                console.error(err);
+            }).on('data', (chunk) => {
+                body.push(chunk);
+            }).on('end', () => {
+                let bodyString: string = Buffer.concat(body).toString();
+                let inMemoryRequest = new InMemoryRequest(method, url, bodyString, headers);
+                console.log(this.match(inMemoryRequest));
+            })
         });
         return this;
     }
@@ -58,9 +68,11 @@ class ResourceRoutingHttpHandler implements RoutingHttpHandler {
     }
 
     match(request: Request): Response {
+        let fn = this.fn;
         let path = this.path;
         if (request.uri == path) {
-            return new InMemoryResponse("OK", "body")
+            let response = fn(request);
+            return new InMemoryResponse(response.status, response.body)
         } else {
             return new InMemoryResponse("Not Found", `${request.method} to ${request.uri} did not match route ${path}`);
         }

@@ -7,9 +7,11 @@ export class InMemoryRequest implements Request {
     headers: Headers;
     body: string;
 
-    constructor(method: Method, uri: string) {
+    constructor(method: Method, uri: string, body: string = "", headers = null) {
         this.method = method.toString();
         this.uri = uri;
+        this.body = body;
+        this.headers = headers;
         return this;
     }
 

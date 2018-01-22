@@ -1,7 +1,9 @@
 import {InMemoryRequest} from "./src/main/core/InMemoryRequest";
-import {HttpMessage, Method} from "./src/main/core/HttpMessage";
+import {HttpMessage, Method, Request} from "./src/main/core/HttpMessage";
 import {routes} from "./src/main/core/RoutingHttpHandler";
+import {InMemoryResponse} from "./src/main/core/InMemoryResponse";
 
 let req: HttpMessage = new InMemoryRequest(Method.GET, "/path");
-console.log(routes("/path").asServer(3000));
+let fn = (req: Request)=>{ return new InMemoryResponse("200 OK", `${req.method} to ${req.uri}`)};
+console.log(routes("/path", fn).asServer(3000));
 
