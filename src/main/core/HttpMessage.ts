@@ -1,7 +1,7 @@
 export interface HttpMessage {
     headers: Headers;
     method: string;
-    body: string;
+    body: Body;
     uri: string;
 
     setUri(uri: string): HttpMessage
@@ -35,10 +35,21 @@ export interface Router {
 
 
 export interface Filter {
-    invoke(fn: (HttpHandler) => HttpHandler): (HttpHandler) => Filter //takes "next" httpHandler and applies it after fn
+    invoke(fn: (HttpHandler) => HttpHandler, next: HttpHandler): (HttpHandler) => Filter //takes "next" httpHandler and applies it after fn
     then(filter: Filter): Filter
 }
 
+export class Body {
+    public bytes;
+
+    constructor (bytes: Buffer) {
+        this.bytes = bytes;
+    }
+
+    bodyString() {
+        this.bytes.toString()
+    }
+}
 
 export enum Method {
     GET = "GET",

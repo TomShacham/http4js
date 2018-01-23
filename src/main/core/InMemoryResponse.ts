@@ -1,4 +1,4 @@
-import {HttpMessage} from "./HttpMessage";
+import {HttpMessage, Body} from "./HttpMessage";
 
 class Headers {}
 
@@ -15,10 +15,10 @@ export class InMemoryResponse implements HttpMessage {
     method: string;
     uri: string;
     headers: Headers;
-    body: string;
+    body: Body;
     status: string;
 
-    constructor(status: string, body: string) {
+    constructor(status: string, body: Body) {
         this.status = status;
         this.body = body;
     }

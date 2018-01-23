@@ -1,13 +1,13 @@
-import {HttpMessage, Request, Headers, Method} from "./HttpMessage";
+import {HttpMessage, Request, Headers, Method, Body} from "./HttpMessage";
 
 export class InMemoryRequest implements Request {
 
     uri: string;
     method: string;
     headers: Headers;
-    body: string;
+    body: Body;
 
-    constructor(method: Method, uri: string, body: string = "", headers = null) {
+    constructor(method: Method, uri: string, body: Body = new Body(Buffer("")), headers = null) {
         this.method = method.toString();
         this.uri = uri;
         this.body = body;
