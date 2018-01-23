@@ -2,25 +2,21 @@ import {HttpMessage, Body} from "./HttpMessage";
 
 class Headers {}
 
-interface Response extends HttpMessage {}
+interface Response extends HttpMessage {
+    status: string;
+}
 
 export class InMemoryResponse implements HttpMessage {
-    setQuery(name: string, value: string): Response {
-        return undefined;
-    }
 
-    getQuery(name: string): string {
-        return undefined;
-    }
     method: string;
     uri: string;
     headers: Headers;
     body: Body;
     status: string;
 
-    constructor(status: string, body: Body) {
+    constructor(status: string, body: Buffer | string) {
         this.status = status;
-        this.body = body;
+        this.body = new Body(body);
     }
 
     setUri(uri: string): HttpMessage {
@@ -60,7 +56,7 @@ export class InMemoryResponse implements HttpMessage {
     }
 
     bodystring(): string {
-        return undefined;
+        return this.body.toString();
     }
 
 }

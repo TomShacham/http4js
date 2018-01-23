@@ -26,28 +26,22 @@ export interface HttpMessage {
 
 }
 
-
 export type HttpHandler = (Request) => Response
-
-export interface Router {
-    match(request: Request): Response
-}
-
-
-export interface Filter {
-    invoke(fn: (HttpHandler) => HttpHandler, next: HttpHandler): (HttpHandler) => Filter //takes "next" httpHandler and applies it after fn
-    then(filter: Filter): Filter
-}
 
 export class Body {
     public bytes;
+    public asString;
 
-    constructor (bytes: Buffer) {
-        this.bytes = bytes;
+    constructor (bytes: Buffer | string) {
+        if (typeof bytes == "string") {
+            this.asString = bytes;
+        } else {
+            this.bytes = bytes;
+        }
     }
 
-    bodyString() {
-        this.bytes.toString()
+    toString() {
+        return this.bytes.toString()
     }
 }
 
