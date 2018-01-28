@@ -2,7 +2,6 @@ import * as http from "http";
 import {InMemoryResponse} from "./InMemoryResponse";
 import {Response, Request, Body, HttpHandler} from "./HttpMessage";
 import {InMemoryRequest} from "./InMemoryRequest";
-import {Filter} from "./Filter";
 
 interface Router {
     match(request: Request): Response
@@ -34,30 +33,30 @@ class BasicServer implements Http4jsServer {
 
 }
 
-export function routes(path: string, fn: (Request) => Response): ResourceRoutingHttpHandler {
-    return new ResourceRoutingHttpHandler(path, fn);
+export function routes(path: string, handler: HttpHandler): ResourceRoutingHttpHandler {
+    return new ResourceRoutingHttpHandler(path, handler);
 }
 
 class ResourceRoutingHttpHandler implements RoutingHttpHandler {
 
     private path: string;
     private server: Http4jsServer;
-    private fn: HttpHandler;
+    private handler: HttpHandler;
 
-    constructor(path: string, fn: HttpHandler) {
+    constructor(path: string, handler: HttpHandler) {
         this.path = path;
-        this.fn = fn;
+        this.handler = handler;
     }
 
     withFilter(filter: (HttpHandler) => HttpHandler): RoutingHttpHandler {
-        return new ResourceRoutingHttpHandler(this.path, filter(this.fn));
+        return new ResourceRoutingHttpHandler(this.path, filter(this.handler));
     }
 
 
     asServer(port: number, server: BasicServer = new BasicServer()): ResourceRoutingHttpHandler {
         this.server = server;
         server.start(port);
-        server.server.on("request", req => {
+        server.server.on("request", (req, res) => {
             const {headers, method, url} = req;
             let chunks = [];
             req.on('error', (err) => {
@@ -67,25 +66,17 @@ class ResourceRoutingHttpHandler implements RoutingHttpHandler {
             }).on('end', () => {
                 let body = new Body(Buffer.concat(chunks));
                 let inMemoryRequest = new InMemoryRequest(method, url, body, headers);
-                console.log(this.match(inMemoryRequest));
+                res.end(this.match(inMemoryRequest).bodystring());
             })
         });
         return this;
     }
 
-    invoke(request: Request): Response {
-        return this.match(request)
-    }
-
     match(request: Request): Response {
-        let fn = this.fn;
+        let handler = this.handler;
         let path = this.path;
         if (request.uri == path) {
-            let response = fn(request);
-            let inMemoryResponse = new InMemoryResponse(response.status, response.body);
-            console.log("resp: ");
-            console.log(inMemoryResponse.body.toString());
-            return inMemoryResponse
+            return handler(request);
         } else {
             let body = new Body(Buffer.from(`${request.method} to ${request.uri} did not match route ${path}`));
             return new InMemoryResponse("Not Found", body);
