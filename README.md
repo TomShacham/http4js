@@ -1,19 +1,18 @@
 ## Http4js
 
+A port of http4k: a lightweight _toolkit_ to allow in memory functional testing and to simplify working with HTTP. 
 
-### A port of http4k
 
-Coming soon ... :P
 
-Manual post request in node repl for testing
+#### To run: 
 
-```
-var pr = http.request({host: 'localhost', port: 3000, method: 'post', path: '/path'}, function(res) {
-     res.setEncoding('utf8');
-     res.on('data', function (chunk) {
-           console.log('Response: ' + chunk);
-       });
- });
-pr.write("blah");
-pr.end();
-```
+`tsc index.ts; node index.js`
+
+#### To do
+
+- write some tests ;)
+- refactor:
+  - client catching errors and supporting all methods
+  - implement InMemoryRequest/Response properly
+  - regex route matching templating
+  - chaining filters

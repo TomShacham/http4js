@@ -1,22 +1,20 @@
 import {HttpMessage, Body} from "./HttpMessage";
+import {Headers} from "./Headers";
 
-class Headers {}
-
-interface Response extends HttpMessage {
-    status: string;
+interface Http4jsResponse extends HttpMessage {
+    status: number;
 }
 
-export class InMemoryResponse implements HttpMessage {
-
+export class Response implements Http4jsResponse {
     method: string;
     uri: string;
     headers: Headers;
     body: Body;
-    status: string;
+    status: number;
 
-    constructor(status: string, body: Buffer | string) {
+    constructor(status: number, body: Body) {
         this.status = status;
-        this.body = new Body(body);
+        this.body = body;
     }
 
     setUri(uri: string): HttpMessage {
@@ -43,7 +41,7 @@ export class InMemoryResponse implements HttpMessage {
         return undefined;
     }
 
-    setBody(body: string): HttpMessage {
+    setBody(body: Body): HttpMessage {
         return undefined;
     }
 

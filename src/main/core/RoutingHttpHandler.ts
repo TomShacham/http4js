@@ -1,10 +1,11 @@
 import * as http from "http";
-import {InMemoryResponse} from "./InMemoryResponse";
-import {Response, Request, Body, HttpHandler} from "./HttpMessage";
-import {InMemoryRequest} from "./InMemoryRequest";
+import {Response} from "./Response";
+import {Http4jsRequest, HttpHandler} from "./HttpMessage";
+import {Request} from "./Request";
+import {Body} from "./Body";
 
 interface Router {
-    match(request: Request): Response
+    match(request: Http4jsRequest): Response
 }
 
 interface RoutingHttpHandler extends Router {
@@ -65,21 +66,21 @@ class ResourceRoutingHttpHandler implements RoutingHttpHandler {
                 chunks.push(chunk);
             }).on('end', () => {
                 let body = new Body(Buffer.concat(chunks));
-                let inMemoryRequest = new InMemoryRequest(method, url, body, headers);
+                let inMemoryRequest = new Request(method, url, body, headers);
                 res.end(this.match(inMemoryRequest).bodystring());
             })
         });
         return this;
     }
 
-    match(request: Request): Response {
+    match(request: Http4jsRequest): Response {
         let handler = this.handler;
         let path = this.path;
         if (request.uri == path) {
             return handler(request);
         } else {
             let body = new Body(Buffer.from(`${request.method} to ${request.uri} did not match route ${path}`));
-            return new InMemoryResponse("Not Found", body);
+            return new Response(404, body);
         }
     }
 

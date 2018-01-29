@@ -1,3 +1,6 @@
+import {Headers} from "./Headers";
+import {Body} from "./Body";
+
 export interface HttpMessage {
     headers: Headers;
     method: string;
@@ -16,7 +19,7 @@ export interface HttpMessage {
 
     removeHeader(name: string): HttpMessage
 
-    setBody(body: string): HttpMessage
+    setBody(body: Body): HttpMessage
 
     setBodystring(body: string): HttpMessage
 
@@ -28,31 +31,12 @@ export interface HttpMessage {
 
 export type HttpHandler = (Request) => Response
 
-export class Body {
-    public bytes;
-    public asString;
-
-    constructor (bytes: Buffer | string) {
-        if (typeof bytes == "string") {
-            this.asString = bytes;
-        } else {
-            this.bytes = bytes;
-        }
-    }
-
-    toString() {
-        return this.bytes.toString()
-    }
-}
-
 export enum Method {
     GET = "GET",
     POST = "POST"
 }
 
-export class Headers {}
-
-export interface Request extends HttpMessage  {
+export interface Http4jsRequest extends HttpMessage  {
     method: string
 }
 
