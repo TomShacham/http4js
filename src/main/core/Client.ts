@@ -17,7 +17,7 @@ export function HttpClient() {
                 });
                 res.on('end', () => {
                     let body = new Body(Buffer.concat(chunks));
-                    succ(new Response(res.statusCode, body));
+                    succ(new Response(body));
                 });
             }).end();
         });

@@ -1,8 +1,8 @@
-import {HttpMessage, Body} from "./HttpMessage";
+import {HttpMessage} from "./HttpMessage";
 import {Headers} from "./Headers";
+import {Body} from "./Body";
 
 interface Http4jsResponse extends HttpMessage {
-    status: number;
 }
 
 export class Response implements Http4jsResponse {
@@ -10,10 +10,8 @@ export class Response implements Http4jsResponse {
     uri: string;
     headers: Headers;
     body: Body;
-    status: number;
 
-    constructor(status: number, body: Body) {
-        this.status = status;
+    constructor(body: Body) {
         this.body = body;
     }
 

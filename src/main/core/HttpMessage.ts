@@ -32,8 +32,8 @@ export interface HttpMessage {
 export type HttpHandler = (Request) => Response
 
 export enum Method {
-    GET = "GET",
-    POST = "POST"
+    GET,
+    POST
 }
 
 export interface Http4jsRequest extends HttpMessage  {

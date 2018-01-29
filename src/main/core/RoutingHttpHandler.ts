@@ -80,7 +80,7 @@ class ResourceRoutingHttpHandler implements RoutingHttpHandler {
             return handler(request);
         } else {
             let body = new Body(Buffer.from(`${request.method} to ${request.uri} did not match route ${path}`));
-            return new Response(404, body);
+            return new Response(body);
         }
     }
 
