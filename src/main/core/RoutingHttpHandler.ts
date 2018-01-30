@@ -38,7 +38,7 @@ export function routes(path: string, handler: HttpHandler): ResourceRoutingHttpH
     return new ResourceRoutingHttpHandler(path, handler);
 }
 
-class ResourceRoutingHttpHandler implements RoutingHttpHandler {
+export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
 
     private path: string;
     private server: Http4jsServer;

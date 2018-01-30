@@ -10,6 +10,10 @@ export class Body {
         }
     }
 
+    bodyString() {
+        return this.asString;
+    }
+
     toString() {
         return this.bytes.toString()
     }
