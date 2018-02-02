@@ -6,7 +6,7 @@ export class Request implements Http4jsRequest {
 
     uri: string;
     method: string;
-    headers: Map<string, string>;
+    headers: object = {};
     body: Body;
 
     constructor(

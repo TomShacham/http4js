@@ -34,11 +34,7 @@ describe("in mem request", () => {
 describe("real request", () => {
 
     let server = routes("/", (req: Request) => {
-        let headers = new Response(new Body("new body"))
-            .setHeaders(req.headers);
-        console.log('**** headers');
-        console.log(headers);
-        return headers;
+        return new Response(new Body("new body")).setHeaders(req.headers);
     }).asServer(3000);
 
 

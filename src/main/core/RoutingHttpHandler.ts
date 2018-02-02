@@ -75,8 +75,7 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
                 let body = new Body(Buffer.concat(chunks));
                 let inMemoryRequest = new Request(method, url, body, headers);
                 let response = this.match(inMemoryRequest);
-                res.writeHead(200, response.headers)
-                res.write
+                res.writeHead(200, response.headers);
                 res.end(response.bodystring());
             })
         });

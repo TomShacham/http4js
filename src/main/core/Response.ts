@@ -27,7 +27,7 @@ export class Response implements Http4jsResponse {
         return undefined;
     }
 
-    setHeaders(headers: Map<string, string>): Response {
+    setHeaders(headers: object): Response {
         this.headers = headers;
         return this;
     }

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha src/test/**.js",
+    "test": "mocha src/test/**",
     "app": "tsc; node index.js"
   },
   "author": "",
