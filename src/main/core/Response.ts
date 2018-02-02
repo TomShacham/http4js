@@ -10,9 +10,11 @@ export class Response implements Http4jsResponse {
     uri: Uri;
     headers: object = {};
     body: Body;
+    status: number;
 
-    constructor(body: Body = new Body("")) {
+    constructor(status: number = 200, body: Body = new Body("")) {
         this.body = body;
+        this.status = status;
     }
 
     getHeader(name: string): string {

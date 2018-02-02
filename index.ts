@@ -8,7 +8,7 @@ import {Uri} from "./src/main/core/Uri";
 
 let handler = (req: Request) => {
     let bodyString = `<h1>${req.method} to ${req.uri.href} with headers ${Object.keys(req.headers)}</h1>`;
-    return new Response(
+    return new Response(200,
         new Body(Buffer.from(bodyString))
     )
 };

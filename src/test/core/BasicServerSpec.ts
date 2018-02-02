@@ -11,7 +11,7 @@ describe('a basic in memory server', () => {
 
     it('takes request and gives response', function () {
         let requestBody = "Got it.";
-        let handler = (req: Request) => { return new Response(req.body); };
+        let handler = (req: Request) => { return new Response(200, req.body); };
         let resourceRoutingHttpHandler = routes("/test", handler);
         let response = resourceRoutingHttpHandler.match(new Request(Method.GET, "/test", new Body(requestBody)));
 
@@ -24,8 +24,7 @@ describe("real request", () => {
 
     let server = routes("/", (req: Request) => {
         let query = req.getQuery("tomQuery");
-        console.log(query)
-        return new Response(new Body(req.bodyString()))
+        return new Response(200, new Body(req.bodyString()))
             .setHeaders(req.headers)
             .setHeader("tomQuery", query);
     }).asServer(3000);

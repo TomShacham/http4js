@@ -21,7 +21,7 @@ export function HttpClient() {
                 });
                 res.on('end', () => {
                     let body = new Body(Buffer.concat(chunks));
-                    let response = new Response(body)
+                    let response = new Response(res.statusCode, body)
                         .setHeaders(res.headers);
                     succ(response);
                 });
@@ -45,7 +45,7 @@ export function HttpClient() {
                 });
                 res.on('end', () => {
                     let body = new Body(Buffer.concat(chunks));
-                    let response = new Response(body).setHeaders(res.headers);
+                    let response = new Response(res.statusCode, body).setHeaders(res.headers);
                     succ(response);
                 });
             });
