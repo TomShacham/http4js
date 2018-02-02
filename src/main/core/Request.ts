@@ -23,7 +23,8 @@ export class Request implements Http4jsRequest {
     }
 
     setUri(uri: string): Request {
-        return undefined;
+        this.uri = uri;
+        return this;
     }
 
     getHeader(name: string): string {

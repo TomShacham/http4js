@@ -9,41 +9,65 @@ import {Body} from "../../main/core/Body";
 
 describe("in mem request", () => {
 
-   it("set header on request", () => {
-       equal(
-           new Request(Method.GET, "some/url")
-               .setHeader("tom", "smells")
-               .getHeader("tom"),
-           "smells");
-   });
+    it("set uri", () => {
+        equal(
+            new Request(Method.GET, "/")
+                .setUri("/tom")
+                .uri,
+            "/tom")
+    });
 
-   it("concat same header on request", () => {
-       assert.deepEqual(
-           new Request(Method.GET, "some/url")
-               .setHeader("tom", "smells")
-               .setHeader("tom", "smells more")
-               .setHeader("tom", "smells some more")
-               .getHeader("tom"),
-           ["smells", "smells more", "smells some more"]);
-   });
+    it("set body", () => {
+        equal(
+            new Request(Method.GET, "/")
+                .setBody(new Body("body boy"))
+                .bodystring(),
+            "body boy")
+    });
 
-   it('replace header', () => {
-       equal(
-           new Request(Method.GET, "some/url")
-               .setHeader("tom", "smells")
-               .replaceHeader("tom", "is nice")
-               .getHeader("tom"),
-           "is nice");
-   });
+    it("set body string", () => {
+        equal(
+            new Request(Method.GET, "/")
+                .setBodystring("tommy boy")
+                .bodystring(),
+            "tommy boy")
+    });
 
-   it('remove header', () => {
-       equal(
-           new Request(Method.GET, "some/url")
-               .setHeader("tom", "smells")
-               .removeHeader("tom")
-               .getHeader("tom"),
-           undefined);
-   })
+    it("set header on request", () => {
+        equal(
+            new Request(Method.GET, "some/url")
+                .setHeader("tom", "smells")
+                .getHeader("tom"),
+            "smells");
+    });
+
+    it("concat same header on request", () => {
+        assert.deepEqual(
+            new Request(Method.GET, "some/url")
+                .setHeader("tom", "smells")
+                .setHeader("tom", "smells more")
+                .setHeader("tom", "smells some more")
+                .getHeader("tom"),
+            ["smells", "smells more", "smells some more"]);
+    });
+
+    it('replace header', () => {
+        equal(
+            new Request(Method.GET, "some/url")
+                .setHeader("tom", "smells")
+                .replaceHeader("tom", "is nice")
+                .getHeader("tom"),
+            "is nice");
+    });
+
+    it('remove header', () => {
+        equal(
+            new Request(Method.GET, "some/url")
+                .setHeader("tom", "smells")
+                .removeHeader("tom")
+                .getHeader("tom"),
+            undefined);
+    })
 
 });
 
