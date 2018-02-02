@@ -41,16 +41,14 @@ export class Request implements Http4jsRequest {
         return this;
     }
 
-    allHeaders(headers: Headers): Request {
-        return undefined;
-    }
-
     replaceHeader(name: string, value: string): Request {
-        return undefined;
+        this.headers[name] = value;
+        return this;
     }
 
     removeHeader(name: string): Request {
-        return undefined;
+        delete(this.headers[name]);
+        return this;
     }
 
     setBody(body: Body): Request {
@@ -58,16 +56,13 @@ export class Request implements Http4jsRequest {
         return this;
     }
 
-    setBodystring(body: string): Request {
-        return undefined;
-    }
-
-    headerValues(name: string): string[] {
-        return undefined;
+    setBodystring(string: string): Request {
+        this.body.bytes = string;
+        return this;
     }
 
     bodystring(): string {
-        return undefined;
+        return this.body.bodyString();
     }
 
 }

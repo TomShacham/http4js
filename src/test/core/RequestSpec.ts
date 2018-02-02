@@ -1,13 +1,11 @@
 import * as assert from "assert";
-import {equal} from "assert";
+import {equal, deepEqual} from "assert";
 import {Request} from "../../main/core/Request";
 import {Method} from "../../main/core/HttpMessage";
 import {httpClient} from "../../main/core/Client";
 import {routes} from "../../main/core/RoutingHttpHandler";
 import {Response} from "../../main/core/Response";
 import {Body} from "../../main/core/Body";
-import {emitKeypressEvents} from "readline";
-import {deepEqual} from "assert";
 
 describe("in mem request", () => {
 
@@ -28,6 +26,24 @@ describe("in mem request", () => {
                .getHeader("tom"),
            ["smells", "smells more", "smells some more"]);
    });
+
+   it('replace header', () => {
+       equal(
+           new Request(Method.GET, "some/url")
+               .setHeader("tom", "smells")
+               .replaceHeader("tom", "is nice")
+               .getHeader("tom"),
+           "is nice");
+   });
+
+   it('remove header', () => {
+       equal(
+           new Request(Method.GET, "some/url")
+               .setHeader("tom", "smells")
+               .removeHeader("tom")
+               .getHeader("tom"),
+           undefined);
+   })
 
 });
 

@@ -13,8 +13,6 @@ export interface HttpMessage {
 
     setHeader(name: string, value: string): HttpMessage;
 
-    allHeaders(headers: Headers): HttpMessage
-
     replaceHeader(name: string, value: string): HttpMessage
 
     removeHeader(name: string): HttpMessage
@@ -22,8 +20,6 @@ export interface HttpMessage {
     setBody(body: Body): HttpMessage
 
     setBodystring(body: string): HttpMessage
-
-    headerValues(name: string): string[];
 
     bodystring(): string
 

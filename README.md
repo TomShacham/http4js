@@ -23,9 +23,7 @@ npm install typescript   --save-dev
 
 #### To do
 
-- write some tests ;)
-- refactor:
-  - implement Request/Response properly
-  - regex route matching templating
-  - chaining and nesting filters
-  - client catching errors and supporting all methods
+- implement Request/Response properly
+- chaining and nesting filters
+- regex route matching templating
+- client catching errors and supporting all methods
