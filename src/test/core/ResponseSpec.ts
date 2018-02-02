@@ -62,28 +62,3 @@ describe("in mem response", () => {
     })
 
 });
-
-describe("real request", () => {
-
-    let server = routes("/", (req: Request) => {
-        return new Response(new Body("new body")).setHeaders(req.headers);
-    }).asServer(3000);
-
-
-    before(() => {
-        server.start();
-    });
-
-    it("sets multiple headers of same name", () => {
-        let headers = {tom: ["smells", "smells more"]};
-        return httpClient().get({host: "localhost", port: 3000, path: "/", headers: headers})
-            .then(succ => {
-                deepEqual(succ.getHeader("tom"), "smells, smells more")
-            })
-    });
-
-    after(() => {
-        server.stop();
-    });
-
-});

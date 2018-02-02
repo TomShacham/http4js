@@ -10,12 +10,8 @@ export function httpClient() {
 export function HttpClient() {
 
     this.get = (request) => {
-        let options = {};
-        options["hostname"] = "localhost";
-        options["port"] = 3000;
-        options["path"] = "/";
-        options["headers"] = request.headers;
-        options["method"] = Method[request.method];
+        let options = request.uri.asRequest();
+        options.headers = request.headers;
 
         return new Promise(succ => {
             http.request(options, (res) => {

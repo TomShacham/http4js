@@ -4,6 +4,7 @@ import {routes} from "./src/main/core/RoutingHttpHandler";
 import {Response} from "./src/main/core/Response";
 import {httpClient} from "./src/main/core/Client";
 import {Body} from "./src/main/core/Body";
+import {Uri} from "./src/main/core/Uri";
 
 let req: Http4jsRequest = new Request(Method.GET, "/path");
 
@@ -13,13 +14,8 @@ let handler = (req: Request) => {
 
 routes("/path", handler).asServer(3000).start();
 
-let options = {
-    host: 'localhost',
-    port: 3000,
-    method: 'post',
-    path: '/path',
-    headers: {tom: ["pwns", "rocks", "smells"]}
-};
+let request = new Request(Method.GET, Uri.of("http://localhost:3000/path2"))
+    .setHeader("tom", "rules");
 
-httpClient().get(options).then(succ => console.log(succ));
+httpClient().get(request).then(succ => console.log(succ));
 

@@ -1,11 +1,15 @@
+let URI = require('url');
+
 export class Uri {
+    path: string;
+    protocol: string;
+    auth: string;
+    query: string;
+    hostname: string;
+    port: string;
+
     template: string;
     uriString: string;
-    path: string;
-    scheme: string;
-    authority: string;
-    query: string;
-    fragment: string;
     private matches: object = {};
     private pathParamMatchingRegex: RegExp = new RegExp(/\{(\w+)\}/);
     private pathParamCaptureTemplate: string = "([\\w\\s]+)";
@@ -13,13 +17,15 @@ export class Uri {
     constructor(uri: string) {
         this.template = uri;
         this.uriString = encodeURI(uri);
-        let rfc3986 = new RegExp(/^(?:([^:\/?#]+):)?(?:\/\/([^\/?#]*))?([^?#]*)(?:\\?([^#]*))?(?:#(.*))?/);
-        let [wtfIsThis, scheme,authority,path,query,fragment] = uri.split(rfc3986);
-        this.scheme = scheme;
-        this.authority = authority;
-        this.path = path;
-        this.query = query;
-        this.fragment = fragment;
+
+        let asRequest = this.asRequest();
+
+        this.protocol = asRequest.protocol;
+        this.auth = asRequest.auth;
+        this.hostname = asRequest.hostname;
+        this.path = asRequest.path;
+        this.port = asRequest.port;
+        this.query = asRequest.query;
     }
 
     static of (uri: string): Uri {
@@ -40,6 +46,10 @@ export class Uri {
 
     pathParam(name: string): string {
         return this.matches[name];
+    }
+
+    asRequest() {
+        return URI.parse(this.uriString);
     }
 
     private uriTemplateToPathParamCapturingRegex (): RegExp {
