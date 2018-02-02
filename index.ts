@@ -6,15 +6,16 @@ import {httpClient} from "./src/main/core/Client";
 import {Body} from "./src/main/core/Body";
 import {Uri} from "./src/main/core/Uri";
 
-let req: Http4jsRequest = new Request(Method.GET, "/path");
-
 let handler = (req: Request) => {
-    return new Response(new Body(Buffer.from(`${req.method} to ${req.uri} with headers ${req.headers}`)))
+    let bodyString = `<h1>${req.method} to ${req.uri.href} with headers ${Object.keys(req.headers)}</h1>`;
+    return new Response(
+        new Body(Buffer.from(bodyString))
+    )
 };
 
 routes("/path", handler).asServer(3000).start();
 
-let request = new Request(Method.GET, Uri.of("http://localhost:3000/path2"))
+let request = new Request(Method.GET, Uri.of("http://localhost:3000/path"))
     .setHeader("tom", "rules");
 
 httpClient().get(request).then(succ => console.log(succ));

@@ -23,6 +23,5 @@ npm install typescript   --save-dev
 
 #### To do
 
-- client catching errors and supporting all methods
 - chaining and nesting filters
-- uri has path and host and protocol and scheme and authority
+- pull out in mem -> wire connectors. bit messy with request and uri and client and routinghttphandler! 
