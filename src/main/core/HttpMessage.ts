@@ -1,10 +1,11 @@
 import {Body} from "./Body";
+import {Uri} from "./Uri";
 
 export interface HttpMessage {
     headers: object;
     method: string;
     body: Body;
-    uri: string;
+    uri: Uri;
 
     setUri(uri: string): HttpMessage
 

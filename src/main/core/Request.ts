@@ -1,10 +1,11 @@
 import {Http4jsRequest, Method} from "./HttpMessage";
 import {Headers} from "./Headers";
 import {Body} from "./Body";
+import {Uri} from "./Uri";
 
 export class Request implements Http4jsRequest {
 
-    uri: string;
+    uri: Uri;
     method: string;
     headers: object = {};
     body: Body;
@@ -12,19 +13,25 @@ export class Request implements Http4jsRequest {
 
     constructor(
         method: Method,
-        uri: string,
+        uri: Uri | string,
         body: Body = new Body(new Buffer("")),
         headers = null
     ) {
         this.method = method.toString();
-        this.uri = uri;
+        if (typeof uri == "string") {
+            this.uri = Uri.of(uri);
+        } else {
+            this.uri = uri;
+        }
         this.body = body;
         this.headers = headers ? headers : {};
         return this;
     }
 
-    setUri(uri: string): Request {
-        this.uri = uri;
+    setUri(uri: Uri | string): Request {
+        if (typeof uri == "string") {
+            this.uri = Uri.of(uri);
+        }
         return this;
     }
 
@@ -70,9 +77,9 @@ export class Request implements Http4jsRequest {
     query(name: string, value: string): Request {
         let queries = Object.keys(this.queries);
         if (queries.length > 0) {
-            this.uri += `&${name}=${value}`;
+            this.uri.uriString += `&${name}=${value}`;
         } else {
-            this.uri += `?${name}=${value}`;
+            this.uri.uriString += `?${name}=${value}`;
         }
         this.queries[name] = value;
         return this;
