@@ -70,7 +70,7 @@ export class Request implements Http4jsRequest {
         return this;
     }
 
-    bodystring(): string {
+    bodyString(): string {
         return this.body.bodyString();
     }
 

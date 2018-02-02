@@ -23,12 +23,20 @@ describe('a basic in memory server', () => {
 describe("real request", () => {
 
     let server = routes("/", (req: Request) => {
-        return new Response(new Body("new body")).setHeaders(req.headers);
+        return new Response(new Body(req.bodyString())).setHeaders(req.headers);
     }).asServer(3000);
 
 
     before(() => {
         server.start();
+    });
+
+    it("sets body", () => {
+        let request = new Request(Method.POST, "http://localhost:3000/", new Body("my humps"));
+        return httpClient().post(request)
+            .then(succ => {
+                deepEqual(succ.bodyString(), "my humps")
+            })
     });
 
     it("sets multiple headers of same name", () => {

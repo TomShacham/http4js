@@ -13,7 +13,7 @@ describe("in mem response", () => {
         equal(
             new Response()
                 .setBody(new Body("body boy"))
-                .bodystring(),
+                .bodyString(),
             "body boy")
     });
 
@@ -21,7 +21,7 @@ describe("in mem response", () => {
         equal(
             new Response()
                 .setBodystring("body boy-o")
-                .bodystring(),
+                .bodyString(),
             "body boy-o")
     });
 

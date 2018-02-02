@@ -59,7 +59,7 @@ export class Response implements Http4jsResponse {
         return this;
     }
 
-    bodystring(): string {
+    bodyString(): string {
         return this.body.bodyString();
     }
 

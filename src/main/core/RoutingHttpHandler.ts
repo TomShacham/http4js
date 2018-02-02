@@ -76,7 +76,7 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
                 let inMemoryRequest = new Request(method, url, body, headers);
                 let response = this.match(inMemoryRequest);
                 res.writeHead(200, response.headers);
-                res.end(response.bodystring());
+                res.end(response.bodyString());
             })
         });
         return this.server;
@@ -88,7 +88,7 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
         if (request.uri.match(path)) {
             return handler(request);
         } else {
-            let body = new Body(Buffer.from(`${request.method} to ${request.uri} did not match route ${path}`));
+            let body = new Body(Buffer.from(`${request.method} to ${request.uri.uriString} did not match route ${path}`));
             return new Response(body);
         }
     }
