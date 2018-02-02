@@ -7,17 +7,12 @@ interface Http4jsResponse extends HttpMessage {
 }
 
 export class Response implements Http4jsResponse {
-    method: string;
     uri: Uri;
     headers: object = {};
     body: Body;
 
-    constructor(body: Body) {
+    constructor(body: Body = new Body("")) {
         this.body = body;
-    }
-
-    setUri(uri: string): Response {
-        return undefined;
     }
 
     getHeader(name: string): string {
@@ -25,7 +20,14 @@ export class Response implements Http4jsResponse {
     }
 
     setHeader(name: string, value: string): Response {
-        return undefined;
+        if (this.headers[name] == null) {
+            this.headers[name] = value;
+        } else if (typeof this.headers[name] == "string") {
+            this.headers[name] = [this.headers[name], value];
+        } else {
+            this.headers[name].push(value);
+        }
+        return this;
     }
 
     setHeaders(headers: object): Response {
@@ -38,23 +40,23 @@ export class Response implements Http4jsResponse {
     }
 
     replaceHeader(name: string, value: string): Response {
-        return undefined;
+        this.headers[name] = value;
+        return this;
     }
 
     removeHeader(name: string): Response {
-        return undefined;
+        delete this.headers[name];
+        return this;
     }
 
     setBody(body: Body): Response {
-        return undefined;
+        this.body = body;
+        return this;
     }
 
-    setBodystring(body: string): Response {
-        return undefined;
-    }
-
-    headerValues(name: string): string[] {
-        return undefined;
+    setBodystring(bodyString: string): Response {
+        this.body.bytes = bodyString;
+        return this;
     }
 
     bodystring(): string {

@@ -3,11 +3,8 @@ import {Uri} from "./Uri";
 
 export interface HttpMessage {
     headers: object;
-    method: string;
     body: Body;
     uri: Uri;
-
-    setUri(uri: string): HttpMessage
 
     getHeader(name: string): string;
 
