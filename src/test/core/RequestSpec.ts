@@ -33,6 +33,15 @@ describe("in mem request", () => {
             "tommy boy")
     });
 
+    it("sets query string", () => {
+        equal(
+            new Request(Method.GET, "/tom")
+                .query("tom", "tosh")
+                .query("ben", "bosh")
+                .uri,
+            "/tom?tom=tosh&ben=bosh")
+    });
+
     it("set header on request", () => {
         equal(
             new Request(Method.GET, "some/url")

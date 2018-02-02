@@ -8,6 +8,7 @@ export class Request implements Http4jsRequest {
     method: string;
     headers: object = {};
     body: Body;
+    private queries = {};
 
     constructor(
         method: Method,
@@ -64,6 +65,17 @@ export class Request implements Http4jsRequest {
 
     bodystring(): string {
         return this.body.bodyString();
+    }
+
+    query(name: string, value: string): Request {
+        let queries = Object.keys(this.queries);
+        if (queries.length > 0) {
+            this.uri += `&${name}=${value}`;
+        } else {
+            this.uri += `?${name}=${value}`;
+        }
+        this.queries[name] = value;
+        return this;
     }
 
 }
