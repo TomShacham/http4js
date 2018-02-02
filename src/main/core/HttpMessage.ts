@@ -1,4 +1,3 @@
-import {Headers} from "./Headers";
 import {Body} from "./Body";
 
 export interface HttpMessage {
