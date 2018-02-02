@@ -4,6 +4,8 @@ import {Response} from "../../main/core/Response";
 import {Body} from "../../main/core/Body";
 import {Request} from "../../main/core/Request";
 import {Method} from "../../main/core/HttpMessage";
+import {deepEqual} from "assert";
+import {httpClient} from "../../main/core/Client";
 
 describe('a basic in memory server', () => {
 
@@ -14,6 +16,31 @@ describe('a basic in memory server', () => {
         let response = resourceRoutingHttpHandler.match(new Request(Method.GET, "/test", new Body(requestBody)));
 
         equal(response.body.bodyString(), requestBody)
+    });
+
+});
+
+describe("real request", () => {
+
+    let server = routes("/", (req: Request) => {
+        return new Response(new Body("new body")).setHeaders(req.headers);
+    }).asServer(3000);
+
+
+    before(() => {
+        server.start();
+    });
+
+    it("sets multiple headers of same name", () => {
+        let headers = {tom: ["smells", "smells more"]};
+        return httpClient().get({host: "localhost", port: 3000, path: "/", headers: headers})
+            .then(succ => {
+                deepEqual(succ.getHeader("tom"), "smells, smells more")
+            })
+    });
+
+    after(() => {
+        server.stop();
     });
 
 });

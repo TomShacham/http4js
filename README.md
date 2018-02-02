@@ -23,7 +23,5 @@ npm install typescript   --save-dev
 
 #### To do
 
-- implement Request/Response properly
-- chaining and nesting filters
-- regex route matching templating
 - client catching errors and supporting all methods
+- chaining and nesting filters

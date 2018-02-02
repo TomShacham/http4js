@@ -20,7 +20,7 @@ describe("uri", () => {
     it("matches paths", () => {
         equal(Uri.of("/tom/{is}/goodness")
                 .match("/tom/is the sugar/goodness/gracious/me"),
-            false
+            true
         )
 
     });

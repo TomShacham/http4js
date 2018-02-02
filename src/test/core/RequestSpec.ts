@@ -1,10 +1,7 @@
 import * as assert from "assert";
-import {equal, deepEqual} from "assert";
+import {equal} from "assert";
 import {Request} from "../../main/core/Request";
 import {Method} from "../../main/core/HttpMessage";
-import {httpClient} from "../../main/core/Client";
-import {routes} from "../../main/core/RoutingHttpHandler";
-import {Response} from "../../main/core/Response";
 import {Body} from "../../main/core/Body";
 
 describe("in mem request", () => {
@@ -13,7 +10,8 @@ describe("in mem request", () => {
         equal(
             new Request(Method.GET, "/")
                 .setUri("/tom")
-                .uri,
+                .uri
+                .uriString,
             "/tom")
     });
 
@@ -38,7 +36,8 @@ describe("in mem request", () => {
             new Request(Method.GET, "/tom")
                 .query("tom", "tosh")
                 .query("ben", "bosh")
-                .uri,
+                .uri
+                .uriString,
             "/tom?tom=tosh&ben=bosh")
     });
 
@@ -77,30 +76,5 @@ describe("in mem request", () => {
                 .getHeader("tom"),
             undefined);
     })
-
-});
-
-describe("real request", () => {
-
-    let server = routes("/", (req: Request) => {
-        return new Response(new Body("new body")).setHeaders(req.headers);
-    }).asServer(3000);
-
-
-    before(() => {
-        server.start();
-    });
-
-    it("sets multiple headers of same name", () => {
-        let headers = {tom: ["smells", "smells more"]};
-        return httpClient().get({host: "localhost", port: 3000, path: "/", headers: headers})
-            .then(succ => {
-                deepEqual(succ.getHeader("tom"), "smells, smells more")
-            })
-    });
-
-    after(() => {
-        server.stop();
-    });
 
 });
