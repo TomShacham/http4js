@@ -25,3 +25,4 @@ npm install typescript   --save-dev
 
 - client catching errors and supporting all methods
 - chaining and nesting filters
+- uri has path and host and protocol and scheme and authority

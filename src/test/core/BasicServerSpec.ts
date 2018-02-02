@@ -40,8 +40,8 @@ describe("real request", () => {
     });
 
     it("sets multiple headers of same name", () => {
-        let headers = {tom: ["smells", "smells more"]};
-        return httpClient().get({host: "localhost", port: 3000, path: "/", headers: headers})
+        let request = new Request(Method.GET, "http://localhost:3000/", new Body("my humps"), {tom: ["smells", "smells more"]});
+        return httpClient().get(request)
             .then(succ => {
                 deepEqual(succ.getHeader("tom"), "smells, smells more")
             })

@@ -1,6 +1,7 @@
 import * as http from 'http';
 import {Response} from "./Response";
 import {Body} from "./Body";
+import {Method} from "./HttpMessage";
 
 export function httpClient() {
     return new HttpClient();
@@ -8,7 +9,14 @@ export function httpClient() {
 
 export function HttpClient() {
 
-    this.get = (options) => {
+    this.get = (request) => {
+        let options = {};
+        options["hostname"] = "localhost";
+        options["port"] = 3000;
+        options["path"] = "/";
+        options["headers"] = request.headers;
+        options["method"] = Method[request.method];
+
         return new Promise(succ => {
             http.request(options, (res) => {
                 let chunks = [];
@@ -30,7 +38,7 @@ export function HttpClient() {
         options["port"] = 3000;
         options["path"] = "/";
         options["headers"] = request.headers;
-        options["method"] = "POST";
+        options["method"] = Method[request.method];
 
         return new Promise(succ => {
             let clientRequest = http.request(options, (res) => {
