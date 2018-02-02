@@ -6,14 +6,19 @@ export class Request implements Http4jsRequest {
 
     uri: string;
     method: string;
-    headers: Headers;
+    headers: Map<string, string>;
     body: Body;
 
-    constructor(method: Method, uri: string, body: Body = new Body(new Buffer("")), headers = null) {
+    constructor(
+        method: Method,
+        uri: string,
+        body: Body = new Body(new Buffer("")),
+        headers = null
+    ) {
         this.method = method.toString();
         this.uri = uri;
         this.body = body;
-        this.headers = headers;
+        this.headers = headers ? headers : {};
         return this;
     }
 
@@ -22,11 +27,18 @@ export class Request implements Http4jsRequest {
     }
 
     getHeader(name: string): string {
-        return undefined;
+        return this.headers[name];
     }
 
     setHeader(name: string, value: string): Request {
-        return undefined;
+        if (this.headers[name] == null) {
+            this.headers[name] = value;
+        } else if (typeof this.headers[name] == "string") {
+            this.headers[name] = [this.headers[name], value];
+        } else {
+            this.headers[name].push(value);
+        }
+        return this;
     }
 
     allHeaders(headers: Headers): Request {

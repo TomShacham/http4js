@@ -8,42 +8,47 @@ interface Http4jsResponse extends HttpMessage {
 export class Response implements Http4jsResponse {
     method: string;
     uri: string;
-    headers: Headers;
+    headers: object = {};
     body: Body;
 
     constructor(body: Body) {
         this.body = body;
     }
 
-    setUri(uri: string): HttpMessage {
+    setUri(uri: string): Response {
         return undefined;
     }
 
     getHeader(name: string): string {
+        return this.headers[name];
+    }
+
+    setHeader(name: string, value: string): Response {
         return undefined;
     }
 
-    setHeader(name: string, value: string): HttpMessage {
+    setHeaders(headers: Map<string, string>): Response {
+        this.headers = headers;
+        return this;
+    }
+
+    allHeaders(headers: Headers): Response {
         return undefined;
     }
 
-    allHeaders(headers: Headers): HttpMessage {
+    replaceHeader(name: string, value: string): Response {
         return undefined;
     }
 
-    replaceHeader(name: string, value: string): HttpMessage {
+    removeHeader(name: string): Response {
         return undefined;
     }
 
-    removeHeader(name: string): HttpMessage {
+    setBody(body: Body): Response {
         return undefined;
     }
 
-    setBody(body: Body): HttpMessage {
-        return undefined;
-    }
-
-    setBodystring(body: string): HttpMessage {
+    setBodystring(body: string): Response {
         return undefined;
     }
 
@@ -52,7 +57,7 @@ export class Response implements Http4jsResponse {
     }
 
     bodystring(): string {
-        return this.body.toString();
+        return this.body.bodyString();
     }
 
 }

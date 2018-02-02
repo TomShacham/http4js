@@ -8,19 +8,18 @@ import {Body} from "./src/main/core/Body";
 let req: Http4jsRequest = new Request(Method.GET, "/path");
 
 let handler = (req: Request) => {
-    let response: Response = new Response(200, new Body(Buffer.from(`${req.method} to ${req.uri}`)));
-    return response
+    return new Response(new Body(Buffer.from(`${req.method} to ${req.uri} with headers ${req.headers}`)))
 };
 
-routes("/path", handler).asServer(3000);
+routes("/path", handler).asServer(3000).start();
 
 let options = {
     host: 'localhost',
     port: 3000,
     method: 'post',
-    path: '/path'
+    path: '/path',
+    headers: {tom: ["pwns", "rocks", "smells"]}
 };
 
-httpClient().get(options)
-    .then(succ => console.log(succ));
+httpClient().get(options).then(succ => console.log(succ));
 

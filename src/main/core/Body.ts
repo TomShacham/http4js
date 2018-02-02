@@ -1,20 +1,17 @@
 export class Body {
     public bytes;
-    public asString;
 
-    constructor (bytes: Buffer | string) {
-        if (typeof bytes == "string") {
-            this.asString = bytes;
-        } else {
-            this.bytes = bytes;
-        }
+    constructor(bytes: Buffer | string) {
+        this.bytes = bytes;
+
     }
 
     bodyString() {
-        return this.asString;
+        if (typeof this.bytes == "string") {
+            return this.bytes;
+        } else {
+            return this.bytes.toString();
+        }
     }
 
-    toString() {
-        return this.bytes.toString()
-    }
 }

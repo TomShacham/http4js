@@ -1,7 +1,7 @@
-import {routes, ResourceRoutingHttpHandler} from "../../main/core/RoutingHttpHandler";
+import {equal} from "assert";
+import {routes} from "../../main/core/RoutingHttpHandler";
 import {Response} from "../../main/core/Response";
 import {Body} from "../../main/core/Body";
-import {equal} from "assert";
 import {Request} from "../../main/core/Request";
 import {Method} from "../../main/core/HttpMessage";
 
