@@ -10,7 +10,7 @@ export function httpClient() {
 export function HttpClient() {
 
     this.get = (request) => {
-        let options = request.uri.asRequest();
+        let options = request.uri.asRequest;
         options.headers = request.headers;
 
         return new Promise(succ => {
@@ -21,7 +21,8 @@ export function HttpClient() {
                 });
                 res.on('end', () => {
                     let body = new Body(Buffer.concat(chunks));
-                    let response = new Response(body).setHeaders(res.headers);
+                    let response = new Response(body)
+                        .setHeaders(res.headers);
                     succ(response);
                 });
             }).end();

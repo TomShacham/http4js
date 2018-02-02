@@ -7,25 +7,27 @@ export class Uri {
     query: string;
     hostname: string;
     port: string;
+    href: string;
 
     template: string;
-    uriString: string;
+    asRequest: object;
+
     private matches: object = {};
     private pathParamMatchingRegex: RegExp = new RegExp(/\{(\w+)\}/);
     private pathParamCaptureTemplate: string = "([\\w\\s]+)";
 
-    constructor(uri: string) {
-        this.template = uri;
-        this.uriString = encodeURI(uri);
+    constructor(template: string) {
+        let uri = URI.parse(template);
 
-        let asRequest = this.asRequest();
-
-        this.protocol = asRequest.protocol;
-        this.auth = asRequest.auth;
-        this.hostname = asRequest.hostname;
-        this.path = asRequest.path;
-        this.port = asRequest.port;
-        this.query = asRequest.query;
+        this.asRequest = uri;
+        this.template = uri.pathname;
+        this.protocol = uri.protocol;
+        this.auth = uri.auth;
+        this.hostname = uri.hostname;
+        this.path = uri.path;
+        this.port = uri.port;
+        this.query = uri.query;
+        this.href = uri.href;
     }
 
     static of (uri: string): Uri {
@@ -48,8 +50,12 @@ export class Uri {
         return this.matches[name];
     }
 
-    asRequest() {
-        return URI.parse(this.uriString);
+    withQuery(name: string, value: string): Uri {
+        if (this.query && this.query.length > 0){
+            return Uri.of(this.href + `&${name}=${value}`)
+        } else {
+            return Uri.of(this.href + `?${name}=${value}`)
+        }
     }
 
     private uriTemplateToPathParamCapturingRegex (): RegExp {

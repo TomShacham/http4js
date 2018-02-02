@@ -11,7 +11,7 @@ describe("in mem request", () => {
             new Request(Method.GET, "/")
                 .setUri("/tom")
                 .uri
-                .uriString,
+                .template,
             "/tom")
     });
 
@@ -37,8 +37,8 @@ describe("in mem request", () => {
                 .query("tom", "tosh")
                 .query("ben", "bosh")
                 .uri
-                .uriString,
-            "/tom?tom=tosh&ben=bosh")
+                .query,
+            "tom=tosh&ben=bosh")
     });
 
     it("set header on request", () => {

@@ -16,7 +16,7 @@ export class Response implements Http4jsResponse {
     }
 
     getHeader(name: string): string {
-        return this.headers[name];
+        return this.headers[name.toLowerCase()];
     }
 
     setHeader(name: string, value: string): Response {

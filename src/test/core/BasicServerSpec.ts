@@ -23,7 +23,11 @@ describe('a basic in memory server', () => {
 describe("real request", () => {
 
     let server = routes("/", (req: Request) => {
-        return new Response(new Body(req.bodyString())).setHeaders(req.headers);
+        let query = req.getQuery("tomQuery");
+        console.log(query)
+        return new Response(new Body(req.bodyString()))
+            .setHeaders(req.headers)
+            .setHeader("tomQuery", query);
     }).asServer(3000);
 
 
@@ -36,6 +40,16 @@ describe("real request", () => {
         return httpClient().post(request)
             .then(succ => {
                 deepEqual(succ.bodyString(), "my humps")
+            })
+    });
+
+    it("sets query params", () => {
+        let request = new Request(Method.GET, "http://localhost:3000/")
+            .query("tomQuery", "likes to party");
+
+        return httpClient().get(request)
+            .then(succ => {
+                equal(succ.getHeader("tomquery"), "likes%20to%20party")
             })
     });
 

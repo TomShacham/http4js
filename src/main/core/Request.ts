@@ -1,7 +1,7 @@
 import {Http4jsRequest, Method} from "./HttpMessage";
-import {Headers} from "./Headers";
 import {Body} from "./Body";
 import {Uri} from "./Uri";
+import {isNullOrUndefined} from "util";
 
 export class Request implements Http4jsRequest {
 
@@ -9,7 +9,7 @@ export class Request implements Http4jsRequest {
     method: string;
     headers: object = {};
     body: Body;
-    private queries = {};
+    queries = {};
 
     constructor(
         method: Method,
@@ -25,7 +25,18 @@ export class Request implements Http4jsRequest {
         }
         this.body = body;
         this.headers = headers ? headers : {};
+        this.queries = this.getQueryParams();
         return this;
+    }
+
+    private getQueryParams(): object {
+        let query2 = this.uri.query;
+        if (isNullOrUndefined(query2)) return {};
+        let split = query2.split("=");
+        for (let i = 0; i<split.length; i+=2) {
+            this.queries[split[i]] = split[i + 1];
+        }
+        return this.queries;
     }
 
     setUri(uri: Uri | string): Request {
@@ -75,14 +86,13 @@ export class Request implements Http4jsRequest {
     }
 
     query(name: string, value: string): Request {
-        let queries = Object.keys(this.queries);
-        if (queries.length > 0) {
-            this.uri.uriString += `&${name}=${value}`;
-        } else {
-            this.uri.uriString += `?${name}=${value}`;
-        }
         this.queries[name] = value;
+        this.uri = this.uri.withQuery(name, value);
         return this;
+    }
+
+    getQuery(name: string) : string {
+        return this.queries[name];
     }
 
 }
