@@ -50,16 +50,21 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
     server: Http4jsServer;
     private path: string;
     private handler: HttpHandler;
-    private handlers: object = {};
+    private handlers: object;
+    private filters: Array<any>;
 
-    constructor(path: string, handler: HttpHandler) {
+
+    constructor(path: string, handler: HttpHandler, handlers: object = {}, filters: Array<any> = []) {
         this.path = path;
         this.handler = handler;
+        this.handlers = handlers;
         this.handlers[path] = handler;
+        this.filters = filters;
     }
 
     withFilter(filter: (HttpHandler) => HttpHandler): RoutingHttpHandler {
-        return new ResourceRoutingHttpHandler(this.path, filter(this.handler));
+        this.filters.push(filter);
+        return this;
     }
 
     withHandler(path: string, handler: HttpHandler): RoutingHttpHandler {
@@ -93,7 +98,11 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
         let matchedPath: string = paths.find(path => {
             return request.uri.match(path)
         });
-        if (matchedPath) return this.handlers[matchedPath](request);
+        if (matchedPath) {
+            let handler = this.handlers[matchedPath];
+            let filtered = this.filters.reduce((acc, next) => { return next(acc) }, handler);
+            return filtered(request);
+        }
         else {
             let body = new Body(Buffer.from(`${request.method} to ${request.uri.template} did not match route ${path}`));
             return new Response(404, body);

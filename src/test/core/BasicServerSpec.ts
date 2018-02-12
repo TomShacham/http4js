@@ -37,6 +37,44 @@ describe('a basic in memory server', () => {
         equal(response.body.bodyString(), "filtered")
     });
 
+    it("chains filters", () => {
+        let resourceRoutingHttpHandler = routes("/test", () => { return new Response(200) })
+            .withFilter(() => {
+                return () => {
+                    return new Response(200, new Body("filtered"))
+                }
+            })
+            .withFilter((handler: HttpHandler) => {
+                return (req: Request) => {
+                    return handler(req).setHeader("another", "filter");
+                }
+            });
+        let response = resourceRoutingHttpHandler.match(new Request(Method.GET, "/test"));
+
+        equal(response.body.bodyString(), "filtered");
+        equal(response.getHeader("another"), "filter");
+    });
+
+    it("chains filters and handlers", () => {
+        let resourceRoutingHttpHandler = routes("/test", () => { return new Response(200) })
+            .withHandler("/nest", () => { return new Response(200, new Body("nested")) })
+            .withFilter((handler: HttpHandler) => {
+                return (req: Request) => {
+                    return handler(req).setHeader("a", "filter1");
+                }
+            })
+            .withFilter((handler: HttpHandler) => {
+                return (req: Request) => {
+                    return handler(req).setHeader("another", "filter2");
+                }
+            });
+        let response = resourceRoutingHttpHandler.match(new Request(Method.GET, "/test/nest"));
+
+        equal(response.body.bodyString(), "nested");
+        equal(response.getHeader("a"), "filter1");
+        equal(response.getHeader("another"), "filter2");
+    });
+
 });
 
 describe("real request", () => {
