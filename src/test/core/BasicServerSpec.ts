@@ -19,14 +19,23 @@ describe('a basic in memory server', () => {
     });
 
     it("nests handlers", () => {
-        let baseHandler = () => { return new Response(200) };
-        let resourceRoutingHttpHandler = routes("/test", baseHandler)
+        let resourceRoutingHttpHandler = routes("/test", () => { return new Response(200) })
             .withHandler("/nest", () => { return new Response(200, new Body("nested")) });
 
         let response = resourceRoutingHttpHandler.match(new Request(Method.GET, "/test/nest"));
 
         equal(response.body.bodyString(), "nested")
-    })
+    });
+
+    it("add a filter", () => {
+        let resourceRoutingHttpHandler = routes("/test", () => { return new Response(200) })
+            .withFilter((handler: HttpHandler) => {
+                return (req: Request) => { return new Response(200, new Body("filtered"))}
+            });
+        let response = resourceRoutingHttpHandler.match(new Request(Method.GET, "/test"));
+
+        equal(response.body.bodyString(), "filtered")
+    });
 
 });
 
