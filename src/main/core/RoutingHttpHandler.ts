@@ -10,7 +10,6 @@ interface Router {
 
 interface RoutingHttpHandler extends Router {
     withFilter(filter: (HttpHandler) => HttpHandler): RoutingHttpHandler
-//     withBasePath(path: String): RoutingHttpHandler
     asServer(port: number): Http4jsServer
 }
 
@@ -51,16 +50,22 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
     server: Http4jsServer;
     private path: string;
     private handler: HttpHandler;
+    private handlers: object = {};
 
     constructor(path: string, handler: HttpHandler) {
         this.path = path;
         this.handler = handler;
+        this.handlers[path] = handler;
     }
 
     withFilter(filter: (HttpHandler) => HttpHandler): RoutingHttpHandler {
         return new ResourceRoutingHttpHandler(this.path, filter(this.handler));
     }
 
+    withHandler(path: string, handler: HttpHandler): RoutingHttpHandler {
+        this.handlers[this.path + path] = handler;
+        return this;
+    }
 
     asServer(port: number): Http4jsServer {
         this.server = new BasicServer(port);
@@ -83,16 +88,17 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
     }
 
     match(request: Http4jsRequest): Response {
-        let handler = this.handler;
         let path = this.path;
-        if (request.uri.match(path)) {
-            return handler(request);
-        } else {
+        let paths = Object.keys(this.handlers);
+        let matchedPath: string = paths.find(path => {
+            return request.uri.match(path)
+        });
+        if (matchedPath) return this.handlers[matchedPath](request);
+        else {
             let body = new Body(Buffer.from(`${request.method} to ${request.uri.template} did not match route ${path}`));
             return new Response(404, body);
         }
     }
-
 
 }
 

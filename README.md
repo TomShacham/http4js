@@ -24,4 +24,4 @@ npm install typescript   --save-dev
 #### To do
 
 - chaining and nesting filters
-- pull out in mem -> wire connectors. bit messy with request and uri and client and routinghttphandler! 
+- mapping in mem stuff to wire is not nice, needs some love. 

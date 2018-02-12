@@ -3,13 +3,13 @@ import {routes} from "../../main/core/RoutingHttpHandler";
 import {Response} from "../../main/core/Response";
 import {Body} from "../../main/core/Body";
 import {Request} from "../../main/core/Request";
-import {Method} from "../../main/core/HttpMessage";
+import {Method, HttpHandler} from "../../main/core/HttpMessage";
 import {deepEqual} from "assert";
 import {httpClient} from "../../main/core/Client";
 
 describe('a basic in memory server', () => {
 
-    it('takes request and gives response', function () {
+    it("takes request and gives response", function () {
         let requestBody = "Got it.";
         let handler = (req: Request) => { return new Response(200, req.body); };
         let resourceRoutingHttpHandler = routes("/test", handler);
@@ -17,6 +17,16 @@ describe('a basic in memory server', () => {
 
         equal(response.body.bodyString(), requestBody)
     });
+
+    it("nests handlers", () => {
+        let baseHandler = () => { return new Response(200) };
+        let resourceRoutingHttpHandler = routes("/test", baseHandler)
+            .withHandler("/nest", () => { return new Response(200, new Body("nested")) });
+
+        let response = resourceRoutingHttpHandler.match(new Request(Method.GET, "/test/nest"));
+
+        equal(response.body.bodyString(), "nested")
+    })
 
 });
 
