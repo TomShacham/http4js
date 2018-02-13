@@ -23,7 +23,6 @@ npm install typescript   --save-dev
 
 #### To do
 
-- refactoring: 
-  - mapping in mem stuff to wire is not nice, needs some love. 
 - write docs
 - publish as library to npm
+- support templating

@@ -1,5 +1,5 @@
 import {Request} from "./src/main/core/Request";
-import {Method, Http4jsRequest} from "./src/main/core/HttpMessage";
+import {Method, Http4jsRequest, HttpHandler} from "./src/main/core/HttpMessage";
 import {routes} from "./src/main/core/RoutingHttpHandler";
 import {Response} from "./src/main/core/Response";
 import {httpClient} from "./src/main/core/Client";
@@ -13,10 +13,24 @@ let handler = (req: Request) => {
     )
 };
 
-routes("/path", handler).asServer(3000).start();
+let headerFilter = (handler: HttpHandler) => {
+    return (req: Request) => {
+        return handler(req.setHeader("filter", "1"));
+    }
+};
 
-let request = new Request(Method.GET, Uri.of("http://localhost:3000/path"))
+routes("/path", handler)
+    .withHandler("/tom", handler)
+    .withFilter(headerFilter)
+    .asServer(3000).start();
+
+let request = new Request(Method.GET, Uri.of("http://localhost:3000/path/tom"))
     .setHeader("tom", "rules");
 
-httpClient().get(request).then(succ => console.log(succ));
+httpClient().get(request).then(succ => {
+    console.log("body string");
+    console.log(succ.body.bodyString());
+    console.log("headers");
+    console.log(succ.headers);
+});
 
