@@ -51,18 +51,16 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
             }).on('data', (chunk) => {
                 chunks.push(chunk);
             }).on('end', () => {
-                let body = new Body(Buffer.concat(chunks));
-                let inMemoryRequest = new Request(method, url, body, headers);
-                let response = this.match(inMemoryRequest);
+                let response = this.createInMemResponse(chunks, method, url, headers);
                 res.writeHead(response.status, response.headers);
-                res.end(response.bodyString());
+                res.end(response.body.bytes);
             })
         });
         return this.server;
     }
 
     match(request: Http4jsRequest): Response {
-        let path = this.path;
+        let incomingPath = this.path;
         let paths = Object.keys(this.handlers);
         let matchedPath: string = paths.find(path => {
             return request.uri.match(path)
@@ -71,11 +69,17 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
             let handler = this.handlers[matchedPath];
             let filtered = this.filters.reduce((acc, next) => { return next(acc) }, handler);
             return filtered(request);
-        }
-        else {
-            let body = new Body(Buffer.from(`${request.method} to ${request.uri.template} did not match route ${path}`));
+        } else {
+            let notFoundBody = `${request.method} to ${request.uri.template} did not match route ${incomingPath}`;
+            let body = new Body(notFoundBody);
             return new Response(404, body);
         }
+    }
+
+    private createInMemResponse(chunks: Array<any>, method: any, url: any, headers: any) {
+        let body = new Body(Buffer.concat(chunks));
+        let inMemRequest = new Request(method, url, body, headers);
+        return this.match(inMemRequest);
     }
 
 }
