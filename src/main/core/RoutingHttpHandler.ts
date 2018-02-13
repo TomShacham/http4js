@@ -1,44 +1,13 @@
-import * as http from "http";
 import {Response} from "./Response";
 import {Http4jsRequest, HttpHandler} from "./HttpMessage";
 import {Request} from "./Request";
 import {Body} from "./Body";
+import {Http4jsServer, Server} from "./Server";
 
-interface Router {
-    match(request: Http4jsRequest): Response
-}
-
-interface RoutingHttpHandler extends Router {
+interface RoutingHttpHandler {
     withFilter(filter: (HttpHandler) => HttpHandler): RoutingHttpHandler
     asServer(port: number): Http4jsServer
-}
-
-interface Http4jsServer {
-    server;
-    port: number;
-
-    start(): void
-    stop(): void
-}
-
-class BasicServer implements Http4jsServer {
-    server;
-    port: number;
-
-    constructor(port: number) {
-        this.port = port;
-        this.server = http.createServer();
-        return this;
-    }
-
-    start(): void {
-        this.server.listen(this.port)
-    }
-
-    stop(): void {
-        this.server.close()
-    }
-
+    match(request: Http4jsRequest): Response
 }
 
 export function routes(path: string, handler: HttpHandler): ResourceRoutingHttpHandler {
@@ -73,7 +42,7 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
     }
 
     asServer(port: number): Http4jsServer {
-        this.server = new BasicServer(port);
+        this.server = new Server(port);
         this.server.server.on("request", (req, res) => {
             const {headers, method, url} = req;
             let chunks = [];

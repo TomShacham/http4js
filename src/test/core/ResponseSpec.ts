@@ -59,6 +59,6 @@ describe("in mem response", () => {
                 .removeHeader("tom")
                 .getHeader("tom"),
             undefined);
-    })
+    });
 
 });
