@@ -1,9 +1,5 @@
 import * as assert from "assert";
-import {equal, deepEqual} from "assert";
-import {Request} from "../../main/core/Request";
-import {Method} from "../../main/core/HttpMessage";
-import {httpClient} from "../../main/core/Client";
-import {routes} from "../../main/core/RoutingHttpHandler";
+import {equal} from "assert";
 import {Response} from "../../main/core/Response";
 import {Body} from "../../main/core/Body";
 

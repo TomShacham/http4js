@@ -4,7 +4,7 @@ A port of [http4k](https://github.com/http4k/http4k): a lightweight _toolkit_ to
 
 #### To run: 
 
-`tsc index.ts; node index.js`
+`tsc index.ts --target es5; node index.js`
 
 #### To test:
 

@@ -62,7 +62,7 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
     match(request: Http4jsRequest): Response {
         let incomingPath = this.path;
         let paths = Object.keys(this.handlers);
-        let matchedPath: string = paths.find(path => {
+        let matchedPath = paths.find(path => {
             return request.uri.match(path)
         });
         if (matchedPath) {
