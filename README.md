@@ -23,6 +23,8 @@ npm install typescript   --save-dev
 
 #### To do
 
+- code:
+  - implement bindX
+  - specify method on route
 - write docs
 - publish as library to npm
-- support templating

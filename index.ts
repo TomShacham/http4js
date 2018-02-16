@@ -2,7 +2,7 @@ import {Request} from "./src/main/core/Request";
 import {HttpHandler, Method} from "./src/main/core/HttpMessage";
 import {routes} from "./src/main/core/RoutingHttpHandler";
 import {Response} from "./src/main/core/Response";
-import {httpClient} from "./src/main/core/Client";
+import {HttpClient, httpClient} from "./src/main/core/Client";
 import {Body} from "./src/main/core/Body";
 import {Uri} from "./src/main/core/Uri";
 
@@ -21,33 +21,20 @@ routes("/path", handler)
     .withHandler("/tom", handler)
     .withFilter(headerFilter)
     .asServer(3000).start();
-//
-// routes("/api", {
-//     routes("/v1")
-// })
-//     .withHandler("/v1")
-//     .withHandler
-
-
-// routes("/", Method.GET, (request: Request) => {return new Response(200);})
-//
-//   HttpHandler.prototype.asServer = function(){
-//
-//   }
 
 let getRequest = new Request(Method.GET, Uri.of("http://localhost:3000/path/tom")).setHeader("tom", "rules");
 let postRequest = new Request(Method.POST, Uri.of("http://localhost:3000/path/tom")).setHeader("tom", "rules");
 
-let client = httpClient();
+let client = HttpClient;
 
-client.get(getRequest).then(succ => {
+client(getRequest).then(succ => {
     console.log("body string");
     console.log(succ.body.bodyString());
     console.log("headers");
     console.log(succ.headers);
 });
 
-client.post(postRequest).then(succ => {
+client(postRequest).then(succ => {
     console.log("body string");
     console.log(succ.body.bodyString());
     console.log("headers");
