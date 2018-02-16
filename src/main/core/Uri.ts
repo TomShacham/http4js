@@ -35,6 +35,8 @@ export class Uri {
     }
 
     match(path: string): boolean {
+        console.log(path)
+        console.log(this.uriTemplateToPathParamCapturingRegex())
         let exec = this.uriTemplateToPathParamCapturingRegex().exec(path);
         return exec != null;
     }

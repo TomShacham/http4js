@@ -24,7 +24,6 @@ npm install typescript   --save-dev
 #### To do
 
 - code:
-  - implement bindX
-  - specify method on route
+  - extract path params in routing http handler
 - write docs
 - publish as library to npm

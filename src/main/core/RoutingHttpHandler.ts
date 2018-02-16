@@ -48,12 +48,12 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
         return this;
     }
 
-    withFilter(filter: (HttpHandler) => HttpHandler): RoutingHttpHandler {
+    withFilter(filter: (HttpHandler) => HttpHandler): ResourceRoutingHttpHandler {
         this.filters.push(filter);
         return this;
     }
 
-    withHandler(path: string, method: string, handler: HttpHandler): RoutingHttpHandler {
+    withHandler(path: string, method: string, handler: HttpHandler): ResourceRoutingHttpHandler {
         let existingPath = this.path != "/" ? this.path : "";
         let nestedPath = existingPath + path;
         this.handlers[nestedPath] = {verb: method, handler: handler};
@@ -82,12 +82,15 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
         let incomingPath = this.path;
         let paths = Object.keys(this.handlers);
         let matchedPath = paths.find(path => {
+            console.log(request.uri.match(path))
             return request.uri.match(path) && this.handlers[path] && this.handlers[path].verb == request.method
         });
         if (matchedPath) {
             let handler = this.handlers[matchedPath].handler;
             let filtered = this.filters.reduce((acc, next) => { return next(acc) }, handler);
-            return filtered(request);
+            let response = filtered(request);
+
+            return response;
         } else {
             let notFoundBody = `${request.method} to ${request.uri.template} did not match route ${incomingPath}`;
             let body = new Body(notFoundBody);

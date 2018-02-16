@@ -80,6 +80,13 @@ describe('a basic in memory server', () => {
             .match(new Request("GET", "/nested"));
 
         equal(response.bodyString(), "hi there deeply.")
-    })
+    });
+
+    it("extracts path params", () => {
+        let response = getTo("/{name}/test", ()=>{return new Response(200)})
+            .match(new Request("GET", "/tom/test"));
+
+        equal(response.pathParams.name, "tom")
+    });
 
 });
