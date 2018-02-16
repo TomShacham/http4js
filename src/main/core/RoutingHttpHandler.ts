@@ -19,16 +19,13 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
     server: Http4jsServer;
     private path: string;
     private handler: HttpHandler;
-    private handlers: object;
-    private filters: Array<any>;
+    private handlers: object = {};
+    private filters: Array<any> = [];
 
-
-    constructor(path: string, handler: HttpHandler, handlers: object = {}, filters: Array<any> = []) {
+    constructor(path: string, handler: HttpHandler) {
         this.path = path;
         this.handler = handler;
-        this.handlers = handlers;
         this.handlers[path] = handler;
-        this.filters = filters;
     }
 
     withFilter(filter: (HttpHandler) => HttpHandler): RoutingHttpHandler {

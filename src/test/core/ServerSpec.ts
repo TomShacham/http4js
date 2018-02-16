@@ -3,9 +3,7 @@ import {routes} from "../../main/core/RoutingHttpHandler";
 import {Response} from "../../main/core/Response";
 import {Body} from "../../main/core/Body";
 import {Request} from "../../main/core/Request";
-import {Method, HttpHandler} from "../../main/core/HttpMessage";
-import {deepEqual} from "assert";
-import {httpClient} from "../../main/core/Client";
+import {HttpHandler, Method} from "../../main/core/HttpMessage";
 
 describe('a basic in memory server', () => {
 

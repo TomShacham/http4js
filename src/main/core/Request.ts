@@ -17,7 +17,7 @@ export class Request implements Http4jsRequest {
         body: Body = new Body(new Buffer("")),
         headers = null
     ) {
-        this.method = method.toString();
+        this.method = Method[method];
         if (typeof uri == "string") {
             this.uri = Uri.of(uri);
         } else {
