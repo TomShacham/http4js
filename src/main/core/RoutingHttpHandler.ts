@@ -28,6 +28,16 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
         this.handlers[path] = handler;
     }
 
+    withRoutes(routes: ResourceRoutingHttpHandler): ResourceRoutingHttpHandler {
+        console.log(this.handlers)
+        for (let path of Object.keys(routes.handlers)) {
+            let existingPath = this.path != "/" ? this.path : "";
+            let nestedPath = existingPath + path;
+            this.handlers[nestedPath] = routes.handlers[path]
+        }
+        return this;
+    }
+
     withFilter(filter: (HttpHandler) => HttpHandler): RoutingHttpHandler {
         this.filters.push(filter);
         return this;

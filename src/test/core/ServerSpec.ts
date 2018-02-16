@@ -27,8 +27,8 @@ describe('a basic in memory server', () => {
 
     it("add a filter", () => {
         let resourceRoutingHttpHandler = routes("/test", () => { return new Response(200) })
-            .withFilter((handler: HttpHandler) => {
-                return (req: Request) => { return new Response(200, new Body("filtered"))}
+            .withFilter(() => {
+                return () => { return new Response(200, new Body("filtered"))}
             });
         let response = resourceRoutingHttpHandler.match(new Request(Method.GET, "/test"));
 
@@ -72,5 +72,14 @@ describe('a basic in memory server', () => {
         equal(response.getHeader("a"), "filter1");
         equal(response.getHeader("another"), "filter2");
     });
+
+    it("recursively defining routes", () => {
+        let nested = routes("/nested", (req: Request) => { return new Response(200).setBodystring("hi there deeply.")});
+        let response = routes("/", ()=>{return new Response(200)})
+            .withRoutes(nested)
+            .match(new Request(Method.GET, "/nested"));
+
+        equal(response.bodyString(), "hi there deeply.")
+    })
 
 });
