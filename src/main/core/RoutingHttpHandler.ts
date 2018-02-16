@@ -89,7 +89,6 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
             let handler = this.handlers[matchedPath].handler;
             let filtered = this.filters.reduce((acc, next) => { return next(acc) }, handler);
             let response = filtered(request);
-
             return response;
         } else {
             let notFoundBody = `${request.method} to ${request.uri.template} did not match route ${incomingPath}`;

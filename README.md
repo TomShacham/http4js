@@ -25,5 +25,7 @@ npm install typescript   --save-dev
 
 - code:
   - extract path params in routing http handler
+  - ordering of filters 
+  - other client verbs
 - write docs
 - publish as library to npm
