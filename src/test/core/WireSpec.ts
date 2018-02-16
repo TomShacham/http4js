@@ -12,7 +12,11 @@ describe("real request", () => {
         return new Response(200, new Body(req.bodyString()))
             .setHeaders(req.headers)
             .setHeader("tomQuery", query);
-    }).asServer(3000);
+    })
+        .withHandler("/post", "POST", (req) => {
+            return new Response(200, new Body(req.bodyString()))
+        })
+        .asServer(3000);
 
 
     before(() => {
@@ -20,10 +24,10 @@ describe("real request", () => {
     });
 
     it("sets body", () => {
-        let request = new Request("GET", "http://localhost:3000/", new Body("my humps"));
+        let request = new Request("POST", "http://localhost:3000/", new Body("my humps"));
         return HttpClient(request)
             .then(succ => {
-                deepEqual(succ.bodyString(), "")
+                deepEqual(succ.bodyString(), "my humps")
             })
     });
 
