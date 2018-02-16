@@ -1,14 +1,13 @@
 import * as assert from "assert";
 import {equal} from "assert";
 import {Request} from "../../main/core/Request";
-import {Method} from "../../main/core/HttpMessage";
 import {Body} from "../../main/core/Body";
 
 describe("in mem request", () => {
 
     it("set uri", () => {
         equal(
-            new Request(Method.GET, "/")
+            new Request("GET", "/")
                 .setUri("/tom")
                 .uri
                 .template,
@@ -17,7 +16,7 @@ describe("in mem request", () => {
 
     it("set body", () => {
         equal(
-            new Request(Method.GET, "/")
+            new Request("GET", "/")
                 .setBody(new Body("body boy"))
                 .bodyString(),
             "body boy")
@@ -25,7 +24,7 @@ describe("in mem request", () => {
 
     it("set body string", () => {
         equal(
-            new Request(Method.GET, "/")
+            new Request("GET", "/")
                 .setBodystring("tommy boy")
                 .bodyString(),
             "tommy boy")
@@ -33,7 +32,7 @@ describe("in mem request", () => {
 
     it("sets query string", () => {
         equal(
-            new Request(Method.GET, "/tom")
+            new Request("GET", "/tom")
                 .query("tom", "tosh")
                 .query("ben", "bosh")
                 .uri
@@ -43,7 +42,7 @@ describe("in mem request", () => {
 
     it("set header on request", () => {
         equal(
-            new Request(Method.GET, "some/url")
+            new Request("GET", "some/url")
                 .setHeader("tom", "smells")
                 .getHeader("tom"),
             "smells");
@@ -51,7 +50,7 @@ describe("in mem request", () => {
 
     it("concat same header on request", () => {
         assert.deepEqual(
-            new Request(Method.GET, "some/url")
+            new Request("GET", "some/url")
                 .setHeader("tom", "smells")
                 .setHeader("tom", "smells more")
                 .setHeader("tom", "smells some more")
@@ -61,7 +60,7 @@ describe("in mem request", () => {
 
     it('replace header', () => {
         equal(
-            new Request(Method.GET, "some/url")
+            new Request("GET", "some/url")
                 .setHeader("tom", "smells")
                 .replaceHeader("tom", "is nice")
                 .getHeader("tom"),
@@ -70,7 +69,7 @@ describe("in mem request", () => {
 
     it('remove header', () => {
         equal(
-            new Request(Method.GET, "some/url")
+            new Request("GET", "some/url")
                 .setHeader("tom", "smells")
                 .removeHeader("tom")
                 .getHeader("tom"),

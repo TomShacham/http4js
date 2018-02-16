@@ -2,7 +2,6 @@ import {getTo} from "../../main/core/RoutingHttpHandler";
 import {Request} from "../../main/core/Request";
 import {Response} from "../../main/core/Response";
 import {Body} from "../../main/core/Body";
-import {Method} from "../../main/core/HttpMessage";
 import {deepEqual, equal} from "assert";
 import {HttpClient} from "../../main/core/Client";
 
@@ -21,15 +20,15 @@ describe("real request", () => {
     });
 
     it("sets body", () => {
-        let request = new Request(Method.POST, "http://localhost:3000/", new Body("my humps"));
+        let request = new Request("GET", "http://localhost:3000/", new Body("my humps"));
         return HttpClient(request)
             .then(succ => {
-                deepEqual(succ.bodyString(), "my humps")
+                deepEqual(succ.bodyString(), "")
             })
     });
 
     it("sets query params", () => {
-        let request = new Request(Method.GET, "http://localhost:3000/")
+        let request = new Request("GET", "http://localhost:3000/")
             .query("tomQuery", "likes to party");
 
         return HttpClient(request)
@@ -39,7 +38,7 @@ describe("real request", () => {
     });
 
     it("sets multiple headers of same name", () => {
-        let request = new Request(Method.GET, "http://localhost:3000/", null, {tom: ["smells", "smells more"]});
+        let request = new Request("GET", "http://localhost:3000/", null, {tom: ["smells", "smells more"]});
         return HttpClient(request)
             .then(succ => {
                 deepEqual(succ.getHeader("tom"), "smells, smells more")

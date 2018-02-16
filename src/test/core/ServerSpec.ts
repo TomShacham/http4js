@@ -3,7 +3,7 @@ import {getTo} from "../../main/core/RoutingHttpHandler";
 import {Response} from "../../main/core/Response";
 import {Body} from "../../main/core/Body";
 import {Request} from "../../main/core/Request";
-import {HttpHandler, Method} from "../../main/core/HttpMessage";
+import {HttpHandler} from "../../main/core/HttpMessage";
 
 describe('a basic in memory server', () => {
 
@@ -11,16 +11,16 @@ describe('a basic in memory server', () => {
         let requestBody = "Got it.";
         let handler = (req: Request) => { return new Response(200, req.body); };
         let resourceRoutingHttpHandler = getTo("/test", handler);
-        let response = resourceRoutingHttpHandler.match(new Request(Method.GET, "/test", new Body(requestBody)));
+        let response = resourceRoutingHttpHandler.match(new Request("GET", "/test", new Body(requestBody)));
 
         equal(response.body.bodyString(), requestBody)
     });
 
     it("nests handlers", () => {
         let resourceRoutingHttpHandler = getTo("/test", () => { return new Response(200) })
-            .withHandler("/nest", () => { return new Response(200, new Body("nested")) });
+            .withHandler("/nest", "GET", () => { return new Response(200, new Body("nested")) });
 
-        let response = resourceRoutingHttpHandler.match(new Request(Method.GET, "/test/nest"));
+        let response = resourceRoutingHttpHandler.match(new Request("GET", "/test/nest"));
 
         equal(response.body.bodyString(), "nested")
     });
@@ -30,7 +30,7 @@ describe('a basic in memory server', () => {
             .withFilter(() => {
                 return () => { return new Response(200, new Body("filtered"))}
             });
-        let response = resourceRoutingHttpHandler.match(new Request(Method.GET, "/test"));
+        let response = resourceRoutingHttpHandler.match(new Request("GET", "/test"));
 
         equal(response.body.bodyString(), "filtered")
     });
@@ -47,7 +47,7 @@ describe('a basic in memory server', () => {
                     return handler(req).setHeader("another", "filter");
                 }
             });
-        let response = resourceRoutingHttpHandler.match(new Request(Method.GET, "/test"));
+        let response = resourceRoutingHttpHandler.match(new Request("GET", "/test"));
 
         equal(response.body.bodyString(), "filtered");
         equal(response.getHeader("another"), "filter");
@@ -55,7 +55,7 @@ describe('a basic in memory server', () => {
 
     it("chains filters and handlers", () => {
         let resourceRoutingHttpHandler = getTo("/test", () => { return new Response(200) })
-            .withHandler("/nest", () => { return new Response(200, new Body("nested")) })
+            .withHandler("/nest", "GET", () => { return new Response(200, new Body("nested")) })
             .withFilter((handler: HttpHandler) => {
                 return (req: Request) => {
                     return handler(req).setHeader("a", "filter1");
@@ -66,7 +66,7 @@ describe('a basic in memory server', () => {
                     return handler(req).setHeader("another", "filter2");
                 }
             });
-        let response = resourceRoutingHttpHandler.match(new Request(Method.GET, "/test/nest"));
+        let response = resourceRoutingHttpHandler.match(new Request("GET", "/test/nest"));
 
         equal(response.body.bodyString(), "nested");
         equal(response.getHeader("a"), "filter1");
@@ -77,7 +77,7 @@ describe('a basic in memory server', () => {
         let nested = getTo("/nested", (req: Request) => { return new Response(200).setBodystring("hi there deeply.")});
         let response = getTo("/", ()=>{return new Response(200)})
             .withRoutes(nested)
-            .match(new Request(Method.GET, "/nested"));
+            .match(new Request("GET", "/nested"));
 
         equal(response.bodyString(), "hi there deeply.")
     })

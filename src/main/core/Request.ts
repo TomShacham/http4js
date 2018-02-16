@@ -1,4 +1,4 @@
-import {Http4jsRequest, Method} from "./HttpMessage";
+import {Http4jsRequest} from "./HttpMessage";
 import {Body} from "./Body";
 import {Uri} from "./Uri";
 import {isNullOrUndefined} from "util";
@@ -12,12 +12,12 @@ export class Request implements Http4jsRequest {
     queries = {};
 
     constructor(
-        method: Method,
+        method: string,
         uri: Uri | string,
         body: Body = new Body(new Buffer("")),
         headers = null
     ) {
-        this.method = Method[method];
+        this.method = method;
         if (typeof uri == "string") {
             this.uri = Uri.of(uri);
         } else {

@@ -1,8 +1,8 @@
 import {Request} from "./src/main/core/Request";
-import {HttpHandler, Method} from "./src/main/core/HttpMessage";
+import {HttpHandler} from "./src/main/core/HttpMessage";
 import {routes} from "./src/main/core/RoutingHttpHandler";
 import {Response} from "./src/main/core/Response";
-import {HttpClient, httpClient} from "./src/main/core/Client";
+import {HttpClient} from "./src/main/core/Client";
 import {Body} from "./src/main/core/Body";
 import {Uri} from "./src/main/core/Uri";
 
@@ -17,13 +17,13 @@ let headerFilter = (handler: HttpHandler) => {
     }
 };
 
-routes("/path", Method.GET, handler)
-    .withHandler("/tom", handler)
+routes("/path", "GET", handler)
+    .withHandler("/tom", "GET", handler)
     .withFilter(headerFilter)
     .asServer(3000).start();
 
-let getRequest = new Request(Method.GET, Uri.of("http://localhost:3000/path/tom")).setHeader("tom", "rules");
-let postRequest = new Request(Method.POST, Uri.of("http://localhost:3000/path/tom")).setHeader("tom", "rules");
+let getRequest = new Request("GET", Uri.of("http://localhost:3000/path/tom")).setHeader("tom", "rules");
+let postRequest = new Request("GET", Uri.of("http://localhost:3000/path/tom")).setHeader("tom", "rules");
 
 let client = HttpClient;
 

@@ -1,5 +1,5 @@
 import {Response} from "./Response";
-import {Http4jsRequest, HttpHandler, Method} from "./HttpMessage";
+import {Http4jsRequest, HttpHandler} from "./HttpMessage";
 import {Request} from "./Request";
 import {Body} from "./Body";
 import {Http4jsServer, Server} from "./Server";
@@ -10,32 +10,33 @@ interface RoutingHttpHandler {
     match(request: Http4jsRequest): Response
 }
 
-export function routes(path: string, method: Method, handler: HttpHandler): ResourceRoutingHttpHandler {
+export function routes(path: string, method: string, handler: HttpHandler): ResourceRoutingHttpHandler {
     return new ResourceRoutingHttpHandler(path, method, handler);
 }
 
 export function getTo(path: string, handler: HttpHandler): ResourceRoutingHttpHandler {
-    return new ResourceRoutingHttpHandler(path, Method.GET, handler);
+    return new ResourceRoutingHttpHandler(path, "GET", handler);
 }
 
 export function postTo(path: string, handler: HttpHandler): ResourceRoutingHttpHandler {
-    return new ResourceRoutingHttpHandler(path, Method.POST, handler);
+    return new ResourceRoutingHttpHandler(path, "GET", handler);
 }
 
 export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
 
     server: Http4jsServer;
     private path: string;
-    private handler: HttpHandler;
+    private handler: object;
     private handlers: object = {};
     private filters: Array<any> = [];
 
     constructor(path: string,
-                method: Method,
+                method: string,
                 handler: HttpHandler) {
         this.path = path;
-        this.handler = handler;
-        this.handlers[path] = handler;
+        let verbToHandler = {verb: method, handler: handler};
+        this.handler = verbToHandler;
+        this.handlers[path] = verbToHandler;
     }
 
     withRoutes(routes: ResourceRoutingHttpHandler): ResourceRoutingHttpHandler {
@@ -52,10 +53,10 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
         return this;
     }
 
-    withHandler(path: string, handler: HttpHandler): RoutingHttpHandler {
+    withHandler(path: string, method: string, handler: HttpHandler): RoutingHttpHandler {
         let existingPath = this.path != "/" ? this.path : "";
         let nestedPath = existingPath + path;
-        this.handlers[nestedPath] = handler;
+        this.handlers[nestedPath] = {verb: method, handler: handler};
         return this;
     }
 
@@ -81,10 +82,10 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
         let incomingPath = this.path;
         let paths = Object.keys(this.handlers);
         let matchedPath = paths.find(path => {
-            return request.uri.match(path)
+            return request.uri.match(path) && this.handlers[path] && this.handlers[path].verb == request.method
         });
         if (matchedPath) {
-            let handler = this.handlers[matchedPath];
+            let handler = this.handlers[matchedPath].handler;
             let filtered = this.filters.reduce((acc, next) => { return next(acc) }, handler);
             return filtered(request);
         } else {
