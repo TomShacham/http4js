@@ -17,7 +17,7 @@ let headerFilter = (handler: HttpHandler) => {
     }
 };
 
-routes("/path", handler)
+routes("/path", Method.GET, handler)
     .withHandler("/tom", handler)
     .withFilter(headerFilter)
     .asServer(3000).start();

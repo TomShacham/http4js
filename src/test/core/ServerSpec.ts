@@ -1,5 +1,5 @@
 import {equal} from "assert";
-import {routes} from "../../main/core/RoutingHttpHandler";
+import {getTo} from "../../main/core/RoutingHttpHandler";
 import {Response} from "../../main/core/Response";
 import {Body} from "../../main/core/Body";
 import {Request} from "../../main/core/Request";
@@ -10,14 +10,14 @@ describe('a basic in memory server', () => {
     it("takes request and gives response", function () {
         let requestBody = "Got it.";
         let handler = (req: Request) => { return new Response(200, req.body); };
-        let resourceRoutingHttpHandler = routes("/test", handler);
+        let resourceRoutingHttpHandler = getTo("/test", handler);
         let response = resourceRoutingHttpHandler.match(new Request(Method.GET, "/test", new Body(requestBody)));
 
         equal(response.body.bodyString(), requestBody)
     });
 
     it("nests handlers", () => {
-        let resourceRoutingHttpHandler = routes("/test", () => { return new Response(200) })
+        let resourceRoutingHttpHandler = getTo("/test", () => { return new Response(200) })
             .withHandler("/nest", () => { return new Response(200, new Body("nested")) });
 
         let response = resourceRoutingHttpHandler.match(new Request(Method.GET, "/test/nest"));
@@ -26,7 +26,7 @@ describe('a basic in memory server', () => {
     });
 
     it("add a filter", () => {
-        let resourceRoutingHttpHandler = routes("/test", () => { return new Response(200) })
+        let resourceRoutingHttpHandler = getTo("/test", () => { return new Response(200) })
             .withFilter(() => {
                 return () => { return new Response(200, new Body("filtered"))}
             });
@@ -36,7 +36,7 @@ describe('a basic in memory server', () => {
     });
 
     it("chains filters", () => {
-        let resourceRoutingHttpHandler = routes("/test", () => { return new Response(200) })
+        let resourceRoutingHttpHandler = getTo("/test", () => { return new Response(200) })
             .withFilter(() => {
                 return () => {
                     return new Response(200, new Body("filtered"))
@@ -54,7 +54,7 @@ describe('a basic in memory server', () => {
     });
 
     it("chains filters and handlers", () => {
-        let resourceRoutingHttpHandler = routes("/test", () => { return new Response(200) })
+        let resourceRoutingHttpHandler = getTo("/test", () => { return new Response(200) })
             .withHandler("/nest", () => { return new Response(200, new Body("nested")) })
             .withFilter((handler: HttpHandler) => {
                 return (req: Request) => {
@@ -74,8 +74,8 @@ describe('a basic in memory server', () => {
     });
 
     it("recursively defining routes", () => {
-        let nested = routes("/nested", (req: Request) => { return new Response(200).setBodystring("hi there deeply.")});
-        let response = routes("/", ()=>{return new Response(200)})
+        let nested = getTo("/nested", (req: Request) => { return new Response(200).setBodystring("hi there deeply.")});
+        let response = getTo("/", ()=>{return new Response(200)})
             .withRoutes(nested)
             .match(new Request(Method.GET, "/nested"));
 

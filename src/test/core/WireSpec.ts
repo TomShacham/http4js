@@ -1,4 +1,4 @@
-import {routes} from "../../main/core/RoutingHttpHandler";
+import {getTo} from "../../main/core/RoutingHttpHandler";
 import {Request} from "../../main/core/Request";
 import {Response} from "../../main/core/Response";
 import {Body} from "../../main/core/Body";
@@ -8,7 +8,7 @@ import {HttpClient} from "../../main/core/Client";
 
 describe("real request", () => {
 
-    let server = routes("/", (req: Request) => {
+    let server = getTo("/", (req: Request) => {
         let query = req.getQuery("tomQuery");
         return new Response(200, new Body(req.bodyString()))
             .setHeaders(req.headers)
