@@ -6,7 +6,8 @@ describe("rendering", () => {
     it("renders a template", () => {
         let rendered = new Renderer().render("src/test/resources/test.hbs");
 
-        equal(rendered, "")
+        equal(rendered, "<h1>Welcome to Http4js!</h1>\n" +
+            "<p>We like nice APIs!</p>")
     })
 
 });
