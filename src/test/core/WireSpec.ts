@@ -11,7 +11,7 @@ describe("real request", () => {
         let query = req.getQuery("tomQuery");
         return new Response(200, new Body(req.bodyString()))
             .setHeaders(req.headers)
-            .setHeader("tomQuery", query);
+            .setHeader("tomQuery", query || "no tom query");
     })
         .withHandler("/post", "POST", (req) => {
             return new Response(200, new Body(req.bodyString()))
@@ -21,6 +21,10 @@ describe("real request", () => {
 
     before(() => {
         server.start();
+    });
+
+    after(() => {
+        server.stop();
     });
 
     it("sets body", () => {
@@ -47,10 +51,6 @@ describe("real request", () => {
             .then(succ => {
                 deepEqual(succ.getHeader("tom"), "smells, smells more")
             })
-    });
-
-    after(() => {
-        server.stop();
     });
 
 });

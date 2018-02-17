@@ -86,7 +86,7 @@ describe('a basic in memory server', () => {
         let response = getTo("/{name}/test", ()=>{return new Response(200)})
             .match(new Request("GET", "/tom/test"));
 
-        equal(response.pathParams.name, "tom")
+        equal(response.pathParams["name"], "tom")
     });
 
 });

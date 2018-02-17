@@ -12,7 +12,7 @@ export class Uri {
     template: string;
     asRequest: object;
 
-    private matches: object = {};
+    matches: object = {};
     private pathParamMatchingRegex: RegExp = new RegExp(/\{(\w+)\}/);
     private pathParamCaptureTemplate: string = "([\\w\\s]+)";
 
@@ -30,18 +30,16 @@ export class Uri {
         this.href = uri.href;
     }
 
-    static of (uri: string): Uri {
+    static of(uri: string): Uri {
         return new Uri(uri)
     }
 
     match(path: string): boolean {
-        console.log(path)
-        console.log(this.uriTemplateToPathParamCapturingRegex())
         let exec = this.uriTemplateToPathParamCapturingRegex().exec(path);
         return exec != null;
     }
 
-    extract (uri: string): Uri {
+    extract(uri: string): Uri {
         let decoded = decodeURI(uri);
         let pathParamName = this.pathParamMatchingRegex.exec(this.template)[1];
         this.matches[pathParamName] = this.uriTemplateToPathParamCapturingRegex().exec(decoded)[1];

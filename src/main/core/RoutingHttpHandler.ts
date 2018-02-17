@@ -3,6 +3,7 @@ import {Http4jsRequest, HttpHandler} from "./HttpMessage";
 import {Request} from "./Request";
 import {Body} from "./Body";
 import {Http4jsServer, Server} from "./Server";
+import {Uri} from "./Uri";
 
 interface RoutingHttpHandler {
     withFilter(filter: (HttpHandler) => HttpHandler): RoutingHttpHandler
@@ -79,25 +80,28 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
     }
 
     match(request: Http4jsRequest): Response {
-        let incomingPath = this.path;
         let paths = Object.keys(this.handlers);
-        let matchedPath = paths.find(path => {
-            console.log(request.uri.match(path))
-            return request.uri.match(path) && this.handlers[path] && this.handlers[path].verb == request.method
+        let exactMatch = paths.find(handlerPath => {
+            return request.uri.match(handlerPath) && this.handlers[handlerPath].verb == request.method
         });
-        if (matchedPath) {
-            let handler = this.handlers[matchedPath].handler;
+        let fuzzyMatch = paths.find(handlerPath => {
+            return Uri.of(handlerPath).match(request.uri.path) && this.handlers[handlerPath].verb == request.method
+        });
+        let match = exactMatch || fuzzyMatch;
+        if (match) {
+            let handler = this.handlers[match].handler;
             let filtered = this.filters.reduce((acc, next) => { return next(acc) }, handler);
             let response = filtered(request);
+            if (match.includes("{")) response.pathParams = Uri.of(match).extract(request.uri.path).matches;
             return response;
         } else {
-            let notFoundBody = `${request.method} to ${request.uri.template} did not match route ${incomingPath}`;
+            let notFoundBody = `${request.method} to ${request.uri.template} did not match route ${request.uri.path}`;
             let body = new Body(notFoundBody);
             return new Response(404, body);
         }
     }
 
-    private createInMemResponse(chunks: Array<any>, method: any, url: any, headers: any) {
+    private createInMemResponse(chunks: Array<any>, method: any, url: any, headers: any): Response  {
         let body = new Body(Buffer.concat(chunks));
         let inMemRequest = new Request(method, url, body, headers);
         return this.match(inMemRequest);
