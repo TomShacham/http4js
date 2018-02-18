@@ -24,7 +24,6 @@ npm install typescript   --save-dev
 #### To do
 
 - code:
-  - extract multiple path params
   - extract query params
   - extract form data
   - ordering of filters 

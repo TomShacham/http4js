@@ -30,12 +30,12 @@ export class Request implements Http4jsRequest {
     }
 
     private getQueryParams(): object {
-        let query2 = this.uri.query;
-        if (isNullOrUndefined(query2)) return {};
-        let split = query2.split("=");
-        for (let i = 0; i<split.length; i+=2) {
-            this.queries[split[i]] = split[i + 1];
-        }
+        if (isNullOrUndefined(this.uri.query)) return {};
+        let pairs = this.uri.query.split("&");
+        pairs.map(pair => {
+            let split = pair.split("=");
+            this.queries[split[0]] = split[1]
+        });
         return this.queries;
     }
 

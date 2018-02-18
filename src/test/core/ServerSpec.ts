@@ -98,4 +98,17 @@ describe('a basic in memory server', () => {
         equal(response.pathParams["personality"], "odd");
     });
 
+    it("extracts query params", () => {
+        let response = getTo("/test", (req)=>{
+            let queries = [
+                req.getQuery("tosh"),
+                req.getQuery("bosh"),
+                req.getQuery("losh"),
+            ];
+            return new Response(200, new Body(queries.join("|")))
+        }).match(new Request("GET", "/test?tosh=rocks&bosh=pwns&losh=killer"));
+
+        equal(response.bodyString(), "rocks|pwns|killer");
+    })
+
 });
