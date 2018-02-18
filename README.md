@@ -24,7 +24,9 @@ npm install typescript   --save-dev
 #### To do
 
 - code:
-  - extract path params in routing http handler
+  - extract multiple path params
+  - extract query params
+  - extract form data
   - ordering of filters 
   - other client verbs
 - write docs

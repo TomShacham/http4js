@@ -13,7 +13,7 @@ export class Uri {
     asRequest: object;
 
     matches: object = {};
-    private pathParamMatchingRegex: RegExp = new RegExp(/\{(\w+)\}/);
+    private pathParamMatchingRegex: RegExp = new RegExp(/\{(\w+)\}/g);
     private pathParamCaptureTemplate: string = "([\\w\\s]+)";
 
     constructor(template: string) {
@@ -40,9 +40,13 @@ export class Uri {
     }
 
     extract(uri: string): Uri {
-        let decoded = decodeURI(uri);
-        let pathParamName = this.pathParamMatchingRegex.exec(this.template)[1];
-        this.matches[pathParamName] = this.uriTemplateToPathParamCapturingRegex().exec(decoded)[1];
+        let decodedUri = decodeURI(uri);
+        let pathParamNames = this.template.match(this.pathParamMatchingRegex)
+            .map(it => it.replace("{", "").replace("}", ""));
+        let pathParams = this.uriTemplateToPathParamCapturingRegex().exec(decodedUri);
+        pathParamNames.map( (name, i) => {
+            this.matches[name] = pathParams[i+1]
+        });
         return this;
     }
 

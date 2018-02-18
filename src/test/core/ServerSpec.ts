@@ -74,19 +74,28 @@ describe('a basic in memory server', () => {
     });
 
     it("recursively defining routes", () => {
-        let nested = getTo("/nested", (req: Request) => { return new Response(200).setBodystring("hi there deeply.")});
-        let response = getTo("/", ()=>{return new Response(200)})
+        let nested = getTo("/nested", () => { return new Response(200).setBodystring("hi there deeply.") });
+        let response = getTo("/", () => {return new Response(200)})
             .withRoutes(nested)
             .match(new Request("GET", "/nested"));
 
         equal(response.bodyString(), "hi there deeply.")
     });
 
-    it("extracts path params", () => {
+    it("extracts path param", () => {
         let response = getTo("/{name}/test", ()=>{return new Response(200)})
             .match(new Request("GET", "/tom/test"));
 
-        equal(response.pathParams["name"], "tom")
+        equal(response.pathParams["name"], "tom");
+    });
+
+    it("extracts multiple path params", () => {
+        let response = getTo("/{name}/test/{age}/bob/{personality}/fred", ()=>{return new Response(200)})
+            .match(new Request("GET", "/tom/test/26/bob/odd/fred"));
+
+        equal(response.pathParams["name"], "tom");
+        equal(response.pathParams["age"], "26");
+        equal(response.pathParams["personality"], "odd");
     });
 
 });

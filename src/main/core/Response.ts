@@ -1,10 +1,8 @@
 import {HttpMessage} from "./HttpMessage";
-import {Headers} from "./Headers";
 import {Body} from "./Body";
 import {Uri} from "./Uri";
 
-interface Http4jsResponse extends HttpMessage {
-}
+interface Http4jsResponse extends HttpMessage {}
 
 export class Response implements Http4jsResponse {
     uri: Uri;
