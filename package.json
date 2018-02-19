@@ -1,12 +1,13 @@
 {
   "name": "http4js",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "",
   "main": "dist/index.js",
   "types" : "dist/index.d.ts",
   "scripts": {
     "test": "mocha src/test/**",
     "build": "tsc",
+    "prepublish": "tsc -p ./ --outDir dist/",
     "app": "tsc; node index.js"
   },
   "repository": {
