@@ -5,7 +5,7 @@ import {Body} from "./Body";
 import {Http4jsServer, Server} from "./Server";
 import {Uri} from "./Uri";
 
-interface RoutingHttpHandler {
+export interface RoutingHttpHandler {
     withFilter(filter: (HttpHandler) => HttpHandler): RoutingHttpHandler
     asServer(port: number): Http4jsServer
     match(request: Http4jsRequest): Response
@@ -20,7 +20,7 @@ export function getTo(path: string, handler: HttpHandler): ResourceRoutingHttpHa
 }
 
 export function postTo(path: string, handler: HttpHandler): ResourceRoutingHttpHandler {
-    return new ResourceRoutingHttpHandler(path, "GET", handler);
+    return new ResourceRoutingHttpHandler(path, "POST", handler);
 }
 
 export class ResourceRoutingHttpHandler implements RoutingHttpHandler {

@@ -2,7 +2,7 @@ import {HttpMessage} from "./HttpMessage";
 import {Body} from "./Body";
 import {Uri} from "./Uri";
 
-interface Http4jsResponse extends HttpMessage {}
+export interface Http4jsResponse extends HttpMessage {}
 
 export class Response implements Http4jsResponse {
     uri: Uri;
@@ -36,7 +36,7 @@ export class Response implements Http4jsResponse {
         return this;
     }
 
-    allHeaders(headers: Headers): Response {
+    allHeaders(headers: object): Response {
         return undefined;
     }
 

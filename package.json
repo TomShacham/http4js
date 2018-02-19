@@ -2,10 +2,16 @@
   "name": "http4js",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types" : "dist/index.d.ts",
   "scripts": {
     "test": "mocha src/test/**",
+    "build": "tsc",
     "app": "tsc; node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tomshacham/http4js.git"
   },
   "author": "",
   "license": "ISC",
