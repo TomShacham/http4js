@@ -4,7 +4,6 @@ import {Request} from "./Request";
 import {Body} from "./Body";
 import {Http4jsServer, Server} from "./Server";
 import {Uri} from "./Uri";
-import {Filter} from "../../../dist/main/core/RoutingHttpHandler";
 
 export interface RoutingHttpHandler {
     withFilter(filter: (HttpHandler) => HttpHandler): RoutingHttpHandler
@@ -47,7 +46,7 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
         return this;
     }
 
-    withFilter(filter: Filter): ResourceRoutingHttpHandler {
+    withFilter(filter: (HttpHandler) => HttpHandler): ResourceRoutingHttpHandler {
         this.filters.push(filter);
         return this;
     }
