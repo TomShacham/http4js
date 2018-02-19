@@ -17,7 +17,9 @@ let headerFilter = (handler: HttpHandler) => {
     }
 };
 
-let moreRoutes = routes("/bob/{id}", "POST", (req) => { return new Response(201, new Body("created a " + req.path))});
+let moreRoutes = routes("/bob/{id}", "POST", (req) => {
+    return new Response(201, new Body("created a " + req.path))
+});
 
 routes("/path", "GET", handler)
     .withHandler("/tom", "GET", handler)
@@ -44,5 +46,10 @@ client(postRequest).then(succ => {
     console.log(succ.headers);
 });
 
+export * from "./src/main/core/RoutingHttpHandler";
+export * from "./src/main/core/Request";
+export * from "./src/main/core/Response";
+export * from "./src/main/core/Server";
+export * from "./src/main/core/Client";
 
 
