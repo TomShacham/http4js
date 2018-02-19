@@ -1,5 +1,8 @@
 let URI = require('url');
 
+const pathParamMatchingRegex: RegExp = new RegExp(/\{(\w+)\}/g);
+const pathParamCaptureTemplate: string = "([\\w\\s]+)";
+
 export class Uri {
     path: string;
     protocol: string;
@@ -13,8 +16,6 @@ export class Uri {
     asRequest: object;
 
     matches: object = {};
-    private pathParamMatchingRegex: RegExp = new RegExp(/\{(\w+)\}/g);
-    private pathParamCaptureTemplate: string = "([\\w\\s]+)";
 
     constructor(template: string) {
         let uri = URI.parse(template);
@@ -41,7 +42,7 @@ export class Uri {
 
     extract(uri: string): Uri {
         let decodedUri = decodeURI(uri);
-        let pathParamNames = this.template.match(this.pathParamMatchingRegex)
+        let pathParamNames = this.template.match(pathParamMatchingRegex)
             .map(it => it.replace("{", "").replace("}", ""));
         let pathParams = this.uriTemplateToPathParamCapturingRegex().exec(decodedUri);
         pathParamNames.map( (name, i) => {
@@ -55,17 +56,15 @@ export class Uri {
     }
 
     withQuery(name: string, value: string): Uri {
-        if (this.query && this.query.length > 0){
-            return Uri.of(this.href + `&${name}=${value}`)
-        } else {
-            return Uri.of(this.href + `?${name}=${value}`)
-        }
+        return this.query && this.query.length > 0
+            ? Uri.of(this.href + `&${name}=${value}`)
+            : Uri.of(this.href + `?${name}=${value}`);
     }
 
     private uriTemplateToPathParamCapturingRegex (): RegExp {
         return new RegExp(this.template.replace(
-            this.pathParamMatchingRegex,
-            this.pathParamCaptureTemplate)
+            pathParamMatchingRegex,
+            pathParamCaptureTemplate)
         );
     }
 }

@@ -28,4 +28,5 @@ npm install typescript   --save-dev
   - extract form data
   - ordering of filters 
   - other client verbs
+  - import lib to a new project as example
 - write docs

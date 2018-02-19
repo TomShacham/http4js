@@ -4,6 +4,7 @@ import {Request} from "./Request";
 import {Body} from "./Body";
 import {Http4jsServer, Server} from "./Server";
 import {Uri} from "./Uri";
+import {Filter} from "../../../dist/main/core/RoutingHttpHandler";
 
 export interface RoutingHttpHandler {
     withFilter(filter: (HttpHandler) => HttpHandler): RoutingHttpHandler
@@ -27,7 +28,6 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
 
     server: Http4jsServer;
     private path: string;
-    private handler: object;
     private handlers: object = {};
     private filters: Array<any> = [];
 
@@ -35,9 +35,7 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
                 method: string,
                 handler: HttpHandler) {
         this.path = path;
-        let verbToHandler = {verb: method, handler: handler};
-        this.handler = verbToHandler;
-        this.handlers[path] = verbToHandler;
+        this.handlers[path] = {verb: method, handler: handler};
     }
 
     withRoutes(routes: ResourceRoutingHttpHandler): ResourceRoutingHttpHandler {
@@ -49,7 +47,7 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
         return this;
     }
 
-    withFilter(filter: (HttpHandler) => HttpHandler): ResourceRoutingHttpHandler {
+    withFilter(filter: Filter): ResourceRoutingHttpHandler {
         this.filters.push(filter);
         return this;
     }
