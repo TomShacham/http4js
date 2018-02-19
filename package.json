@@ -3,11 +3,11 @@
   "version": "1.0.5",
   "description": "",
   "main": "dist/index.js",
-  "types" : "dist/index.d.ts",
+  "types": "dist/index.d.ts",
   "scripts": {
     "test": "mocha src/test/**",
     "build": "tsc",
-    "prepublish": "tsc -p ./ --outDir dist/",
+    "prepublishOnly": "tsc -p ./ --outDir dist/",
     "app": "tsc; node index.js"
   },
   "repository": {
@@ -16,10 +16,8 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "@types/node": "9.4.0"
-  },
   "devDependencies": {
+    "@types/node": "9.4.0",
     "@types/mocha": "2.2.47",
     "mocha": "5.0.0",
     "ts-node": "4.1.0",
