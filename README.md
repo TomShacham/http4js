@@ -24,8 +24,8 @@ npm install typescript   --save-dev
 #### To do
 
 - code:
+  - daves advice
   - extract form data
   - ordering of filters 
   - other client verbs
 - write docs
-- publish as library to npm
