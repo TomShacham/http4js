@@ -119,4 +119,20 @@ describe('a basic in memory server', () => {
         equal(response.status, 404);
     });
 
+    it("custom 404s using filters", () => {
+        let response = getTo("/", (req) => {
+            return new Response(200, new Body("hello, world!"))
+        }).withFilter((handler) => (req) => {
+            if (handler(req).status == 404) {
+                return new Response(404, new Body("Page not found"));
+            } else {
+                handler(req);
+            }
+        })
+            .match(new Request("GET", "/unknown"));
+
+        equal(response.status, 404);
+        equal(response.bodyString(), "Page not found");
+    })
+
 });
