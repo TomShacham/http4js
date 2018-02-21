@@ -94,10 +94,15 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
             if (match.includes("{")) response.pathParams = Uri.of(match).extract(request.uri.path).matches;
             return response;
         } else {
-            let notFoundBody = `${request.method} to ${request.uri.template} did not match routes ${paths.join(" // ")}`;
-            let body = new Body(notFoundBody);
-            return new Response(404, body);
+            let filtered = this.filters.reduce((acc, next) => { return next(acc) }, this.defaultNotFoundHandler);
+            return filtered(request);
         }
+    }
+
+    private defaultNotFoundHandler = (request: Http4jsRequest) => {
+        let notFoundBody = `${request.method} to ${request.uri.template} did not match routes`;
+        let body = new Body(notFoundBody);
+        return new Response(404, body);
     }
 
     private createInMemResponse(chunks: Array<any>, method: any, url: any, headers: any): Response  {
