@@ -82,7 +82,9 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
             return request.uri.match(handlerPath) && this.handlers[handlerPath].verb == request.method
         });
         let fuzzyMatch = paths.find(handlerPath => {
-            return Uri.of(handlerPath).match(request.uri.path) && this.handlers[handlerPath].verb == request.method
+            return handlerPath == "/"
+                ? false
+                : Uri.of(handlerPath).match(request.uri.path) && this.handlers[handlerPath].verb == request.method
         });
         let match = exactMatch || fuzzyMatch;
         if (match) {

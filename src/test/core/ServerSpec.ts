@@ -109,6 +109,14 @@ describe('a basic in memory server', () => {
         }).match(new Request("GET", "/test?tosh=rocks&bosh=pwns&losh=killer"));
 
         equal(response.bodyString(), "rocks|pwns|killer");
-    })
+    });
+
+    it("unknown route returns a 404", () => {
+        let response = getTo("/", (req) => {
+            return new Response(200, new Body("hello, world!"))
+        }).match(new Request("GET", "/unknown"));
+
+        equal(response.status, 404);
+    });
 
 });
