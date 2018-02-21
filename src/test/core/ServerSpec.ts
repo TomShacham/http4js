@@ -120,7 +120,7 @@ describe('a basic in memory server', () => {
     });
 
     it("custom 404s using filters", () => {
-        let response = getTo("/", (req) => {
+        let response = getTo("/", () => {
             return new Response(200, new Body("hello, world!"))
         }).withFilter((handler) => (req) => {
             if (handler(req).status == 404) {
@@ -133,6 +133,20 @@ describe('a basic in memory server', () => {
 
         equal(response.status, 404);
         equal(response.bodyString(), "Page not found");
-    })
+    });
+
+    it("ordering - filters apply in order they are declared", () => {
+        let response = getTo("/", () => {
+            return new Response(200, new Body("hello, world!"))
+        }).withFilter((handler) => (req) => {
+            return handler(req).replaceHeader("person", "tosh")
+        }).withFilter((handler) => (req) => {
+            return handler(req).replaceHeader("person", "bosh")
+        })
+            .match(new Request("GET", "/"));
+
+        equal(response.getHeader("person"), "bosh")
+
+    });
 
 });
