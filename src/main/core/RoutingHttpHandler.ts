@@ -91,8 +91,7 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
             let handler = this.handlers[match].handler;
             let filtered = this.filters.reduce((acc, next) => { return next(acc) }, handler);
             if (match.includes("{")) request.pathParams = Uri.of(match).extract(request.uri.path).matches;
-            let response = filtered(request);
-            return response;
+            return filtered(request);
         } else {
             let filtered = this.filters.reduce((acc, next) => { return next(acc) }, this.defaultNotFoundHandler);
             return filtered(request);
