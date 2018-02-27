@@ -146,7 +146,15 @@ describe('a basic in memory server', () => {
             .match(new Request("GET", "/"));
 
         equal(response.getHeader("person"), "bosh")
+    });
 
+    it("matches path params only if specified a capture in route", () => {
+        let response = getTo("/family", () => {
+            return new Response(200, new Body("losh,bosh,tosh"))
+        })
+            .match(new Request("GET", "/family/123"));
+
+        equal(response.bodyString(), "GET to /family/123 did not match routes")
     });
 
 });

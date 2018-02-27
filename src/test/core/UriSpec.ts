@@ -18,13 +18,13 @@ describe("uri", () => {
 
     it("matches paths", () => {
         equal(Uri.of("/tom/{is}/goodness")
-                .match("/tom/is the sugar/goodness/gracious/me"),
+                .templateMatch("/tom/is the sugar/goodness/gracious/me"),
             true)
     });
 
     it("matches false when paths different", () => {
         equal(Uri.of("/tom/{is}/goodness")
-                .match("/tom/is/badness"),
+                .templateMatch("/tom/is/badness"),
             false)
     });
 

@@ -79,12 +79,12 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
     match(request: Http4jsRequest): Response {
         let paths = Object.keys(this.handlers);
         let exactMatch = paths.find(handlerPath => {
-            return request.uri.match(handlerPath) && this.handlers[handlerPath].verb == request.method
+            return request.uri.templateMatch(handlerPath) && this.handlers[handlerPath].verb == request.method
         });
         let fuzzyMatch = paths.find(handlerPath => {
             return handlerPath == "/"
                 ? false
-                : Uri.of(handlerPath).match(request.uri.path) && this.handlers[handlerPath].verb == request.method
+                : handlerPath.includes("{") && Uri.of(handlerPath).templateMatch(request.uri.path) && this.handlers[handlerPath].verb == request.method
         });
         let match = exactMatch || fuzzyMatch;
         if (match) {
