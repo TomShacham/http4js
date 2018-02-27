@@ -9,7 +9,9 @@ describe('a basic in memory server', () => {
 
     it("takes request and gives response", function () {
         let requestBody = "Got it.";
-        let handler = (req: Request) => { return new Response(200, req.body); };
+        let handler = (req: Request) => {
+            return new Response(200, req.body);
+        };
         let resourceRoutingHttpHandler = getTo("/test", handler);
         let response = resourceRoutingHttpHandler.match(new Request("GET", "/test", new Body(requestBody)));
 
@@ -17,8 +19,12 @@ describe('a basic in memory server', () => {
     });
 
     it("nests handlers", () => {
-        let resourceRoutingHttpHandler = getTo("/test", () => { return new Response(200) })
-            .withHandler("/nest", "GET", () => { return new Response(200, new Body("nested")) });
+        let resourceRoutingHttpHandler = getTo("/test", () => {
+            return new Response(200)
+        })
+            .withHandler("/nest", "GET", () => {
+                return new Response(200, new Body("nested"))
+            });
 
         let response = resourceRoutingHttpHandler.match(new Request("GET", "/test/nest"));
 
@@ -26,9 +32,13 @@ describe('a basic in memory server', () => {
     });
 
     it("add a filter", () => {
-        let resourceRoutingHttpHandler = getTo("/test", () => { return new Response(200) })
+        let resourceRoutingHttpHandler = getTo("/test", () => {
+            return new Response(200)
+        })
             .withFilter(() => {
-                return () => { return new Response(200, new Body("filtered"))}
+                return () => {
+                    return new Response(200, new Body("filtered"))
+                }
             });
         let response = resourceRoutingHttpHandler.match(new Request("GET", "/test"));
 
@@ -36,7 +46,9 @@ describe('a basic in memory server', () => {
     });
 
     it("chains filters", () => {
-        let resourceRoutingHttpHandler = getTo("/test", () => { return new Response(200) })
+        let resourceRoutingHttpHandler = getTo("/test", () => {
+            return new Response(200)
+        })
             .withFilter(() => {
                 return () => {
                     return new Response(200, new Body("filtered"))
@@ -54,8 +66,12 @@ describe('a basic in memory server', () => {
     });
 
     it("chains filters and handlers", () => {
-        let resourceRoutingHttpHandler = getTo("/test", () => { return new Response(200) })
-            .withHandler("/nest", "GET", () => { return new Response(200, new Body("nested")) })
+        let resourceRoutingHttpHandler = getTo("/test", () => {
+            return new Response(200)
+        })
+            .withHandler("/nest", "GET", () => {
+                return new Response(200, new Body("nested"))
+            })
             .withFilter((handler: HttpHandler) => {
                 return (req: Request) => {
                     return handler(req).setHeader("a", "filter1");
@@ -74,8 +90,12 @@ describe('a basic in memory server', () => {
     });
 
     it("recursively defining routes", () => {
-        let nested = getTo("/nested", () => { return new Response(200).setBodystring("hi there deeply.") });
-        let response = getTo("/", () => {return new Response(200)})
+        let nested = getTo("/nested", () => {
+            return new Response(200).setBodystring("hi there deeply.")
+        });
+        let response = getTo("/", () => {
+            return new Response(200)
+        })
             .withRoutes(nested)
             .match(new Request("GET", "/nested"));
 
@@ -83,23 +103,28 @@ describe('a basic in memory server', () => {
     });
 
     it("extracts path param", () => {
-        let response = getTo("/{name}/test", ()=>{return new Response(200)})
+        let response = getTo("/{name}/test", (req) => {
+            return new Response(200, new Body(req.pathParams["name"]))
+        })
             .match(new Request("GET", "/tom/test"));
 
-        equal(response.pathParams["name"], "tom");
+        equal(response.bodyString(), "tom");
     });
 
     it("extracts multiple path params", () => {
-        let response = getTo("/{name}/test/{age}/bob/{personality}/fred", ()=>{return new Response(200)})
+        let response = getTo("/{name}/test/{age}/bob/{personality}/fred", (req) => {
+            return new Response(200, new Body(`${req.pathParams["name"]}, ${req.pathParams["age"]}, ${req.pathParams["personality"]}`))
+        })
             .match(new Request("GET", "/tom/test/26/bob/odd/fred"));
 
-        equal(response.pathParams["name"], "tom");
-        equal(response.pathParams["age"], "26");
-        equal(response.pathParams["personality"], "odd");
+        let pathParams = response.bodyString().split(", ");
+        equal(pathParams[0], "tom");
+        equal(pathParams[1], "26");
+        equal(pathParams[2], "odd");
     });
 
     it("extracts query params", () => {
-        let response = getTo("/test", (req)=>{
+        let response = getTo("/test", (req) => {
             let queries = [
                 req.getQuery("tosh"),
                 req.getQuery("bosh"),

@@ -1,5 +1,5 @@
 import {Response} from "./Response";
-import {Http4jsRequest, HttpHandler} from "./HttpMessage";
+import {HttpHandler} from "./HttpMessage";
 import {Request} from "./Request";
 import {Body} from "./Body";
 import {Http4jsServer, Server} from "./Server";
@@ -8,7 +8,7 @@ import {Uri} from "./Uri";
 export interface RoutingHttpHandler {
     withFilter(filter: (HttpHandler) => HttpHandler): RoutingHttpHandler
     asServer(port: number): Http4jsServer
-    match(request: Http4jsRequest): Response
+    match(request: Request): Response
 }
 
 export function routes(path: string, method: string, handler: HttpHandler): ResourceRoutingHttpHandler {
@@ -76,7 +76,7 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
         return this.server;
     }
 
-    match(request: Http4jsRequest): Response {
+    match(request: Request): Response {
         let paths = Object.keys(this.handlers);
         let exactMatch = paths.find(handlerPath => {
             return request.uri.templateMatch(handlerPath) && this.handlers[handlerPath].verb == request.method
@@ -90,8 +90,8 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
         if (match) {
             let handler = this.handlers[match].handler;
             let filtered = this.filters.reduce((acc, next) => { return next(acc) }, handler);
+            if (match.includes("{")) request.pathParams = Uri.of(match).extract(request.uri.path).matches;
             let response = filtered(request);
-            if (match.includes("{")) response.pathParams = Uri.of(match).extract(request.uri.path).matches;
             return response;
         } else {
             let filtered = this.filters.reduce((acc, next) => { return next(acc) }, this.defaultNotFoundHandler);
@@ -99,11 +99,11 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
         }
     }
 
-    private defaultNotFoundHandler = (request: Http4jsRequest) => {
+    private defaultNotFoundHandler = (request: Request) => {
         let notFoundBody = `${request.method} to ${request.uri.template} did not match routes`;
         let body = new Body(notFoundBody);
         return new Response(404, body);
-    }
+    };
 
     private createInMemResponse(chunks: Array<any>, method: any, url: any, headers: any): Response  {
         let body = new Body(Buffer.concat(chunks));

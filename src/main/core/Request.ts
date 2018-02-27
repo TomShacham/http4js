@@ -1,15 +1,15 @@
-import {Http4jsRequest} from "./HttpMessage";
 import {Body} from "./Body";
 import {Uri} from "./Uri";
 import {isNullOrUndefined} from "util";
 
-export class Request implements Http4jsRequest {
+export class Request {
 
     uri: Uri;
     method: string;
     headers: object = {};
     body: Body;
     queries = {};
+    pathParams: object;
 
     constructor(
         method: string,

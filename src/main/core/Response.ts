@@ -9,7 +9,6 @@ export class Response implements Http4jsResponse {
     headers: object = {};
     body: Body;
     status: number;
-    pathParams: object;
 
     constructor(status: number = 200, body: Body = new Body("")) {
         this.body = body;

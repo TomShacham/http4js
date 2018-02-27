@@ -24,8 +24,4 @@ export interface HttpMessage {
 
 export type HttpHandler = (Request) => Response
 
-export interface Http4jsRequest extends HttpMessage  {
-    method: string
-}
-
 export interface Response extends HttpMessage {}
