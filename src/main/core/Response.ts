@@ -8,8 +8,10 @@ export class Response implements HttpMessage {
     body: Body;
     status: number;
 
-    constructor(status: number = 200, body: Body = new Body("")) {
-        this.body = body;
+    constructor(status: number = 200, body: Body | string = new Body("")) {
+        this.body = typeof body == "string"
+            ? new Body(body)
+            : body;
         this.status = status;
     }
 

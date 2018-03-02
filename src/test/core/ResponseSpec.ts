@@ -57,4 +57,11 @@ describe("in mem response", () => {
             undefined);
     });
 
+    it("can set body with just a string or a Body" , () => {
+        equal(
+            new Response(200, "some string made into a Body")
+                .bodyString(),
+            "some string made into a Body")
+    });
+
 });
