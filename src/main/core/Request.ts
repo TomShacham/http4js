@@ -10,13 +10,12 @@ export class Request {
     body: Body;
     queries = {};
     pathParams: object;
+    form: object = {};
 
-    constructor(
-        method: string,
-        uri: Uri | string,
-        body: Body = new Body(new Buffer("")),
-        headers = null
-    ) {
+    constructor(method: string,
+                uri: Uri | string,
+                body: Body = new Body(new Buffer("")),
+                headers = null) {
         this.method = method;
         if (typeof uri == "string") {
             this.uri = Uri.of(uri);
@@ -26,6 +25,12 @@ export class Request {
         this.body = body;
         this.headers = headers ? headers : {};
         this.queries = this.getQueryParams();
+        if (this.method == "POST") {
+            body.bodyString().split("&").map(kv => {
+                let strings = kv.split("=");
+                this.form[strings[0]] = strings[1];
+            })
+        }
         return this;
     }
 
@@ -91,7 +96,7 @@ export class Request {
         return this;
     }
 
-    getQuery(name: string) : string {
+    getQuery(name: string): string {
         return this.queries[name];
     }
 

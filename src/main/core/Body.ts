@@ -10,7 +10,9 @@ export class Body {
         if (typeof this.bytes == "string") {
             return this.bytes;
         } else {
-            return this.bytes.toString();
+            return this.bytes
+                ? this.bytes.toString()
+                : "";
         }
     }
 

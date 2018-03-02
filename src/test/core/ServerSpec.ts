@@ -1,5 +1,5 @@
 import {equal} from "assert";
-import {getTo} from "../../main/core/RoutingHttpHandler";
+import {getTo, postTo} from "../../main/core/RoutingHttpHandler";
 import {Response} from "../../main/core/Response";
 import {Body} from "../../main/core/Body";
 import {Request} from "../../main/core/Request";
@@ -191,6 +191,16 @@ describe('a basic in memory server', () => {
             .match(new Request("GET", "/family/123"));
 
         equal(response.bodyString(), "GET to /family/123 did not match routes")
+    });
+
+    it("extract form params", () => {
+        let response = postTo("/family", (req) => {
+            return new Response(200, new Body(req.form))
+        })
+            .match(new Request("POST", "/family", new Body("p1=1&p2=tom&p3=bosh&p4=losh")).setHeader("Content-Type", "application/x-www-form-urlencoded"));
+
+        equal(response.bodyString(), {p1: 1, p2: "tom", p3: "bosh", p4: "losh"})
+
     });
 
 });
