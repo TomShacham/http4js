@@ -23,7 +23,8 @@ npm install typescript   --save-dev
 
 #### To do
 
-- daves advice
-- dont have to create a new Body for Response
-- other client verbs
+- add a type or interface for Filter, instead of referring to it as HttpHandler -> HttpHandler. 
+Then you can add the "then" methods to it to recreate the chaining?
+- support express backend
+- other client verbs, PUT, PATCH, HEAD etc.
 - write docs

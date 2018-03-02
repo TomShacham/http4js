@@ -7,7 +7,7 @@
   "scripts": {
     "test": "tsc; mocha dist/test/**",
     "build": "tsc",
-    "prepublishOnly": "tsc -p ./ --outDir dist/",
+    "prepublishOnly": "rm -rf ./dist && tsc -p ./ --outDir dist/",
     "app": "tsc; node index.js"
   },
   "repository": {
