@@ -26,24 +26,20 @@ export function postTo(path: string, handler: HttpHandler): ResourceRoutingHttpH
 export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
 
     server: Http4jsServer;
-    private path: string;
-    private handlers: object = {};
+    private root: string;
+    private handlers = [];
     private filters: Array<(HttpHandler) => HttpHandler> = [];
     private preFilters: Array<(Request) => Request> = [];
 
     constructor(path: string,
                 method: string,
                 handler: HttpHandler) {
-        this.path = path;
-        this.handlers[path] = {verb: method, handler: handler};
+        this.root = path;
+        this.handlers.push({path: path, verb: method, handler: handler});
     }
 
     withRoutes(routes: ResourceRoutingHttpHandler): ResourceRoutingHttpHandler {
-        for (let path of Object.keys(routes.handlers)) {
-            let existingPath = this.path != "/" ? this.path : "";
-            let nestedPath = existingPath + path;
-            this.handlers[nestedPath] = routes.handlers[path]
-        }
+        this.handlers = this.handlers.concat(routes.handlers);
         return this;
     }
 
@@ -58,9 +54,9 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
     }
 
     withHandler(path: string, method: string, handler: HttpHandler): ResourceRoutingHttpHandler {
-        let existingPath = this.path != "/" ? this.path : "";
+        let existingPath = this.root != "/" ? this.root : "";
         let nestedPath = existingPath + path;
-        this.handlers[nestedPath] = {verb: method, handler: handler};
+        this.handlers.push({path: nestedPath, verb: method, handler: handler});
         return this;
     }
 
@@ -83,22 +79,21 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
     }
 
     match(request: Request): Response {
-        let paths = Object.keys(this.handlers);
-        let exactMatch = paths.find(handlerPath => {
-            return request.uri.exactMatch(handlerPath) && this.handlers[handlerPath].verb == request.method
+        let exactMatch = this.handlers.find(it => {
+            return request.uri.exactMatch(it.path) && it.verb == request.method
         });
-        let fuzzyMatch = paths.find(handlerPath => {
-            return handlerPath == "/"
+        let fuzzyMatch = this.handlers.find(it => {
+            return it.path == "/"
                 ? false
-                : handlerPath.includes("{") && Uri.of(handlerPath).templateMatch(request.uri.path) && this.handlers[handlerPath].verb == request.method
+                : it.path.includes("{") && Uri.of(it.path).templateMatch(request.uri.path) && it.verb == request.method
         });
-        let match = exactMatch || fuzzyMatch;
+        let matchedHandler = exactMatch || fuzzyMatch;
         let preFilteredRequest = this.preFilters.reduce((acc, next) => { return next(acc) }, request);
-        if (match) {
-            let handler = this.handlers[match].handler;
+        if (matchedHandler) {
+            let handler = matchedHandler.handler;
             let filtered = this.filters.reduce((acc, next) => { return next(acc) }, handler);
-            preFilteredRequest.pathParams = match.includes("{")
-                ? Uri.of(match).extract(preFilteredRequest.uri.path).matches
+            preFilteredRequest.pathParams = matchedHandler.path.includes("{")
+                ? Uri.of(matchedHandler.path).extract(preFilteredRequest.uri.path).matches
                 : {};
             return filtered(preFilteredRequest);
         } else {
