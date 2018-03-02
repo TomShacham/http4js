@@ -208,6 +208,30 @@ describe('a basic in memory server', () => {
         equal(response.bodyString(), "exact")
     });
 
+    it("Post redirect.", () => {
+        let friends = [];
+        let routes = getTo("/", () => {
+            return new Response(200, new Body("root"))
+        })
+            .withHandler("/family", "GET", () => {
+                return new Response(200, new Body(friends.join(", ")))
+            })
+            .withHandler("/family/{name}", "GET", () => {
+                return new Response(200, new Body("fuzzy"))
+            })
+            .withHandler("/family", "POST", (req) => {
+                friends.push(req.form["name"]);
+                return new Response(302).setHeader("Location", "/family")
+            });
+
+        let postSideEffect1 = routes.match(new Request("POST", "/family", new Body("name=tosh")));
+        let postSideEffect2 = routes.match(new Request("POST", "/family", new Body("name=bosh")));
+        let postSideEffect3 = routes.match(new Request("POST", "/family", new Body("name=losh")));
+        let response = routes.match(new Request("GET", "/family"));
+
+        equal(response.bodyString(), "tosh, bosh, losh")
+    });
+
     it("extract form params", () => {
         let response = postTo("/family", (req) => {
             return new Response(200, new Body(req.form))
@@ -217,7 +241,6 @@ describe('a basic in memory server', () => {
         equal(response.bodyString(), {p1: 1, p2: "tom", p3: "bosh", p4: "losh"})
 
     });
-
 
 
 });
