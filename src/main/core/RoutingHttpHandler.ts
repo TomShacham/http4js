@@ -28,7 +28,8 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
     server: Http4jsServer;
     private path: string;
     private handlers: object = {};
-    private filters: Array<any> = [];
+    private filters: Array<(HttpHandler) => HttpHandler> = [];
+    private preFilters: Array<(Request) => Request> = [];
 
     constructor(path: string,
                 method: string,
@@ -48,6 +49,11 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
 
     withFilter(filter: (HttpHandler) => HttpHandler): ResourceRoutingHttpHandler {
         this.filters.push(filter);
+        return this;
+    }
+
+    withPreFilter(filter: (Request) => Request): ResourceRoutingHttpHandler {
+        this.preFilters.push(filter);
         return this;
     }
 
@@ -87,14 +93,15 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
                 : handlerPath.includes("{") && Uri.of(handlerPath).templateMatch(request.uri.path) && this.handlers[handlerPath].verb == request.method
         });
         let match = exactMatch || fuzzyMatch;
+        let preFilteredRequest = this.preFilters.reduce((acc, next) => { return next(acc) }, request);
         if (match) {
             let handler = this.handlers[match].handler;
             let filtered = this.filters.reduce((acc, next) => { return next(acc) }, handler);
-            if (match.includes("{")) request.pathParams = Uri.of(match).extract(request.uri.path).matches;
-            return filtered(request);
+            if (match.includes("{")) preFilteredRequest.pathParams = Uri.of(match).extract(preFilteredRequest.uri.path).matches;
+            return filtered(preFilteredRequest);
         } else {
             let filtered = this.filters.reduce((acc, next) => { return next(acc) }, this.defaultNotFoundHandler);
-            return filtered(request);
+            return filtered(preFilteredRequest);
         }
     }
 

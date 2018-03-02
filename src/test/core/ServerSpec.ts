@@ -173,6 +173,17 @@ describe('a basic in memory server', () => {
         equal(response.getHeader("person"), "bosh")
     });
 
+    it("can prefilter requests", () => {
+        let response = getTo("/", (req) => {
+            return new Response(200, new Body(req.getHeader("pre-filter") || "hello, world!"))
+        }).withPreFilter((req) => {
+            return req.setHeader("pre-filter", "hello from pre-filter")
+        })
+            .match(new Request("GET", "/"));
+
+        equal(response.bodyString(), "hello from pre-filter")
+    });
+
     it("matches path params only if specified a capture in route", () => {
         let response = getTo("/family", () => {
             return new Response(200, new Body("losh,bosh,tosh"))
