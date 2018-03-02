@@ -24,6 +24,6 @@ npm install typescript   --save-dev
 #### To do
 
 - daves advice
-- extract form data
+- dont have to create a new Body for Response
 - other client verbs
 - write docs

@@ -193,6 +193,21 @@ describe('a basic in memory server', () => {
         equal(response.bodyString(), "GET to /family/123 did not match routes")
     });
 
+    it("exact match handler", () => {
+        let response = getTo("/", () => {
+            return new Response(200, new Body("root"))
+        }).withHandler("/family", "GET", () => {
+            return new Response(200, new Body("exact"))
+        }).withHandler("/family/{name}", "GET", () => {
+            return new Response(200, new Body("fuzzy"))
+        }).withHandler("/family", "POST", () => {
+            return new Response(200, new Body("post"))
+        })
+            .match(new Request("GET", "/family"));
+
+        equal(response.bodyString(), "exact")
+    });
+
     it("extract form params", () => {
         let response = postTo("/family", (req) => {
             return new Response(200, new Body(req.form))
@@ -202,5 +217,7 @@ describe('a basic in memory server', () => {
         equal(response.bodyString(), {p1: 1, p2: "tom", p3: "bosh", p4: "losh"})
 
     });
+
+
 
 });

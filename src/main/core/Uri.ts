@@ -35,6 +35,11 @@ export class Uri {
         return new Uri(uri)
     }
 
+    exactMatch(path: string): boolean {
+        let exec = this.uriTemplateToExactPathParamCapturingRegex().exec(path);
+        return exec != null;
+    }
+
     templateMatch(path: string): boolean {
         let exec = this.uriTemplateToPathParamCapturingRegex().exec(path);
         return exec != null;
@@ -59,6 +64,10 @@ export class Uri {
         return this.query && this.query.length > 0
             ? Uri.of(this.href + `&${name}=${value}`)
             : Uri.of(this.href + `?${name}=${value}`);
+    }
+
+    private uriTemplateToExactPathParamCapturingRegex (): RegExp {
+        return new RegExp(`^${this.template}$`.replace(pathParamMatchingRegex, pathParamCaptureTemplate));
     }
 
     private uriTemplateToPathParamCapturingRegex (): RegExp {
