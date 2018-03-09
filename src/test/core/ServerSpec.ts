@@ -176,8 +176,8 @@ describe('a basic in memory server', () => {
     it("can prefilter requests", () => {
         let response = getTo("/", (req) => {
             return new Response(200, new Body(req.getHeader("pre-filter") || "hello, world!"))
-        }).withPreFilter((req) => {
-            return req.setHeader("pre-filter", "hello from pre-filter")
+        }).withFilter((handler) => (req) => {
+            return handler(req.setHeader("pre-filter", "hello from pre-filter"))
         })
             .match(new Request("GET", "/"));
 
