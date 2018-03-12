@@ -1,5 +1,6 @@
 import {Body} from "./Body";
 import {Uri} from "./Uri";
+import {Response} from "./Response";
 
 export interface HttpMessage {
     headers: object;
@@ -23,5 +24,3 @@ export interface HttpMessage {
 }
 
 export type HttpHandler = (Request) => Response
-
-export interface Response extends HttpMessage {}
