@@ -13,14 +13,14 @@ export class Uri {
     href: string;
 
     template: string;
-    asRequest: object;
+    asNativeNodeRequest: object;
 
     matches: object = {};
 
     constructor(template: string) {
         let uri = URI.parse(template);
 
-        this.asRequest = uri;
+        this.asNativeNodeRequest = uri;
         this.template = uri.pathname;
         this.protocol = uri.protocol;
         this.auth = uri.auth;

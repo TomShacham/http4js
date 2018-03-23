@@ -1,8 +1,9 @@
 import * as http from 'http';
 import {Response} from "./Response";
+import {Request} from "./Request";
 import {Body} from "./Body";
 
-export function HttpClient(request) {
+export function HttpClient(request: Request) {
     if (request.method == "GET") {
         return get(request)
     } else {
@@ -10,10 +11,9 @@ export function HttpClient(request) {
     }
 }
 
-
-function get(request): Promise<Response> {
-    let options = request.uri.asRequest;
-    options.headers = request.headers;
+function get(request: Request): Promise<Response> {
+    let options = request.uri.asNativeNodeRequest;
+    options['headers'] = request.headers;
 
     return new Promise(succ => {
         http.request(options, (res) => {
@@ -28,11 +28,11 @@ function get(request): Promise<Response> {
             });
         }).end();
     });
-};
+}
 
 function post(request): Promise<Response> {
-    let options = request.uri.asRequest;
-    options.headers = request.headers;
+    let options = request.uri.asNativeNodeRequest;
+    options['headers'] = request.headers;
     options.method = request.method;
 
     return new Promise(succ => {
@@ -51,4 +51,3 @@ function post(request): Promise<Response> {
         clientRequest.end();
     });
 }
-
