@@ -8,7 +8,7 @@ import {Uri} from "./Uri";
 export interface RoutingHttpHandler {
     withFilter(filter: (HttpHandler) => HttpHandler): RoutingHttpHandler
     asServer(port: number): Http4jsServer
-    match(request: Request): Response
+    match(request: Request): Promise<Response>
 }
 
 export function routes(path: string, method: string, handler: HttpHandler): ResourceRoutingHttpHandler {
@@ -72,7 +72,7 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
         return this.server;
     }
 
-    match(request: Request): Response {
+    match(request: Request): Promise<Response> {
         let exactMatch = this.handlers.find(it => {
             return request.uri.exactMatch(it.path) && it.verb == request.method
         });
@@ -88,10 +88,10 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
             request.pathParams = matchedHandler.path.includes("{")
                 ? Uri.of(matchedHandler.path).extract(request.uri.path).matches
                 : {};
-            return filtered(request);
+            return new Promise(resolve => resolve(filtered(request)));
         } else {
             let filtered = this.filters.reduce((acc, next) => { return next(acc) }, this.defaultNotFoundHandler);
-            return filtered(request);
+            return new Promise(resolve => resolve(filtered(request)));
         }
     }
 
@@ -101,7 +101,7 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
         return new Response(404, body);
     };
 
-    private createInMemResponse(chunks: Array<any>, method: any, url: any, headers: any): Response  {
+    private createInMemResponse(chunks: Array<any>, method: any, url: any, headers: any): Promise<Response>  {
         let body = new Body(Buffer.concat(chunks));
         let inMemRequest = new Request(method, url, body, headers);
         return this.match(inMemRequest);

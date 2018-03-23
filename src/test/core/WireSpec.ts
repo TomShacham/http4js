@@ -13,7 +13,7 @@ describe("real request", () => {
 
     let server = getTo("/", (req: Request) => {
         let query = req.getQuery("tomQuery");
-        return new Response(200, new Body(req.bodyString()))
+        return new Promise(resolve => resolve(new Response(200, new Body(req.bodyString()))))
             .setHeaders(req.headers)
             .setHeader("tomQuery", query || "no tom query");
     })
