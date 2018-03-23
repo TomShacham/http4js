@@ -14,14 +14,22 @@ Hence we can run server in memory and test our entire stack and therefore the on
  
 We inject all of our dependencies to our Server so testing using fakes is easy peasy. We can even write simple fakes of external dependencies and spin them up in memory. 
 
-#### To run: 
+#### To install:
 
-`tsc index.ts --target es5; node index.js`
+npm install --save http4js
+
+#### To run:
+
+```
+git clone git@github.com:TomShacham/http4js.git && cd http4js
+npm install
+tsc index.ts --target es5; node index.js
+```
 
 #### To test:
 
 ```
-npm install --save 
+npm install
 npm test
 ```
 
