@@ -21,7 +21,7 @@ npm install --save http4js
 #### To run:
 
 ```
-git clone git@github.com:TomShacham/http4js.git && cd http4js
+git clone git@github.com:TomShacham/http4js.git  cd http4js
 npm install
 tsc index.ts --target es5; node index.js
 ```
@@ -52,53 +52,40 @@ Then you can add the "then" methods to it to recreate the chaining?
 
 #### Example
 
-```
-import {Request} from "./src/main/core/Request";
-import {HttpHandler} from "./src/main/core/HttpMessage";
-import {routes} from "./src/main/core/RoutingHttpHandler";
-import {Response} from "./src/main/core/Response";
-import {HttpClient} from "./src/main/core/Client";
-import {Body} from "./src/main/core/Body";
-import {Uri} from "./src/main/core/Uri";
-&
+```typescript
+import {Request} from "./dist/main/core/Request";
+import {HttpHandler} from "./dist/main/core/HttpMessage";
+import {routes} from "./dist/main/core/RoutingHttpHandler";
+import {Response} from "./dist/main/core/Response";
+import {HttpClient} from "./dist/main/core/Client";
+import {Body} from "./dist/main/core/Body";
+import {Uri} from "./dist/main/core/Uri";
+ 
 let handler = (req: Request) => {
     let bodyString = `<h1>${req.method} to ${req.uri.href} with headers ${Object.keys(req.headers)}</h1>`;
-    return new Response(200, new Body(Buffer.from(bodyString)))
+    return new Promise(resolve => resolve(new Response(200, new Body(Buffer.from(bodyString)))));
 };
-&
+ 
 let headerFilter = (handler: HttpHandler) => {
     return (req: Request) => {
         return handler(req.setHeader("filter", "1"));
     }
 };
-&
+ 
 let moreRoutes = routes("/bob/{id}", "POST", (req) => {
-    return new Response(201, new Body("created a " + req.path))
+    return new Promise(resolve => resolve(new Response(201, new Body("created a " + req.path))));
 });
-&
+ 
 routes("/path", "GET", handler)
     .withHandler("/tom", "GET", handler)
     .withRoutes(moreRoutes)
     .withFilter(headerFilter)
     .asServer(3000).start();
-&
+ 
 let getRequest = new Request("GET", Uri.of("http://localhost:3000/path/tom")).setHeader("tom", "rules");
-&
-let postRequest = new Request("GET", Uri.of("http://localhost:3000/path/tom")).setHeader("tom", "rules");
-&
-let client = HttpClient;
-&
-client(getRequest).then(succ => {
-    console.log("body string");
-    console.log(succ.body.bodyString());
-    console.log("headers");
-    console.log(succ.headers);
-});
-&
-client(postRequest).then(succ => {
-    console.log("body string");
-    console.log(succ.body.bodyString());
-    console.log("headers");
-    console.log(succ.headers);
+ 
+HttpClient(getRequest).then(response => {
+    console.log(response.body.bodyString());
+    console.log(response.headers);
 });
 ```
