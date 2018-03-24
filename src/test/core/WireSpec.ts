@@ -13,28 +13,33 @@ describe("real request", () => {
 
     let server = getTo("/", (req: Request) => {
         let query = req.getQuery("tomQuery");
-        return new Promise(resolve => resolve(new Response(200, new Body(req.bodyString()))))
-            .setHeaders(req.headers)
-            .setHeader("tomQuery", query || "no tom query");
+        return new Promise(resolve => {
+            resolve(
+                new Response(200, new Body(req.bodyString()))
+                    .setHeaders(req.headers)
+                    .setHeader("tomQuery", query || "no tom query")
+            )
+        })
+
     })
         .withHandler("/post", "POST", (req) => {
-            return new Response(200, new Body(req.bodyString()))
+            return new Promise(resolve => resolve(new Response(200, new Body(req.bodyString()))));
         })
         .withHandler("/family", "GET", () => {
-            return new Response(200, new Body(friends.join(", ")))
+            return new Promise(resolve => resolve(new Response(200, new Body(friends.join(", ")))));
         })
         .withHandler("/family/{name}", "GET", () => {
-            return new Response(200, new Body("fuzzy"))
+            return new Promise(resolve => resolve(new Response(200, new Body("fuzzy"))));
         })
         .withHandler("/family", "POST", (req) => {
             friends.push(req.form["name"]);
-            return new Response(302).setHeader("Location", "/family")
+            return new Promise(resolve => resolve(new Response(302).setHeader("Location", "/family")));
         })
 
         .asServer(3000);
 
     let anotherServer = getTo("/", (req) => {
-        return new Response(200, new Body("Hello, world!"))
+        return new Promise(resolve => resolve(new Response(200, new Body("Hello, world!"))));
     })
         .withHandler("/friends", "GET", (req) => {
             let queries = req.queries;
@@ -45,7 +50,7 @@ describe("real request", () => {
 
             let html = filteredFriends.join(", ");
 
-            return new Response(200, new Body(html))
+            return new Promise(resolve => resolve(new Response(200, new Body(html))))
         })
 
         .withHandler("/friends/{name}", "GET", (req) => {
@@ -53,7 +58,7 @@ describe("real request", () => {
             let filter = name
                 ? friends.filter(it => it.indexOf(name) > -1)
                 : friends;
-            return new Response(200, new Body(filter.join(",")));
+            return new Promise(resolve => resolve(new Response(200, new Body(filter.join(",")))));
         })
 
         .withHandler("/friends", "POST", (req) => {
@@ -62,15 +67,15 @@ describe("real request", () => {
             let html = `<p>${friends.join("</p><p>")}</p>
                             <form method="post"><input type="text" name="name"/><input type="submit"></form>`;
 
-            return new Response(200, new Body(html))
+            return new Promise(resolve => resolve(new Response(200, new Body(html))))
 
         })
         .withFilter((handler) => (req) => {
             let response = handler(req);
             if (response.status == 404) {
-                return new Response(404, new Body("Page not found"));
+                return new Promise(resolve => resolve(new Response(404, new Body("Page not found"))));
             } else {
-                return response;
+                return new Promise(resolve => resolve(response));
             }
         })
         .asServer(3001);

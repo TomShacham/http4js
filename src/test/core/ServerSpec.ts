@@ -157,12 +157,13 @@ describe('a basic in memory server', () => {
             .withFilter((handler: HttpHandler) => {
                 return (req: Request) => {
                     let responsePromise = handler(req);
-                    if (responsePromise.status == 404) {
-                        return new Promise(resolve => resolve(new Response(404, new Body("Page not found"))));
-                    } else {
-                        new Promise(resolve => resolve(responsePromise));
-                    }
-
+                    return responsePromise.then(response => {
+                        if (response.status == 404) {
+                            return new Promise(resolve => resolve(new Response(404, new Body("Page not found"))));
+                        } else {
+                            return new Promise(resolve => resolve(response));
+                        }
+                    });
                 }
             })
             .match(new Request("GET", "/unknown"))

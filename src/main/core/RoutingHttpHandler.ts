@@ -65,8 +65,10 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
                 chunks.push(chunk);
             }).on('end', () => {
                 let response = this.createInMemResponse(chunks, method, url, headers);
-                res.writeHead(response.status, response.headers);
-                res.end(response.body.bytes);
+                response.then(response => {
+                    res.writeHead(response.status, response.headers);
+                    res.end(response.body.bytes);
+                });
             })
         });
         return this.server;
@@ -98,7 +100,7 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
     private defaultNotFoundHandler = (request: Request) => {
         let notFoundBody = `${request.method} to ${request.uri.template} did not match routes`;
         let body = new Body(notFoundBody);
-        return new Response(404, body);
+        return new Promise(resolve => resolve(new Response(404, body)));
     };
 
     private createInMemResponse(chunks: Array<any>, method: any, url: any, headers: any): Promise<Response>  {
