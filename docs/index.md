@@ -2,7 +2,7 @@
 
 ### Table of Contents
 
-- [Hello world](/http4js)
+- [Overview](/http4js)
 - [Intro](/http4js/Intro)
 - [In Memory Server](/http4js/In-memory)
 
@@ -10,9 +10,21 @@
 
 We provide a server and a client.
 
-A server is simply a route with a handler attached to it and a handler is just a function 
+A server is simply a route with a handler attached to it and a handler is just a function.
+We can choose to keep the server in memory or start it on a port:
+
 ```typescript
-    type HttpHandler = (Request) => Promise<Response>
+//handler is just a function
+type HttpHandler = (Request) => Promise<Response> 
+ 
+const handler = (req: Request) => {
+    return new Promise(resolve => resolve(new Response(200)));
+}
+ 
+//server is just a route with a handler
+routes("/", "GET", handler)
+    //.asServer(3000) //if we want to run on a port
+    //.start()
 ```
 
 Our client has the same interface. It simply takes a `Request` and returns a `Promise<Response>`
