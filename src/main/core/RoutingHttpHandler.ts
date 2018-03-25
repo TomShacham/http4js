@@ -90,10 +90,10 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
             request.pathParams = matchedHandler.path.includes("{")
                 ? Uri.of(matchedHandler.path).extract(request.uri.path).matches
                 : {};
-            return new Promise(resolve => resolve(filtered(request)));
+            return filtered(request);
         } else {
             let filtered = this.filters.reduce((acc, next) => { return next(acc) }, this.defaultNotFoundHandler);
-            return new Promise(resolve => resolve(filtered(request)));
+            return filtered(request);
         }
     }
 
