@@ -6,7 +6,9 @@ Read the [docs](https://tomshacham.github.io/http4js/) here
 
 #### To install:
 
-`npm install --save http4js`
+```
+npm install --save http4js
+```
 
 #### To run:
 
