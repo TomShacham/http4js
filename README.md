@@ -6,7 +6,7 @@ Read the [docs](https://tomshacham.github.io/http4js/) here
 
 #### To install:
 
-npm install --save http4js
+`npm install --save http4js`
 
 #### To run:
 
@@ -33,8 +33,6 @@ npm install typescript   --save-dev
 
 #### To do
 
-- add a type or interface for Filter, instead of referring to it as HttpHandler -> HttpHandler. 
-Then you can add the "then" methods to it to recreate the chaining?
 - support express backend
 - other client verbs, PUT, PATCH, HEAD etc.
 

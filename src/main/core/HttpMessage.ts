@@ -24,3 +24,5 @@ export interface HttpMessage {
 }
 
 export type HttpHandler = (Request) => Promise<Response>
+
+export type Filter = (HttpHandler: HttpHandler) => HttpHandler

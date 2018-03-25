@@ -1,5 +1,5 @@
 import {Response} from "./Response";
-import {HttpHandler} from "./HttpMessage";
+import {HttpHandler, Filter} from "./HttpMessage";
 import {Request} from "./Request";
 import {Body} from "./Body";
 import {Http4jsServer, Server} from "./Server";
@@ -42,7 +42,7 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
         return this;
     }
 
-    withFilter(filter: (HttpHandler) => HttpHandler): ResourceRoutingHttpHandler {
+    withFilter(filter: Filter): ResourceRoutingHttpHandler {
         this.filters.push(filter);
         return this;
     }
