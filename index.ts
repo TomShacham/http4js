@@ -31,7 +31,7 @@ let moreRoutes = routes("/bob/{id}", "POST", (req) => {
 });
 
 routes("/path", "GET", handler)
-    .withHandler("/tom", "GET", handler)
+    .withHandler("/tom", "HEAD", handler)
     .withRoutes(moreRoutes)
     .withFilter(headerFilter)
     .asServer(3000)
@@ -39,7 +39,7 @@ routes("/path", "GET", handler)
 
 
 HttpClient(
-    new Request("GET", Uri.of("http://localhost:3000/path/tom"))
+    new Request("HEAD", Uri.of("http://localhost:3000/path/tom"))
 ).then(response => {
     console.log(response.bodyString())
 });
