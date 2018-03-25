@@ -1,6 +1,10 @@
-# Intro
+### Table of Contents
 
-## In Memory Server
+- [Hello world](/http4js)
+- [Intro](/http4js/Intro)
+- [In Memory Server](/http4js/In-memory)
+
+# In Memory Server
 
 If we don't start the server then we can still use it to serve requests in memory
 

@@ -1,18 +1,8 @@
-## Http4js
+## http4js
 
-A port of [http4k](https://github.com/http4k/http4k): a lightweight _toolkit_ to allow in memory functional testing and to simplify working with HTTP. 
+A simple http library for typescript
 
-If you wrote a thin API layer that translated the wire representation of HTTP into a few domain objects: Request, Response and Routing, and translated back again, you essentially wind up with the whole of http4js.
-
-This seemingly basic idea is the beauty and power of http4js and the SaaF (Server as a Function) concept.
-
-We translate a wire request into a Request object. Our server is a function from Request -> Response, we translate a Response to a wire response. 
-
-We write all our routing logic with our Routing domain object. 
-
-Hence we can run server in memory and test our entire stack and therefore the only added benefit of functional testing is to test the translation between wire and domain.
- 
-We inject all of our dependencies to our Server so testing using fakes is easy peasy. We can even write simple fakes of external dependencies and spin them up in memory. 
+Read the [docs](https://tomshacham.github.io/http4js/) here
 
 #### To install:
 
@@ -47,8 +37,6 @@ npm install typescript   --save-dev
 Then you can add the "then" methods to it to recreate the chaining?
 - support express backend
 - other client verbs, PUT, PATCH, HEAD etc.
-- write docs
-- provide examples in this README
 
 #### Example
 
@@ -62,8 +50,8 @@ import {Body} from "./dist/main/core/Body";
 import {Uri} from "./dist/main/core/Uri";
  
 let handler = (req: Request) => {
-    let bodyString = `<h1>${req.method} to ${req.uri.href} with headers ${Object.keys(req.headers)}</h1>`;
-    return new Promise(resolve => resolve(new Response(200, new Body(Buffer.from(bodyString)))));
+    let html = `<h1>${req.method} to ${req.uri.href} with headers ${Object.keys(req.headers)}</h1>`;
+    return new Promise(resolve => resolve(new Response(200, new Body(Buffer.from(html)))));
 };
  
 let headerFilter = (handler: HttpHandler) => {
@@ -73,19 +61,53 @@ let headerFilter = (handler: HttpHandler) => {
 };
  
 let moreRoutes = routes("/bob/{id}", "POST", (req) => {
-    return new Promise(resolve => resolve(new Response(201, new Body("created a " + req.path))));
+    return new Promise(resolve => {
+        resolve(new Response(201, new Body("created a " + req.path)))
+    });
 });
  
 routes("/path", "GET", handler)
     .withHandler("/tom", "GET", handler)
     .withRoutes(moreRoutes)
     .withFilter(headerFilter)
-    .asServer(3000).start();
+    .asServer(3000)
+    .start();
  
-let getRequest = new Request("GET", Uri.of("http://localhost:3000/path/tom")).setHeader("tom", "rules");
- 
-HttpClient(getRequest).then(response => {
-    console.log(response.body.bodyString());
-    console.log(response.headers);
+
+HttpClient(
+    new Request("GET", Uri.of("http://localhost:3000/path/tom"))
+).then(response => {
+    console.log(response);
+    console.log(response.bodyString());
 });
+ 
+/*
+Response {
+  headers: 
+   { date: 'Sun, 25 Mar 2018 11:15:12 GMT',
+     connection: 'close',
+     'transfer-encoding': 'chunked' },
+  body: 
+   Body {
+     bytes: <Buffer 3c 68 31 3e 47 45 54 20 74 6f 20 2f 70 61 74 68 2f 74 6f 6d 20 77 69 74 68 20 68 65 61 64 65 72 73 20 68 6f 73 74 2c 63 6f 6e 6e 65 63 74 69 6f 6e 2c ... > },
+  status: 200 }
+ 
+<h1>GET to /path/tom with headers host,connection,filter</h1>
+ */
 ```
+
+## History and Design
+
+http4js is a port of [http4k](https://github.com/http4k/http4k): an HTTP toolkit written in Kotlin that enables the serving and consuming of HTTP services in a functional and consistent way. Inspiration for http4js is entirely thanks to [David Denton](https://github.com/daviddenton) and [Ivan Sanchez](https://github.com/s4nchez). Thanks! 
+
+If you wrote a thin API layer that translated the wire representation of HTTP into a few domain objects: Request, Response and Routing, and translated back again, you essentially wind up with the whole of http4js.
+
+This seemingly basic idea is the beauty and power of http4js and the SaaF (Server as a Function) concept.
+
+We translate a wire request into a Request object. Our server is a function from Request -> Response, we translate a Response to a wire response. 
+
+We write all our routing logic with our ResourceRouting domain object. 
+
+Hence we can run server in memory and test our entire stack and therefore the only added benefit of functional testing is to test the translation between wire and domain.
+ 
+We inject all of our dependencies to our Server so testing using fakes is easy peasy. We can even write simple fakes of external dependencies and spin them up in memory. 
