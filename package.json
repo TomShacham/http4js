@@ -16,12 +16,15 @@
   },
   "author": "",
   "license": "ISC",
-  "keywords": ["http", "Server as a Function"],
+  "keywords": [
+    "http",
+    "Server as a Function"
+  ],
   "devDependencies": {
     "@types/node": "9.4.0",
     "@types/mocha": "2.2.47",
     "mocha": "5.0.0",
     "ts-node": "4.1.0",
-    "typescript": "2.3.4"
+    "typescript": "2.4.0"
   }
 }
