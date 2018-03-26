@@ -159,9 +159,9 @@ describe('a basic in memory server', () => {
                     let responsePromise = handler(req);
                     return responsePromise.then(response => {
                         if (response.status == 404) {
-                            return new Promise(resolve => resolve(new Response(404, new Body("Page not found"))));
+                            return new Promise<Response>(resolve => resolve(new Response(404, new Body("Page not found"))));
                         } else {
-                            return new Promise(resolve => resolve(response));
+                            return new Promise<Response>(resolve => resolve(response));
                         }
                     });
                 }

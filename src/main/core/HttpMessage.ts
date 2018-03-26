@@ -2,19 +2,13 @@ import {Body} from "./Body";
 import {Uri} from "./Uri";
 import {Response} from "./Response";
 
-export class Header {
-    name: string;
-    value: string;
-
-    constructor(name: string, value: string) {
-        this.name = name;
-        this.value = value;
-        return this;
-    }
+export declare enum Header {
+    CONTENT_TYPE = "Content-Type",
+    APPLICATION_JSON = "application/json"
 }
 
 export interface HttpMessage {
-    headers: Array<Header>;
+    headers: object;
     body: Body;
     uri: Uri;
 
