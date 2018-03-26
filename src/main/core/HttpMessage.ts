@@ -2,8 +2,19 @@ import {Body} from "./Body";
 import {Uri} from "./Uri";
 import {Response} from "./Response";
 
+export class Header {
+    name: string;
+    value: string;
+
+    constructor(name: string, value: string) {
+        this.name = name;
+        this.value = value;
+        return this;
+    }
+}
+
 export interface HttpMessage {
-    headers: object;
+    headers: Array<Header>;
     body: Body;
     uri: Uri;
 

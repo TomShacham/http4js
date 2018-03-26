@@ -16,6 +16,7 @@
   },
   "author": "",
   "license": "ISC",
+  "keywords": ["http", "Server as a Function"],
   "devDependencies": {
     "@types/node": "9.4.0",
     "@types/mocha": "2.2.47",
