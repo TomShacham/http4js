@@ -66,6 +66,11 @@ export class Uri {
             : Uri.of(this.href + `?${name}=${value}`);
     }
 
+    withProtocol(protocol: string): Uri {
+        this.protocol = protocol;
+        return this;
+    }
+
     private uriTemplateToExactPathParamCapturingRegex (): RegExp {
         return new RegExp(`^${this.template}$`.replace(pathParamMatchingRegex, pathParamCaptureTemplate));
     }
