@@ -17,8 +17,6 @@ export interface HttpMessage {
 
     setBody(body: Body): HttpMessage
 
-    setBodystring(body: string): HttpMessage
-
     bodyString(): string
 
 }

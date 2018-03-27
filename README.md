@@ -64,7 +64,7 @@ let headerFilter = (handler: HttpHandler) => {
  
 let moreRoutes = routes("/bob/{id}", "POST", (req) => {
     return new Promise(resolve => {
-        resolve(new Response(201, new Body("created a " + req.path)))
+        resolve(new Response(201, `created id of ${req.path}`))
     });
 });
  

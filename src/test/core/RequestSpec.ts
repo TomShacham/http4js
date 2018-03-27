@@ -17,7 +17,7 @@ describe("in mem request", () => {
     it("set body", () => {
         equal(
             new Request("GET", "/")
-                .setBody(new Body("body boy"))
+                .setBody("body boy")
                 .bodyString(),
             "body boy")
     });
@@ -25,7 +25,7 @@ describe("in mem request", () => {
     it("set body string", () => {
         equal(
             new Request("GET", "/")
-                .setBodystring("tommy boy")
+                .setBody("tommy boy")
                 .bodyString(),
             "tommy boy")
     });

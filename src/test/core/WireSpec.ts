@@ -21,31 +21,31 @@ describe("wire request", () => {
 
     })
         .withHandler("/post-body", "POST", (req) => {
-            return new Promise(resolve => resolve(new Response(200, new Body(req.bodyString()))));
+            return new Promise(resolve => resolve(new Response(200, req.bodyString())));
         })
         .withHandler("/get", "GET", (req) => {
-            return new Promise(resolve => resolve(new Response(200, new Body("Done a GET request init?"))));
+            return new Promise(resolve => resolve(new Response(200, "Done a GET request init?")));
         })
         .withHandler("/post", "POST", (req) => {
-            return new Promise(resolve => resolve(new Response(200, new Body("Done a POST request init?"))));
+            return new Promise(resolve => resolve(new Response(200, "Done a POST request init?")));
         })
         .withHandler("/put", "PUT", (req) => {
-            return new Promise(resolve => resolve(new Response(200, new Body("Done a PUT request init?"))));
+            return new Promise(resolve => resolve(new Response(200, "Done a PUT request init?")));
         })
         .withHandler("/patch", "PATCH", (req) => {
-            return new Promise(resolve => resolve(new Response(200, new Body("Done a PATCH request init?"))));
+            return new Promise(resolve => resolve(new Response(200, "Done a PATCH request init?")));
         })
         .withHandler("/delete", "DELETE", (req) => {
-            return new Promise(resolve => resolve(new Response(200, new Body("Done a DELETE request init?"))));
+            return new Promise(resolve => resolve(new Response(200, "Done a DELETE request init?")));
         })
         .withHandler("/options", "OPTIONS", (req) => {
-            return new Promise(resolve => resolve(new Response(200, new Body("Done a OPTIONS request init?"))));
+            return new Promise(resolve => resolve(new Response(200, "Done a OPTIONS request init?")));
         })
         .withHandler("/head", "HEAD", (req) => {
-            return new Promise(resolve => resolve(new Response(200, new Body("Done a HEAD request init?"))));
+            return new Promise(resolve => resolve(new Response(200, "Done a HEAD request init?")));
         })
         .withHandler("/trace", "TRACE", (req) => {
-            return new Promise(resolve => resolve(new Response(200, new Body("Done a TRACE request init?"))));
+            return new Promise(resolve => resolve(new Response(200, "Done a TRACE request init?")));
         })
         .asServer(3000);
 
@@ -59,7 +59,7 @@ describe("wire request", () => {
     });
 
     it("sets post body", () => {
-        let request = new Request("POST", `${baseUrl}/post-body`, new Body("my humps"));
+        let request = new Request("POST", `${baseUrl}/post-body`, "my humps");
         return HttpClient(request)
             .then(succ => {
                 equal(succ.bodyString(), "my humps")

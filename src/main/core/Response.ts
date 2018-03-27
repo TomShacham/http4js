@@ -49,13 +49,10 @@ export class Response implements HttpMessage {
         return this;
     }
 
-    setBody(body: Body): Response {
-        this.body = body;
-        return this;
-    }
-
-    setBodystring(bodyString: string): Response {
-        this.body.bytes = bodyString;
+    setBody(body: Body | string): Response {
+        typeof body == "string"
+            ? this.body.bytes = body
+            : this.body = body;
         return this;
     }
 

@@ -14,7 +14,7 @@ export class Request {
 
     constructor(method: string,
                 uri: Uri | string,
-                body: Body = new Body(new Buffer("")),
+                body: Body | string = new Body(new Buffer("")),
                 headers = null) {
         this.method = method;
         if (typeof uri == "string") {
@@ -22,11 +22,13 @@ export class Request {
         } else {
             this.uri = uri;
         }
-        this.body = body;
+        this.body = typeof body == "string"
+            ? new Body(body)
+            : body;
         this.headers = headers ? headers : {};
         this.queries = this.getQueryParams();
         if (this.method == "POST") {
-            body.bodyString().split("&").map(kv => {
+            this.body.bodyString().split("&").map(kv => {
                 let strings = kv.split("=");
                 this.form[strings[0]] = strings[1];
             })
@@ -76,13 +78,10 @@ export class Request {
         return this;
     }
 
-    setBody(body: Body): Request {
-        this.body = body;
-        return this;
-    }
-
-    setBodystring(string: string): Request {
-        this.body.bytes = string;
+    setBody(body: Body | string): Request {
+        typeof body == "string"
+            ? this.body.bytes = body
+            : this.body = body;
         return this;
     }
 

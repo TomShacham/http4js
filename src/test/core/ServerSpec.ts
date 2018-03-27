@@ -87,7 +87,7 @@ describe('a basic in memory server', () => {
 
     it("recursively defining routes", () => {
         let nested = getTo("/nested", () => {
-            return new Promise(resolve => resolve(new Response(200).setBodystring("hi there deeply.")));
+            return new Promise(resolve => resolve(new Response(200).setBody("hi there deeply.")));
         });
         return getTo("/", () => {
             return new Promise(resolve => resolve(new Response(200)));
