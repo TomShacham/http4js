@@ -23,7 +23,7 @@ const handler = (req: Request) => {
 }
  
 //server is just a route with a handler
-routes("/", "GET", handler)
+routes("GET", "/", handler)
     //.asServer(3000) //if we want to run on a port
     //.start()
 ```
@@ -38,7 +38,7 @@ import {Request} from "./dist/main/core/Request";
 import {Response} from "./dist/main/core/Response";
 import {HttpClient} from "./dist/main/core/Client";
  
-routes("/", "GET", (req: Request) => {
+routes("GET", "/", (req: Request) => {
   return new Promise(resolve => {
     resolve(new Response(200))
   })

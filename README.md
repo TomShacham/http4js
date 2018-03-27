@@ -35,10 +35,10 @@ npm install typescript   --save-dev
 
 #### To do
 
-- document withFilter for eg to add user on req or upgrade http to https
+- add more in built filters :timing debug filter
 - document a proxy
 - document unit testing routing and fakes
-- support express backend
+- support express, koa backends
 
 #### Example
 
@@ -68,7 +68,7 @@ let moreRoutes = routes("/bob/{id}", "POST", (req) => {
     });
 });
  
-routes("/path", "GET", handler)
+routes("GET", "/path", handler)
     .withHandler("/tom", "GET", handler)
     .withRoutes(moreRoutes)
     .withFilter(headerFilter)

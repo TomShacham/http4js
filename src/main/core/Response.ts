@@ -62,3 +62,7 @@ export class Response implements HttpMessage {
 
 }
 
+export function response(status: number = 200, body: Body | string = new Body("")){
+    return new Response(status, body);
+}
+

@@ -7,7 +7,7 @@ import {equal} from "assert";
 describe("Built in filters", () => {
 
     it("upgrade to https", () => {
-        return routes("/", "GET", (req) => {
+        return routes("GET", "/", (req) => {
             return new Promise(resolve => resolve(new Response(200, req.uri.protocol)));
         })
             .withFilter(Filters.UPGRADE_TO_HTTPS)

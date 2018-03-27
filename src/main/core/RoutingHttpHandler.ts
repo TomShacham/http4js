@@ -1,26 +1,15 @@
 import {Response} from "./Response";
-import {HttpHandler, Filter} from "./HttpMessage";
+import {HttpHandler} from "./HttpMessage";
 import {Request} from "./Request";
 import {Body} from "./Body";
 import {Http4jsServer, Server} from "./Server";
 import {Uri} from "./Uri";
+import {Filter} from "./Filters";
 
 export interface RoutingHttpHandler {
     withFilter(filter: (HttpHandler) => HttpHandler): RoutingHttpHandler
     asServer(port: number): Http4jsServer
     match(request: Request): Promise<Response>
-}
-
-export function routes(path: string, method: string, handler: HttpHandler): ResourceRoutingHttpHandler {
-    return new ResourceRoutingHttpHandler(path, method, handler);
-}
-
-export function getTo(path: string, handler: HttpHandler): ResourceRoutingHttpHandler {
-    return new ResourceRoutingHttpHandler(path, "GET", handler);
-}
-
-export function postTo(path: string, handler: HttpHandler): ResourceRoutingHttpHandler {
-    return new ResourceRoutingHttpHandler(path, "POST", handler);
 }
 
 export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
@@ -111,3 +100,26 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
 
 }
 
+export function routes(method: string, path: string, handler: HttpHandler): ResourceRoutingHttpHandler {
+    return new ResourceRoutingHttpHandler(path, method, handler);
+}
+
+export function getTo(path: string, handler: HttpHandler): ResourceRoutingHttpHandler {
+    return new ResourceRoutingHttpHandler(path, "GET", handler);
+}
+
+export function postTo(path: string, handler: HttpHandler): ResourceRoutingHttpHandler {
+    return new ResourceRoutingHttpHandler(path, "POST", handler);
+}
+
+export function putTo(path: string, handler: HttpHandler): ResourceRoutingHttpHandler {
+    return new ResourceRoutingHttpHandler(path, "PUT", handler);
+}
+
+export function patchTo(path: string, handler: HttpHandler): ResourceRoutingHttpHandler {
+    return new ResourceRoutingHttpHandler(path, "PATCH", handler);
+}
+
+export function deleteTo(path: string, handler: HttpHandler): ResourceRoutingHttpHandler {
+    return new ResourceRoutingHttpHandler(path, "DELETE", handler);
+}

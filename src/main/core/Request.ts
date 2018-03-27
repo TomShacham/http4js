@@ -100,3 +100,10 @@ export class Request {
     }
 
 }
+
+export function request(method: string,
+                        uri: Uri | string,
+                        body: Body | string = new Body(new Buffer("")),
+                        headers = null){
+    return new Request(method, uri, body, headers);
+}

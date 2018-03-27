@@ -12,7 +12,7 @@
 We can route a path to a handler and start it as a server:
 
 ```typescript
-routes("/path", "GET", (req: Request) => {
+routes("GET", "/path", (req: Request) => {
   return new Promise(resolve => {
     resolve(new Response(200))
   })
