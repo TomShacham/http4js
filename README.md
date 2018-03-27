@@ -39,7 +39,6 @@ npm install typescript   --save-dev
 - document a proxy
 - document unit testing routing and fakes
 - support express backend
-- other client verbs, PUT, PATCH, HEAD etc.
 
 #### Example
 

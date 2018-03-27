@@ -19,6 +19,8 @@ export function HttpClient(request: Request) {
             return head(request);
         case "OPTIONS":
             return options(request);
+        case "TRACE":
+            return trace(request);
 
         default:
             return get(request)
@@ -156,6 +158,28 @@ function head(request): Promise<Response> {
 }
 
 function options(request): Promise<Response> {
+    let options = request.uri.asNativeNodeRequest;
+    options['headers'] = request.headers;
+    options.method = request.method;
+
+    return new Promise(succ => {
+        let clientRequest = http.request(options, (res) => {
+            let chunks = [];
+            res.on('data', (chunk) => {
+                chunks.push(chunk);
+            });
+            res.on('end', () => {
+                let body = new Body(Buffer.concat(chunks));
+                let response = new Response(res.statusCode, body).setHeaders(res.headers);
+                return succ(response);
+            });
+        });
+        clientRequest.write(request.body.bodyString());
+        clientRequest.end();
+    });
+}
+
+function trace(request): Promise<Response> {
     let options = request.uri.asNativeNodeRequest;
     options['headers'] = request.headers;
     options.method = request.method;
