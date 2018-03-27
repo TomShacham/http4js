@@ -35,7 +35,6 @@ npm install typescript   --save-dev
 
 #### To do
 
-- create Header and Method to wrap headers and method on req and provide convenience functions like Headers.CONTENT_TYPE and Method.GET
 - document withFilter for eg to add user on req or upgrade http to https
 - document a proxy
 - document unit testing routing and fakes
