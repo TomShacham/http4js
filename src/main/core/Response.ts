@@ -20,13 +20,13 @@ export class Response implements HttpMessage {
     }
 
     setHeader(name: string, value: string): Response {
-        const name = name.toLowerCase();
-        if (this.headers[name] == null) {
-            this.headers[name] = value;
-        } else if (typeof this.headers[name] == "string") {
-            this.headers[name] = [this.headers[name], value];
+        const lowercaseName = name.toLowerCase();
+        if (this.headers[lowercaseName] == null) {
+            this.headers[lowercaseName] = value;
+        } else if (typeof this.headers[lowercaseName] == "string") {
+            this.headers[lowercaseName] = [this.headers[lowercaseName], value];
         } else {
-            this.headers[name].push(value);
+            this.headers[lowercaseName].push(value);
         }
         return this;
     }

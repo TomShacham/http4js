@@ -1,7 +1,7 @@
 import {routes} from "../../main/core/RoutingHttpHandler";
 import {Response} from "../../main/core/Response";
 import {Request} from "../../main/core/Request";
-import {Filters} from "../../main/core/Filters";
+import {debugFilter, Filters} from "../../main/core/Filters";
 import {equal} from "assert";
 
 describe("Built in filters", () => {
@@ -19,7 +19,7 @@ describe("Built in filters", () => {
 
     it("timing filter", () => {
         return routes("GET", "/", (req) => {
-            return new Promise(resolve => resolve(new Response(200, req.uri.protocol)));
+            return new Promise(resolve => resolve(new Response(200, "OK")));
         })
             .withFilter(Filters.TIMING)
             .match(new Request("GET", "/"))
@@ -28,15 +28,23 @@ describe("Built in filters", () => {
             });
     });
 
-    xit("debug filter", () => {
+    it("debugging filter", () => {
+        function memoryLogger() {
+            this.messages = [];
+            this.log = (msg) => {
+                // console.log(msg);
+                this.messages.push(msg);
+            }
+        }
+        const logger = new memoryLogger();
+
         return routes("GET", "/", (req) => {
-            return new Promise(resolve => resolve(new Response(200, req.uri.protocol)));
+            return new Promise(resolve => resolve(new Response(200, "OK")));
         })
-            .withFilter(Filters.DEBUG)
+            .withFilter(debugFilter(logger))
             .match(new Request("GET", "/"))
             .then(response => {
-                console.log(response)
-                equal(response.bodyString(), "debugged");
+                equal(logger.messages[0], 'GET to / with response 200');
             });
     });
 

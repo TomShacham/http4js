@@ -12,11 +12,16 @@ export class Filters {
         return handler(req).then(response => response.setHeader("Total-Time", "500"));
     };
 
-    static DEBUG: Filter = (handler: HttpHandler) => (req: Request) => {
+    static DEBUG: Filter = debugFilter(console);
+
+}
+
+export function debugFilter(out): Filter {
+    return (handler: HttpHandler) => (req: Request) => {
         let response = handler(req);
-        response.then(response => {
-            console.log(`${req.method} to ${req.uri.href} with response ${response.status}`)
+        return response.then(response => {
+            out.log(`${req.method} to ${req.uri.href} with response ${response.status}`);
+            return response;
         });
-        return response;
-    };
+    }
 }
