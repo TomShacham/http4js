@@ -38,6 +38,7 @@ npm install typescript   --save-dev
 - add more in built filters :timing debug filter
 - document a proxy
 - document unit testing routing and fakes
+- complete http4js-eg
 - support express, koa backends
 
 #### Example

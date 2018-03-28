@@ -20,6 +20,7 @@ export class Response implements HttpMessage {
     }
 
     setHeader(name: string, value: string): Response {
+        const name = name.toLowerCase();
         if (this.headers[name] == null) {
             this.headers[name] = value;
         } else if (typeof this.headers[name] == "string") {
