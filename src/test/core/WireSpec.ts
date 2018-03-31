@@ -4,6 +4,7 @@ import {Response} from "../../main/core/Response";
 import {Body} from "../../main/core/Body";
 import {deepEqual, equal} from "assert";
 import {HttpClient} from "../../main/core/Client";
+import {Server} from "../../main/core/Server";
 
 describe("wire request", () => {
 
@@ -47,7 +48,7 @@ describe("wire request", () => {
         .withHandler("/trace", "TRACE", (req) => {
             return new Promise(resolve => resolve(new Response(200, "Done a TRACE request init?")));
         })
-        .asServer(3000);
+        .asServer(new Server(3000));
 
 
     before(() => {

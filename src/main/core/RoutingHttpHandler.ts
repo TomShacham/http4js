@@ -8,7 +8,7 @@ import {Filter} from "./Filters";
 
 export interface RoutingHttpHandler {
     withFilter(filter: (HttpHandler) => HttpHandler): RoutingHttpHandler
-    asServer(port: number): Http4jsServer
+    asServer(server: Server): Http4jsServer
     match(request: Request): Promise<Response>
 }
 
@@ -43,23 +43,9 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
         return this;
     }
 
-    asServer(port: number): Http4jsServer {
-        this.server = new Server(port);
-        this.server.server.on("request", (req, res) => {
-            const {headers, method, url} = req;
-            let chunks = [];
-            req.on('error', (err) => {
-                console.error(err);
-            }).on('data', (chunk) => {
-                chunks.push(chunk);
-            }).on('end', () => {
-                let response = this.createInMemResponse(chunks, method, url, headers);
-                response.then(response => {
-                    res.writeHead(response.status, response.headers);
-                    res.end(response.body.bytes);
-                });
-            })
-        });
+    asServer(server: Server): Http4jsServer {
+        this.server = server;
+        server.registerCatchAllHandler(this);
         return this.server;
     }
 
@@ -91,12 +77,6 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
         let body = new Body(notFoundBody);
         return new Promise<Response>(resolve => resolve(new Response(404, body)));
     };
-
-    private createInMemResponse(chunks: Array<any>, method: any, url: any, headers: any): Promise<Response>  {
-        let body = new Body(Buffer.concat(chunks));
-        let inMemRequest = new Request(method, url, body, headers);
-        return this.match(inMemRequest);
-    }
 
 }
 
