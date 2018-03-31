@@ -16,7 +16,7 @@ export class Request {
                 uri: Uri | string,
                 body: Body | string = new Body(new Buffer("")),
                 headers = null) {
-        this.method = method;
+        this.method = method.toUpperCase();
         if (typeof uri == "string") {
             this.uri = Uri.of(uri);
         } else {
@@ -54,16 +54,17 @@ export class Request {
     }
 
     getHeader(name: string): string {
-        return this.headers[name];
+        return this.headers[name.toLowerCase()];
     }
 
     setHeader(name: string, value: string): Request {
-        if (this.headers[name] == null) {
-            this.headers[name] = value;
-        } else if (typeof this.headers[name] == "string") {
-            this.headers[name] = [this.headers[name], value];
+        let caseInsensitiveName = name.toLowerCase();
+        if (this.headers[caseInsensitiveName] == null) {
+            this.headers[caseInsensitiveName] = value;
+        } else if (typeof this.headers[caseInsensitiveName] == "string") {
+            this.headers[caseInsensitiveName] = [this.headers[caseInsensitiveName], value];
         } else {
-            this.headers[name].push(value);
+            this.headers[caseInsensitiveName].push(value);
         }
         return this;
     }

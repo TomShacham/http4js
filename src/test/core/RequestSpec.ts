@@ -5,6 +5,13 @@ import {Body} from "../../main/core/Body";
 
 describe("in mem request", () => {
 
+    it("set method is case insensitive", () => {
+        equal(
+            new Request("gEt", "/")
+                .method,
+            "GET")
+    });
+
     it("set uri", () => {
         equal(
             new Request("GET", "/")
@@ -38,6 +45,14 @@ describe("in mem request", () => {
                 .uri
                 .query,
             "tom=tosh&ben=bosh")
+    });
+
+    it("get header is case insensitive", () => {
+        equal(
+            new Request("GET", "some/url")
+                .setHeader("TOM", "rocks")
+                .getHeader("tom"),
+            "rocks");
     });
 
     it("set header on request", () => {
