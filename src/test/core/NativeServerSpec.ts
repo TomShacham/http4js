@@ -6,7 +6,7 @@ import {deepEqual, equal} from "assert";
 import {HttpClient} from "../../main/core/Client";
 import {Server} from "../../main/core/Server";
 
-describe("wire request", () => {
+describe("native node over the wire", () => {
 
     let baseUrl = "http://localhost:3000";
 
@@ -19,7 +19,6 @@ describe("wire request", () => {
                     .setHeader("tomQuery", query || "no tom query")
             )
         })
-
     })
         .withHandler("/post-body", "POST", (req) => {
             return new Promise(resolve => resolve(new Response(200, req.bodyString())));

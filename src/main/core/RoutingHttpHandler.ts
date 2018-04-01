@@ -43,7 +43,7 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
         return this;
     }
 
-    asServer(server: Server): Http4jsServer {
+    asServer(server: Http4jsServer): Http4jsServer {
         this.server = server;
         server.registerCatchAllHandler(this);
         return this.server;
