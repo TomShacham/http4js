@@ -1,6 +1,6 @@
 {
   "name": "http4js",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "A lightweight HTTP toolkit",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -21,8 +21,9 @@
     "Server as a Function"
   ],
   "devDependencies": {
-    "@types/node": "9.4.0",
     "@types/mocha": "2.2.47",
+    "@types/node": "9.4.0",
+    "body-parser": "1.18.2",
     "mocha": "5.0.0",
     "ts-node": "4.1.0",
     "typescript": "2.4.0"

@@ -14,6 +14,10 @@ export interface Http4jsServer {
 }
 
 export class ExpressServer implements Http4jsServer {
+    server;
+    port: number;
+    private routing;
+
     constructor(expressApp, port: number) {
         this.port = port;
         this.server = expressApp;
@@ -24,10 +28,11 @@ export class ExpressServer implements Http4jsServer {
         this.routing = routing;
         this.server.use((req, res, next) => {
             const {headers, method, url} = req;
-            const body = req.body || [];
+            let body = Object.keys(req.body).length == 0 ? [] : req.body;
+            if (headers['content-type'] == 'application/json') body = [Buffer.from(JSON.stringify(body))];
             let response = this.createInMemResponse(body, method, url, headers);
             response.then(response => {
-                Object.keys(response.headers).forEach(header => res.setHeader(header, response.headers[header]))
+                Object.keys(response.headers).forEach(header => res.setHeader(header, response.headers[header]));
                 res.end(response.body.bytes);
             });
             next();
@@ -45,8 +50,7 @@ export class ExpressServer implements Http4jsServer {
     }
 
     stop(): void {
-        console.log("Forcing express to stop by listening again on the same port... lol");
-        this.server.listen(this.port);
+        console.log("cannot stop an express server ... lol");
     }
 }
 
