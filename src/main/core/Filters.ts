@@ -9,7 +9,11 @@ export class Filters {
     };
 
     static TIMING: Filter = (handler: HttpHandler) => (req: Request) => {
-        return handler(req).then(response => response.setHeader("Total-Time", "500"));
+        const start = Date.now();
+        return handler(req).then(response => {
+            const total = Date.now() - start;
+            return response.setHeader("Total-Time", total.toString())
+        });
     };
 
     static DEBUG: Filter = debugFilter(console);

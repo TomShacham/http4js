@@ -10,36 +10,6 @@ Read the [docs](https://tomshacham.github.io/http4js/) here
 npm install --save http4js
 ```
 
-#### To run:
-
-```
-git clone git@github.com:TomShacham/http4js.git  cd http4js
-npm install
-tsc index.ts --target es5; node index.js
-```
-
-#### To test:
-
-```
-npm install
-npm test
-```
-
-**In order to run tests in idea/webstorm**, you may need to:
-
-```
-npm install @types/mocha --save-dev
-npm install ts-node      --save-dev
-npm install typescript   --save-dev 
-```
-
-#### To do
-
-- support express, koa backends
-- complete http4js-eg
-- document unit testing routing and fakes
-- document a proxy
-
 #### Example
 
 ```typescript
@@ -98,7 +68,7 @@ Response {
  */
 ```
 
-## History and Design
+#### History and Design
 
 http4js is a port of [http4k](https://github.com/http4k/http4k): an HTTP toolkit written in Kotlin that enables the serving and consuming of HTTP services in a functional and consistent way. Inspiration for http4js is entirely thanks to [David Denton](https://github.com/daviddenton) and [Ivan Sanchez](https://github.com/s4nchez). Thanks! 
 
@@ -113,3 +83,38 @@ We write all our routing logic with our ResourceRouting domain object.
 Hence we can run server in memory and test our entire stack and therefore the only added benefit of functional testing is to test the translation between wire and domain.
  
 We inject all of our dependencies to our Server so testing using fakes is easy peasy. We can even write simple fakes of external dependencies and spin them up in memory. 
+
+
+#### Contributing
+
+I'd be very happy if you'd like to contribute :)
+
+#### To run:
+
+```
+git clone git@github.com:TomShacham/http4js.git  cd http4js
+npm install
+tsc index.ts --target es5; node index.js
+```
+
+#### To test:
+
+```
+npm install
+npm test
+```
+
+**In order to run tests in idea/webstorm**, you may need to:
+
+```
+npm install @types/mocha --save-dev
+npm install ts-node      --save-dev
+npm install typescript   --save-dev 
+```
+
+#### To do
+
+- support koa backend
+- complete http4js-eg
+- document unit testing routing and fakes
+- document a proxy
