@@ -1,21 +1,18 @@
-import * as express from "express";
 import {getTo} from "../../main/core/RoutingHttpHandler";
 import {Response} from "../../main/core/Response";
-import {ExpressServer} from "../../main/core/Server";
+import {ExpressServer, KoaServer} from "../../main/core/Server";
 import {HttpClient} from "../../main/core/Client";
 import {Request} from "../../main/core/Request";
 import {Body} from "../../main/core/Body";
-import {equal} from "assert";
-import {deepEqual} from "assert";
+import {equal, deepEqual} from "assert";
 const bodyParser = require('body-parser');
+const Koa = require('koa');
 
-let expressApp = express();
-expressApp.use(bodyParser.urlencoded({extended: true}));
-expressApp.use(bodyParser.json());
+const koaApp = new Koa();
 
-describe("express", () => {
+describe("koa", () => {
 
-    let baseUrl = "http://localhost:3001";
+    let baseUrl = "http://localhost:3002";
 
     let server = getTo("/", (req: Request) => {
         let query = req.getQuery("tomQuery");
@@ -54,7 +51,7 @@ describe("express", () => {
         .withHandler("/trace", "TRACE", (req) => {
             return new Promise(resolve => resolve(new Response(200, "Done a TRACE request init?")));
         })
-        .asServer(new ExpressServer(expressApp, 3001));
+        .asServer(new KoaServer(koaApp, 3002));
 
 
     before(() => {
@@ -66,7 +63,7 @@ describe("express", () => {
     });
 
     it("sets post body", () => {
-        let request = new Request("POST", "http://localhost:3001/post-body", '{"result": "my humps"}', {"Content-Type": "application/json"});
+        let request = new Request("POST", `${baseUrl}/post-body`, '{"result": "my humps"}', {"Content-Type": "application/json"});
         return HttpClient(request)
             .then(succ => {
                 equal(JSON.parse(succ.bodyString())["result"], "my humps");

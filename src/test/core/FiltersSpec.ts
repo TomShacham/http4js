@@ -33,7 +33,6 @@ describe("Built in filters", () => {
         function memoryLogger() {
             this.messages = [];
             this.log = (msg) => {
-                // console.log(msg);
                 this.messages.push(msg);
             }
         }
