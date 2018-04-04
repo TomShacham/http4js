@@ -5,6 +5,7 @@ import {Body} from "./Body";
 import {Uri} from "./Uri";
 import {Filter} from "./Filters";
 import {Http4jsServer} from "./Server";
+import {NativeServer} from "./NativeServer";
 
 export interface RoutingHttpHandler {
     withFilter(filter: (HttpHandler) => HttpHandler): RoutingHttpHandler
@@ -43,7 +44,7 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
         return this;
     }
 
-    asServer(server: Http4jsServer): Http4jsServer {
+    asServer(server: Http4jsServer = new NativeServer(3000)): Http4jsServer {
         this.server = server;
         server.registerCatchAllHandler(this);
         return this.server;
