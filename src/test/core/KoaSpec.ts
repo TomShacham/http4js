@@ -11,6 +11,11 @@ const bodyParser = require('koa-bodyparser');
 const koaApp = new Koa();
 koaApp.use(bodyParser());
 
+koaApp.use((ctx, next) => {
+    ctx.set("koa", "middleware");
+    next();
+});
+
 describe("koa", () => {
 
     let baseUrl = "http://localhost:3002";
@@ -61,6 +66,13 @@ describe("koa", () => {
 
     after(() => {
         server.stop();
+    });
+
+    it("respects middleware", () => {
+        return HttpClient(new Request("GET", baseUrl))
+            .then(succ => {
+                equal(succ.getHeader("koa"), "middleware")
+            })
     });
 
     it("sets post body", () => {

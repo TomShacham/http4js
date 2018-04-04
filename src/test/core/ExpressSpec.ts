@@ -9,11 +9,17 @@ import {equal} from "assert";
 import {deepEqual} from "assert";
 const bodyParser = require('body-parser');
 
-let expressApp = express();
-expressApp.use(bodyParser.urlencoded({extended: true}));
-expressApp.use(bodyParser.json());
 
 describe("express", () => {
+
+    let expressApp = express();
+    expressApp.use(bodyParser.urlencoded({extended: true}));
+    expressApp.use(bodyParser.json());
+
+    expressApp.use((req, res, next) => {
+        res.setHeader("express", "middleware");
+        next();
+    });
 
     let baseUrl = "http://localhost:3001";
 
@@ -63,6 +69,13 @@ describe("express", () => {
 
     after(() => {
         server.stop();
+    });
+
+    it("respects middleware", () => {
+        return HttpClient(new Request("GET", baseUrl))
+            .then(succ => {
+                equal(succ.getHeader("express"), "middleware")
+            })
     });
 
     it("sets post body", () => {
