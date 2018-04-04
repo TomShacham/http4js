@@ -1,7 +1,7 @@
 import * as express from "express";
 import {getTo} from "../../main/core/RoutingHttpHandler";
 import {Response} from "../../main/core/Response";
-import {ExpressServer} from "../../main/core/Server";
+import {ExpressServer} from "../../main/core/ExpressServer";
 import {HttpClient} from "../../main/core/Client";
 import {Request} from "../../main/core/Request";
 import {Body} from "../../main/core/Body";

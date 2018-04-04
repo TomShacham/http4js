@@ -1,14 +1,15 @@
 import {getTo} from "../../main/core/RoutingHttpHandler";
 import {Response} from "../../main/core/Response";
-import {ExpressServer, KoaServer} from "../../main/core/Server";
+import {KoaServer} from "../../main/core/KoaServer";
 import {HttpClient} from "../../main/core/Client";
 import {Request} from "../../main/core/Request";
 import {Body} from "../../main/core/Body";
 import {equal, deepEqual} from "assert";
-const bodyParser = require('body-parser');
 const Koa = require('koa');
 
+const bodyParser = require('koa-bodyparser');
 const koaApp = new Koa();
+koaApp.use(bodyParser());
 
 describe("koa", () => {
 

@@ -2,13 +2,13 @@ import {Response} from "./Response";
 import {HttpHandler} from "./HttpMessage";
 import {Request} from "./Request";
 import {Body} from "./Body";
-import {Http4jsServer, Server} from "./Server";
 import {Uri} from "./Uri";
 import {Filter} from "./Filters";
+import {Http4jsServer} from "./Server";
 
 export interface RoutingHttpHandler {
     withFilter(filter: (HttpHandler) => HttpHandler): RoutingHttpHandler
-    asServer(server: Server): Http4jsServer
+    asServer(server: Http4jsServer): Http4jsServer
     match(request: Request): Promise<Response>
 }
 
