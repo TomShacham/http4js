@@ -114,7 +114,6 @@ npm install typescript   --save-dev
 
 #### To do
 
-- support koa backend
+- support regex in path like *
 - complete http4js-eg
 - document unit testing routing and fakes
-- document a proxy

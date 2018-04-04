@@ -3,6 +3,7 @@
 - [Overview](/http4js)
 - [Intro](/http4js/Intro)
 - [In Memory Server](/http4js/In-memory)
+- [Proxy](/http4js/Proxy)
 - [Example App](https://github.com/TomShacham/http4js-eg)
 
 # In Memory Server
