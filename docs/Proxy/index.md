@@ -33,8 +33,7 @@ const proxy = getTo("/", (req: Request) => {
 
 Now when we make a get request to `http://localhost:3000` we add our x-proxy header to it and rewrite the uri to `http://localhost:3001`.
 
-```typescript
-/*
+```
 *** REWRITTEN REQUEST ***
 Request {
   headers:
@@ -77,6 +76,7 @@ Request {
      href: 'http://localhost:3001/' },
   body: Body { bytes: <Buffer > },
   pathParams: {} }
+
 *** UPSTREAM RESPONSE ***
 Response {
   headers: {},
@@ -91,7 +91,5 @@ Response {
      'accept-language': 'en-GB,en;q=0.9,en-US;q=0.8,pt;q=0.7',
      'x-proxy': 'header from proxy' },
   status: 200 }
-
-*/
 
 ```
