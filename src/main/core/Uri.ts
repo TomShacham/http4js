@@ -36,20 +36,18 @@ export class Uri {
     }
 
     exactMatch(path: string): boolean {
-        let exec = this.uriTemplateToExactPathParamCapturingRegex().exec(path);
-        return exec != null;
+        return new RegExp(`^${path}$`).exec(this.template) != null;
     }
 
     templateMatch(path: string): boolean {
-        let exec = this.uriTemplateToPathParamCapturingRegex().exec(path);
-        return exec != null;
+        return this._uriTemplateToPathParamCapturingRegex().exec(path) != null;
     }
 
     extract(uri: string): Uri {
         let decodedUri = decodeURI(uri);
         let pathParamNames = this.template.match(pathParamMatchingRegex)
             .map(it => it.replace("{", "").replace("}", ""));
-        let pathParams = this.uriTemplateToPathParamCapturingRegex().exec(decodedUri);
+        let pathParams = this._uriTemplateToPathParamCapturingRegex().exec(decodedUri);
         pathParamNames.map( (name, i) => {
             this.matches[name] = pathParams[i+1]
         });
@@ -71,11 +69,7 @@ export class Uri {
         return this;
     }
 
-    private uriTemplateToExactPathParamCapturingRegex (): RegExp {
-        return new RegExp(`^${this.template}$`.replace(pathParamMatchingRegex, pathParamCaptureTemplate));
-    }
-
-    private uriTemplateToPathParamCapturingRegex (): RegExp {
+    private _uriTemplateToPathParamCapturingRegex (): RegExp {
         return new RegExp(this.template.replace(
             pathParamMatchingRegex,
             pathParamCaptureTemplate)

@@ -52,23 +52,28 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
 
     match(request: Request): Promise<Response> {
         let exactMatch = this.handlers.find(it => {
-            return request.uri.exactMatch(it.path) && it.verb == request.method
+            return request.uri.exactMatch(it.path) && request.method.match(it.verb) != null;
         });
         let fuzzyMatch = this.handlers.find(it => {
-            return it.path == "/"
-                ? false
-                : it.path.includes("{") && Uri.of(it.path).templateMatch(request.uri.path) && it.verb == request.method
+            if (it.path == "/") return false;
+            return it.path.includes("{")
+                && Uri.of(it.path).templateMatch(request.uri.path)
+                && request.method.match(it.verb) != null;
         });
         let matchedHandler = exactMatch || fuzzyMatch;
         if (matchedHandler) {
             let handler = matchedHandler.handler;
-            let filtered = this.filters.reduce((acc, next) => { return next(acc) }, handler);
+            let filtered = this.filters.reduce((acc, next) => {
+                return next(acc)
+            }, handler);
             request.pathParams = matchedHandler.path.includes("{")
                 ? Uri.of(matchedHandler.path).extract(request.uri.path).matches
                 : {};
             return filtered(request);
         } else {
-            let filtered = this.filters.reduce((acc, next) => { return next(acc) }, this.defaultNotFoundHandler);
+            let filtered = this.filters.reduce((acc, next) => {
+                return next(acc)
+            }, this.defaultNotFoundHandler);
             return filtered(request);
         }
     }

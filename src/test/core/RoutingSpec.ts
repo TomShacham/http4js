@@ -1,5 +1,5 @@
 import {deepEqual, deepStrictEqual, equal} from "assert";
-import {getTo, postTo} from "../../main/core/RoutingHttpHandler";
+import {getTo, postTo, routes} from "../../main/core/RoutingHttpHandler";
 import {Response} from "../../main/core/Response";
 import {Body} from "../../main/core/Body";
 import {Request} from "../../main/core/Request";
@@ -9,7 +9,7 @@ describe('a basic in memory server', () => {
 
     it("takes request and gives response", function () {
         return getTo("/test", (req: Request) => {
-            return new Promise(resolve => resolve(new Response(200, req.body)));
+            return Promise.resolve(new Response(200, req.body));
         })
             .match(new Request("GET", "/test", new Body("Got it.")))
             .then(response => equal(response.body.bodyString(), "Got it."))
@@ -17,10 +17,10 @@ describe('a basic in memory server', () => {
 
     it("nests handlers", () => {
         return getTo("/test", () => {
-            return new Promise(resolve => resolve(new Response(200)));
+            return Promise.resolve(new Response(200));
         })
             .withHandler("/nest", "GET", () => {
-                return new Promise(resolve => resolve(new Response(200, new Body("nested"))));
+                return Promise.resolve(new Response(200, new Body("nested")));
             })
             .match(new Request("GET", "/test/nest"))
             .then(response => equal(response.body.bodyString(), "nested"))
@@ -28,11 +28,11 @@ describe('a basic in memory server', () => {
 
     it("add a filter", () => {
         return getTo("/test", () => {
-            return new Promise(resolve => resolve(new Response(200)));
+            return Promise.resolve(new Response(200));
         })
             .withFilter(() => {
                 return () => {
-                    return new Promise(resolve => resolve(new Response(200, new Body("filtered"))));
+                    return Promise.resolve(new Response(200, new Body("filtered")));
                 }
             })
             .match(new Request("GET", "/test"))
@@ -41,16 +41,16 @@ describe('a basic in memory server', () => {
 
     it("chains filters", () => {
         return getTo("/test", () => {
-            return new Promise(resolve => resolve(new Response(200)));
+            return Promise.resolve(new Response(200));
         })
             .withFilter(() => {
                 return () => {
-                    return new Promise(resolve => resolve(new Response(200, new Body("filtered"))))
+                    return Promise.resolve(new Response(200, new Body("filtered")))
                 }
             })
             .withFilter((handler: HttpHandler) => {
                 return (req: Request) => {
-                    return new Promise(resolve => resolve(handler(req).then(response => response.setHeader("another", "filter"))))
+                    return Promise.resolve(handler(req).then(response => response.setHeader("another", "filter")))
                 }
             })
             .match(new Request("GET", "/test"))
@@ -62,10 +62,10 @@ describe('a basic in memory server', () => {
 
     it("chains filters and handlers", () => {
         return getTo("/test", () => {
-            return new Promise(resolve => resolve(new Response(200)));
+            return Promise.resolve(new Response(200));
         })
             .withHandler("/nest", "GET", () => {
-                return new Promise(resolve => resolve(new Response(200, new Body("nested"))));
+                return Promise.resolve(new Response(200, new Body("nested")));
             })
             .withFilter((handler: HttpHandler) => {
                 return (req: Request) => {
@@ -87,10 +87,10 @@ describe('a basic in memory server', () => {
 
     it("recursively defining routes", () => {
         let nested = getTo("/nested", () => {
-            return new Promise(resolve => resolve(new Response(200).setBody("hi there deeply.")));
+            return Promise.resolve(new Response(200).setBody("hi there deeply."));
         });
         return getTo("/", () => {
-            return new Promise(resolve => resolve(new Response(200)));
+            return Promise.resolve(new Response(200));
         })
             .withRoutes(nested)
             .match(new Request("GET", "/nested"))
@@ -100,7 +100,7 @@ describe('a basic in memory server', () => {
 
     it("matches path params only if specified a capture in route", () => {
         return getTo("/family", () => {
-            return new Promise(resolve => resolve(new Response(200, new Body("losh,bosh,tosh"))));
+            return Promise.resolve(new Response(200, new Body("losh,bosh,tosh")));
         })
             .match(new Request("GET", "/family/123"))
             .then(response => equal(response.bodyString(), "GET to /family/123 did not match routes"))
@@ -108,7 +108,7 @@ describe('a basic in memory server', () => {
 
     it("extracts path param", () => {
         return getTo("/{name}/test", (req) => {
-            return new Promise(resolve => resolve(new Response(200, new Body(req.pathParams["name"]))));
+            return Promise.resolve(new Response(200, new Body(req.pathParams["name"])));
         })
             .match(new Request("GET", "/tom/test"))
             .then(response => equal(response.bodyString(), "tom"));
@@ -136,7 +136,7 @@ describe('a basic in memory server', () => {
                 req.getQuery("bosh"),
                 req.getQuery("losh"),
             ];
-            return new Promise(resolve => resolve(new Response(200, new Body(queries.join("|")))));
+            return Promise.resolve(new Response(200, new Body(queries.join("|"))));
         })
             .match(new Request("GET", "/test?tosh=rocks&bosh=pwns&losh=killer"))
             .then(response => equal(response.bodyString(), "rocks|pwns|killer"));
@@ -144,7 +144,7 @@ describe('a basic in memory server', () => {
 
     it("unknown route returns a 404", () => {
         return getTo("/", () => {
-            return new Promise(resolve => resolve(new Response(200, new Body("hello, world!"))));
+            return Promise.resolve(new Response(200, new Body("hello, world!")));
         })
             .match(new Request("GET", "/unknown"))
             .then(response => equal(response.status, 404));
@@ -152,7 +152,7 @@ describe('a basic in memory server', () => {
 
     it("custom 404s using filters", () => {
         return getTo("/", () => {
-            return new Promise(resolve => resolve(new Response(200, new Body("hello, world!"))));
+            return Promise.resolve(new Response(200, new Body("hello, world!")));
         })
             .withFilter((handler: HttpHandler) => {
                 return (req: Request) => {
@@ -175,7 +175,7 @@ describe('a basic in memory server', () => {
 
     it("ordering - filters apply in order they are declared", () => {
         return getTo("/", () => {
-            return new Promise(resolve => resolve(new Response(200, new Body("hello, world!"))));
+            return Promise.resolve(new Response(200, new Body("hello, world!")));
         }).withFilter((handler) => (req) => {
             return handler(req).then(response => response.replaceHeader("person", "tosh"));
         }).withFilter((handler) => (req) => {
@@ -187,7 +187,7 @@ describe('a basic in memory server', () => {
 
     it("can add stuff to request using filters", () => {
         return getTo("/", (req) => {
-            return new Promise(resolve => resolve(new Response(200, new Body(req.getHeader("pre-filter") || "hello, world!"))));
+            return Promise.resolve(new Response(200, new Body(req.getHeader("pre-filter") || "hello, world!")));
         }).withFilter((handler) => (req) => {
             return handler(req.setHeader("pre-filter", "hello from pre-filter"))
         })
@@ -197,13 +197,13 @@ describe('a basic in memory server', () => {
 
     it("exact match handler", () => {
         return getTo("/", () => {
-            return new Promise(resolve => resolve(new Response(200, new Body("root"))));
+            return Promise.resolve(new Response(200, new Body("root")));
         }).withHandler("/family", "GET", () => {
-            return new Promise(resolve => resolve(new Response(200, new Body("exact"))));
+            return Promise.resolve(new Response(200, new Body("exact")));
         }).withHandler("/family/{name}", "GET", () => {
-            return new Promise(resolve => resolve(new Response(200, new Body("fuzzy"))));
+            return Promise.resolve(new Response(200, new Body("fuzzy")));
         }).withHandler("/family", "POST", () => {
-            return new Promise(resolve => resolve(new Response(200, new Body("post"))));
+            return Promise.resolve(new Response(200, new Body("post")));
         })
             .match(new Request("GET", "/family"))
             .then(response => equal(response.bodyString(), "exact"))
@@ -212,22 +212,22 @@ describe('a basic in memory server', () => {
     it("Post redirect.", () => {
         let friends = [];
         let routes = getTo("/", () => {
-            return new Promise(resolve => resolve(new Response(200, new Body("root"))));
+            return Promise.resolve(new Response(200, new Body("root")));
         })
             .withHandler("/family", "GET", () => {
-                return new Promise(resolve => resolve(new Response(200, new Body(friends.join(", ")))));
+                return Promise.resolve(new Response(200, new Body(friends.join(", "))));
             })
             .withHandler("/family/{name}", "GET", () => {
-                return new Promise(resolve => resolve(new Response(200, new Body("fuzzy"))));
+                return Promise.resolve(new Response(200, new Body("fuzzy")));
             })
             .withHandler("/family", "POST", (req) => {
                 friends.push(req.form["name"]);
-                return new Promise(resolve => resolve(new Response(302).setHeader("Location", "/family")));
+                return Promise.resolve(new Response(302).setHeader("Location", "/family"));
             });
 
-        let postSideEffect1 = routes.match(new Request("POST", "/family", new Body("name=tosh")));
-        let postSideEffect2 = routes.match(new Request("POST", "/family", new Body("name=bosh")));
-        let postSideEffect3 = routes.match(new Request("POST", "/family", new Body("name=losh")));
+        const postSideEffect1 = routes.match(new Request("POST", "/family", new Body("name=tosh")));
+        const postSideEffect2 = routes.match(new Request("POST", "/family", new Body("name=bosh")));
+        const postSideEffect3 = routes.match(new Request("POST", "/family", new Body("name=losh")));
 
         return routes.match(new Request("GET", "/family"))
             .then(response => equal(response.bodyString(), "tosh, bosh, losh"))
@@ -237,7 +237,7 @@ describe('a basic in memory server', () => {
 
     it("extract form params", () => {
         return postTo("/family", (req) => {
-            return new Promise(resolve => resolve(new Response(200, new Body(req.form))));
+            return Promise.resolve(new Response(200, new Body(req.form)));
         })
             .match(new Request("POST", "/family", new Body("p1=1&p2=tom&p3=bosh&p4=losh")).setHeader("Content-Type", "application/x-www-form-urlencoded"))
             .then(response => {
@@ -245,5 +245,20 @@ describe('a basic in memory server', () => {
             })
     });
 
+    it("matches method by regex", () => {
+        return routes(".*", "/", () => Promise.resolve(new Response(200, "matched")) )
+            .match(new Request("GET", "/"))
+            .then(response => {
+                equal(response.bodyString(), "matched");
+            })
+    });
+
+    it("matches path by regex", () => {
+        return routes(".*", ".*", () => Promise.resolve(new Response(200, "matched")) )
+            .match(new Request("GET", "/any/path/matches"))
+            .then(response => {
+                equal(response.bodyString(), "matched");
+            })
+    });
 
 });

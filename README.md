@@ -115,5 +115,6 @@ npm install typescript   --save-dev
 #### To do
 
 - support regex in path like *
+- status enum
 - complete http4js-eg
 - document unit testing routing and fakes

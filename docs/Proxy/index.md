@@ -45,7 +45,7 @@ Request {
      accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
      'accept-encoding': 'gzip, deflate, br',
      'accept-language': 'en-GB,en;q=0.9,en-US;q=0.8,pt;q=0.7',
-     'x-proxy': 'stu' },
+     'x-proxy': 'header from proxy' },
   queries: {},
   form: {},
   method: 'GET',
