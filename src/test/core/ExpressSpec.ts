@@ -1,8 +1,8 @@
 import * as express from "express";
-import {getTo} from "../../main/core/RoutingHttpHandler";
+import {getTo} from "../../main/core/Routing";
 import {Response} from "../../main/core/Response";
-import {ExpressServer} from "../../main/core/ExpressServer";
-import {HttpClient} from "../../main/core/Client";
+import {ExpressServer} from "../../main/servers/ExpressServer";
+import {HttpClient} from "../../main/client/Client";
 import {Request} from "../../main/core/Request";
 import {Body} from "../../main/core/Body";
 import {equal} from "assert";

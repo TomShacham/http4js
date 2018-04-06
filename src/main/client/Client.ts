@@ -1,7 +1,7 @@
 import * as http from 'http';
-import {Response} from "./Response";
-import {Request} from "./Request";
-import {Body} from "./Body";
+import {Response} from "../core/Response";
+import {Request} from "../core/Request";
+import {Body} from "../core/Body";
 
 export function HttpClient(request: Request) {
     switch (request.method) {

@@ -4,6 +4,7 @@ export enum Headers {
     ACCEPT_ENCODING = "Accept-Encoding",
     ACCESS_CONTROL_REQUEST_METHOD = "Access-Control-Request-Method",
     ACCESS_CONTROL_REQUEST_HEADERS = "Access-Control-Request-Headers",
+    ALLOW = "Allow",
     AUTHORIZATION = "Authorization",
     CACHE_CONTROL = "Cache-Control",
     COOKIE = "Cookie",
@@ -17,7 +18,7 @@ export enum Headers {
     X_FORWARDED_Host = "X-Forwarded-Host",
     X_CSRF_TOKEN = "X-Csrf-Token",
 
-        //Response headers
+    //Response headers
     ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin",
     ACCESS_CONTROL_ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials",
     ACCESS_CONTROL_EXPOSE_HEADERS = "Access-Control-Expose-Headers",
@@ -36,6 +37,12 @@ export enum Headers {
 }
 
 export enum HeaderValues {
-    APPLICATION_JSON = "application/json"
+    APPLICATION_JSON = "application/json",
+    TEXT_HTML = "text/html",
+    MULTIPART_FORMDATA = "multipart/form-data",
+    IMAGE_JPG = "image/jpg",
+    IMAGE_PNG = "image/png",
+    AUDIO_MPEG = "audio/mpeg",
+    VIDEO_MP4 = "video/mp4",
 
 }

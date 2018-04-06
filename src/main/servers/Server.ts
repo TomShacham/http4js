@@ -1,4 +1,4 @@
-import {RoutingHttpHandler} from "./RoutingHttpHandler";
+import {RoutingHttpHandler} from "../core/Routing";
 
 export interface Http4jsServer {
     server;

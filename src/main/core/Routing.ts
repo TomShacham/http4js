@@ -4,8 +4,8 @@ import {Request} from "./Request";
 import {Body} from "./Body";
 import {Uri} from "./Uri";
 import {Filter} from "./Filters";
-import {Http4jsServer} from "./Server";
-import {NativeServer} from "./NativeServer";
+import {Http4jsServer} from "../servers/Server";
+import {NativeServer} from "../servers/NativeServer";
 
 export interface RoutingHttpHandler {
     withFilter(filter: (HttpHandler) => HttpHandler): RoutingHttpHandler

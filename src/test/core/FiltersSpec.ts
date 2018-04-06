@@ -1,4 +1,4 @@
-import {routes} from "../../main/core/RoutingHttpHandler";
+import {routes} from "../../main/core/Routing";
 import {Response} from "../../main/core/Response";
 import {Request} from "../../main/core/Request";
 import {debugFilter, Filters} from "../../main/core/Filters";

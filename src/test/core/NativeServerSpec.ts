@@ -1,10 +1,10 @@
-import {getTo} from "../../main/core/RoutingHttpHandler";
+import {getTo} from "../../main/core/Routing";
 import {Request} from "../../main/core/Request";
 import {Response} from "../../main/core/Response";
 import {Body} from "../../main/core/Body";
 import {deepEqual, equal} from "assert";
-import {HttpClient} from "../../main/core/Client";
-import {NativeServer} from "../../main/core/NativeServer";
+import {HttpClient} from "../../main/client/Client";
+import {NativeServer} from "../../main/servers/NativeServer";
 
 describe("native node over the wire", () => {
 

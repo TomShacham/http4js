@@ -1,7 +1,7 @@
-import {RoutingHttpHandler} from "./RoutingHttpHandler";
-import {Response} from "./Response";
-import {Body} from "./Body";
-import {Request} from "./Request";
+import {RoutingHttpHandler} from "../core/Routing";
+import {Response} from "../core/Response";
+import {Body} from "../core/Body";
+import {Request} from "../core/Request";
 import {Http4jsServer} from "./Server";
 
 export class KoaServer implements Http4jsServer {

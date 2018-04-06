@@ -1,5 +1,5 @@
-import {deepEqual, deepStrictEqual, equal} from "assert";
-import {getTo, postTo, routes} from "../../main/core/RoutingHttpHandler";
+import {deepStrictEqual, equal} from "assert";
+import {getTo, postTo, routes} from "../../main/core/Routing";
 import {Response} from "../../main/core/Response";
 import {Body} from "../../main/core/Body";
 import {Request} from "../../main/core/Request";
