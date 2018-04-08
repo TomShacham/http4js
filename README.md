@@ -2,7 +2,7 @@
 
 A simple http library for typescript
 
-Read the [docs](https://tomshacham.github.io/http4js/) here
+## Read the [docs](https://tomshacham.github.io/http4js/)
 
 #### To install:
 
@@ -12,59 +12,59 @@ npm install --save http4js
 
 #### Example
 
+An example server and client
+
 ```typescript
+import {Status} from "./src/main/core/Status";
 import {Request} from "./dist/main/core/Request";
 import {HttpHandler} from "./dist/main/core/HttpMessage";
-import {routes} from "./dist/main/core/RoutingHttpHandler";
+import {routes} from "./dist/main/core/Routing";
 import {Response} from "./dist/main/core/Response";
-import {HttpClient} from "./dist/main/core/Client";
-import {Body} from "./dist/main/core/Body";
+import {HttpClient} from "./dist/main/client/Client";
 import {Uri} from "./dist/main/core/Uri";
- 
+import {Headers} from "./src/main/core/Headers";
+import {Method} from "./src/main/core/Methods";
+
+//handler takes a request and promises a response
 let handler = (req: Request) => {
-    let html = `<h1>${req.method} to ${req.uri.href} with headers ${Object.keys(req.headers)}</h1>`;
-    return new Promise(resolve => resolve(new Response(200, new Body(Buffer.from(html)))));
+    let html = `<h1>${req.method} to ${req.uri.href} with req headers ${Object.keys(req.headers)}</h1>`;
+    return Promise.resolve(new Response(Status.OK, html));
 };
- 
+
+//add header to every request
 let headerFilter = (handler: HttpHandler) => {
     return (req: Request) => {
-        return handler(req.setHeader("filter", "1"));
+        return handler(req.setHeader(Headers.X_CSRF_TOKEN, Math.random()))
+            .then(response => response.setHeader(Headers.VARY, "gzip"));
     }
 };
- 
-let moreRoutes = routes("/bob/{id}", "POST", (req) => {
-    return new Promise(resolve => {
-        resolve(new Response(201, `created id of ${req.path}`))
-    });
-});
- 
-routes("GET", "/path", handler)
-    .withHandler("/tom", "GET", handler)
-    .withRoutes(moreRoutes)
-    .withFilter(headerFilter)
-    .asServer(3000)
-    .start();
- 
 
+//define our server routes and start on port 3000
+routes(Method.GET, ".*", handler)
+    .withFilter(headerFilter)
+    .asServer()
+    .start();
+
+//make an http request to our server and log the response
 HttpClient(
-    new Request("GET", Uri.of("http://localhost:3000/path/tom"))
+    new Request(Method.GET, Uri.of("http://localhost:3000/any/path"))
 ).then(response => {
     console.log(response);
     console.log(response.bodyString());
 });
- 
+
 /*
 Response {
-  headers: 
-   { date: 'Sun, 25 Mar 2018 11:15:12 GMT',
-     connection: 'close',
-     'transfer-encoding': 'chunked' },
-  body: 
-   Body {
-     bytes: <Buffer 3c 68 31 3e 47 45 54 20 74 6f 20 2f 70 61 74 68 2f 74 6f 6d 20 77 69 74 68 20 68 65 61 64 65 72 73 20 68 6f 73 74 2c 63 6f 6e 6e 65 63 74 69 6f 6e 2c ... > },
-  status: 200 }
- 
-<h1>GET to /path/tom with headers host,connection,filter</h1>
+    headers:
+    { vary: 'gzip',
+        date: 'Sun, 08 Apr 2018 08:26:20 GMT',
+        connection: 'close',
+        'transfer-encoding': 'chunked' },
+    body:
+        Body {
+        bytes: <Buffer 3c 68 31 3e 47 45 54 20 74 6f 20 2f 61 6e 79 2f 70 61 74 68 20 77 69 74 68 20 72 65 71 20 68 65 61 64 65 72 73 20 68 6f 73 74 2c 63 6f 6e 6e 65 63 74 ... > },
+    status: 200 }
+<h1>GET to /any/path with req headers host,connection,x-csrf-token</h1>
  */
 ```
 
@@ -114,7 +114,5 @@ npm install typescript   --save-dev
 
 #### To do
 
-- support regex in path like *
-- status enum
 - complete http4js-eg
 - document unit testing routing and fakes
