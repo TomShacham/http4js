@@ -92,9 +92,10 @@ I'd be very happy if you'd like to contribute :)
 #### To run:
 
 ```
-git clone git@github.com:TomShacham/http4js.git  cd http4js
+git clone git@github.com:TomShacham/http4js.git  
+cd http4js
 npm install
-tsc index.ts --target es5; node index.js
+tsc; node index.js
 ```
 
 #### To test:
@@ -104,15 +105,8 @@ npm install
 npm test
 ```
 
-**In order to run tests in idea/webstorm**, you may need to:
-
-```
-npm install @types/mocha --save-dev
-npm install ts-node      --save-dev
-npm install typescript   --save-dev 
-```
-
 #### To do
 
 - complete http4js-eg
-- document unit testing routing and fakes
+- document unit testing with routing.match and approval testing and fakes
+- write a tutorial to complement docs
