@@ -86,7 +86,7 @@ describe('a basic in memory server', () => {
     });
 
     it("recursively defining routes", () => {
-        let nested = getTo("/nested", () => {
+        const nested = getTo("/nested", () => {
             return Promise.resolve(new Response(200).setBody("hi there deeply."));
         });
         return getTo("/", () => {
@@ -122,7 +122,7 @@ describe('a basic in memory server', () => {
         })
             .match(new Request("GET", "/tom/test/26/bob/odd/fred"))
             .then(response => {
-                let pathParams = response.bodyString().split(", ");
+                const pathParams = response.bodyString().split(", ");
                 equal(pathParams[0], "tom");
                 equal(pathParams[1], "26");
                 equal(pathParams[2], "odd");
@@ -131,7 +131,7 @@ describe('a basic in memory server', () => {
 
     it("extracts query params", () => {
         return getTo("/test", (req) => {
-            let queries = [
+            const queries = [
                 req.getQuery("tosh"),
                 req.getQuery("bosh"),
                 req.getQuery("losh"),
@@ -156,7 +156,7 @@ describe('a basic in memory server', () => {
         })
             .withFilter((handler: HttpHandler) => {
                 return (req: Request) => {
-                    let responsePromise = handler(req);
+                    const responsePromise = handler(req);
                     return responsePromise.then(response => {
                         if (response.status == 404) {
                             return new Promise<Response>(resolve => resolve(new Response(404, new Body("Page not found"))));
@@ -210,8 +210,8 @@ describe('a basic in memory server', () => {
     });
 
     it("Post redirect.", () => {
-        let friends = [];
-        let routes = getTo("/", () => {
+        const friends = [];
+        const routes = getTo("/", () => {
             return Promise.resolve(new Response(200, new Body("root")));
         })
             .withHandler("/family", "GET", () => {

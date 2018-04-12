@@ -22,7 +22,7 @@ export class ExpressServer implements Http4jsServer {
             const {headers, method, url} = req;
             let body = Object.keys(req.body).length == 0 ? [] : req.body;
             if (headers['content-type'] == 'application/json') body = [Buffer.from(JSON.stringify(body))];
-            let response = this.createInMemResponse(body, method, url, headers);
+            const response = this.createInMemResponse(body, method, url, headers);
             response.then(response => {
                 Object.keys(response.headers).forEach(header => res.setHeader(header, response.headers[header]));
                 res.end(response.body.bytes);
@@ -32,8 +32,8 @@ export class ExpressServer implements Http4jsServer {
     }
 
     private createInMemResponse(chunks: Array<any>, method: any, url: any, headers: any): Promise<Response> {
-        let body = new Body(Buffer.concat(chunks));
-        let inMemRequest = new Request(method, url, body, headers);
+        const body = new Body(Buffer.concat(chunks));
+        const inMemRequest = new Request(method, url, body, headers);
         return this.routing.match(inMemRequest);
     }
 

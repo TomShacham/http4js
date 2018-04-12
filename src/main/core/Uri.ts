@@ -1,4 +1,4 @@
-let URI = require('url');
+const URI = require('url');
 
 const pathParamMatchingRegex: RegExp = new RegExp(/\{(\w+)\}/g);
 const pathParamCaptureTemplate: string = "([\\w\\s]+)";
@@ -18,7 +18,7 @@ export class Uri {
     matches: object = {};
 
     constructor(template: string) {
-        let uri = URI.parse(template);
+        const uri = URI.parse(template);
 
         this.asNativeNodeRequest = uri;
         this.template = uri.pathname;
@@ -44,10 +44,10 @@ export class Uri {
     }
 
     extract(uri: string): Uri {
-        let decodedUri = decodeURI(uri);
-        let pathParamNames = this.template.match(pathParamMatchingRegex)
+        const decodedUri = decodeURI(uri);
+        const pathParamNames = this.template.match(pathParamMatchingRegex)
             .map(it => it.replace("{", "").replace("}", ""));
-        let pathParams = this._uriTemplateToPathParamCapturingRegex().exec(decodedUri);
+        const pathParams = this._uriTemplateToPathParamCapturingRegex().exec(decodedUri);
         pathParamNames.map( (name, i) => {
             this.matches[name] = pathParams[i+1]
         });

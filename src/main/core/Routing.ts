@@ -38,8 +38,8 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
     }
 
     withHandler(path: string, method: string, handler: HttpHandler): ResourceRoutingHttpHandler {
-        let existingPath = this.root != "/" ? this.root : "";
-        let nestedPath = existingPath + path;
+        const existingPath = this.root != "/" ? this.root : "";
+        const nestedPath = existingPath + path;
         this.handlers.push({path: nestedPath, verb: method, handler: handler});
         return this;
     }
@@ -51,19 +51,19 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
     }
 
     match(request: Request): Promise<Response> {
-        let exactMatch = this.handlers.find(it => {
+        const exactMatch = this.handlers.find(it => {
             return request.uri.exactMatch(it.path) && request.method.match(it.verb) != null;
         });
-        let fuzzyMatch = this.handlers.find(it => {
+        const fuzzyMatch = this.handlers.find(it => {
             if (it.path == "/") return false;
             return it.path.includes("{")
                 && Uri.of(it.path).templateMatch(request.uri.path)
                 && request.method.match(it.verb) != null;
         });
-        let matchedHandler = exactMatch || fuzzyMatch;
+        const matchedHandler = exactMatch || fuzzyMatch;
         if (matchedHandler) {
-            let handler = matchedHandler.handler;
-            let filtered = this.filters.reduce((acc, next) => {
+            const handler = matchedHandler.handler;
+            const filtered = this.filters.reduce((acc, next) => {
                 return next(acc)
             }, handler);
             request.pathParams = matchedHandler.path.includes("{")
@@ -71,7 +71,7 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
                 : {};
             return filtered(request);
         } else {
-            let filtered = this.filters.reduce((acc, next) => {
+            const filtered = this.filters.reduce((acc, next) => {
                 return next(acc)
             }, this.defaultNotFoundHandler);
             return filtered(request);
@@ -79,9 +79,8 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
     }
 
     private defaultNotFoundHandler = (request: Request) => {
-        let notFoundBody = `${request.method} to ${request.uri.template} did not match routes`;
-        let body = new Body(notFoundBody);
-        return new Promise<Response>(resolve => resolve(new Response(404, body)));
+        const notFoundBodystring = `${request.method} to ${request.uri.template} did not match routes`;
+        return new Promise<Response>(resolve => resolve(new Response(404, notFoundBodystring)));
     };
 
 }

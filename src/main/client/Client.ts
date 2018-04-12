@@ -29,18 +29,18 @@ export function HttpClient(request: Request) {
 }
 
 function get(request: Request): Promise<Response> {
-    let options = request.uri.asNativeNodeRequest;
+    const options = request.uri.asNativeNodeRequest;
     options['headers'] = request.headers;
 
     return new Promise(succ => {
         http.request(options, (res) => {
-            let chunks = [];
+            const chunks = [];
             res.on('data', (chunk) => {
                 chunks.push(chunk);
             });
             res.on('end', () => {
-                let body = new Body(Buffer.concat(chunks));
-                let response = new Response(res.statusCode, body).setHeaders(res.headers);
+                const body = new Body(Buffer.concat(chunks));
+                const response = new Response(res.statusCode, body).setHeaders(res.headers);
                 return succ(response);
             });
         }).end();
@@ -48,19 +48,19 @@ function get(request: Request): Promise<Response> {
 }
 
 function post(request): Promise<Response> {
-    let options = request.uri.asNativeNodeRequest;
+    const options = request.uri.asNativeNodeRequest;
     options['headers'] = request.headers;
     options.method = request.method;
 
     return new Promise(succ => {
-        let clientRequest = http.request(options, (res) => {
-            let chunks = [];
+        const clientRequest = http.request(options, (res) => {
+            const chunks = [];
             res.on('data', (chunk) => {
                 chunks.push(chunk);
             });
             res.on('end', () => {
-                let body = new Body(Buffer.concat(chunks));
-                let response = new Response(res.statusCode, body).setHeaders(res.headers);
+                const body = new Body(Buffer.concat(chunks));
+                const response = new Response(res.statusCode, body).setHeaders(res.headers);
                 return succ(response);
             });
         });
@@ -70,19 +70,19 @@ function post(request): Promise<Response> {
 }
 
 function put(request): Promise<Response> {
-    let options = request.uri.asNativeNodeRequest;
+    const options = request.uri.asNativeNodeRequest;
     options['headers'] = request.headers;
     options.method = request.method;
 
     return new Promise(succ => {
-        let clientRequest = http.request(options, (res) => {
-            let chunks = [];
+        const clientRequest = http.request(options, (res) => {
+            const chunks = [];
             res.on('data', (chunk) => {
                 chunks.push(chunk);
             });
             res.on('end', () => {
-                let body = new Body(Buffer.concat(chunks));
-                let response = new Response(res.statusCode, body).setHeaders(res.headers);
+                const body = new Body(Buffer.concat(chunks));
+                const response = new Response(res.statusCode, body).setHeaders(res.headers);
                 return succ(response);
             });
         });
@@ -92,19 +92,19 @@ function put(request): Promise<Response> {
 }
 
 function patch(request): Promise<Response> {
-    let options = request.uri.asNativeNodeRequest;
+    const options = request.uri.asNativeNodeRequest;
     options['headers'] = request.headers;
     options.method = request.method;
 
     return new Promise(succ => {
-        let clientRequest = http.request(options, (res) => {
-            let chunks = [];
+        const clientRequest = http.request(options, (res) => {
+            const chunks = [];
             res.on('data', (chunk) => {
                 chunks.push(chunk);
             });
             res.on('end', () => {
-                let body = new Body(Buffer.concat(chunks));
-                let response = new Response(res.statusCode, body).setHeaders(res.headers);
+                const body = new Body(Buffer.concat(chunks));
+                const response = new Response(res.statusCode, body).setHeaders(res.headers);
                 return succ(response);
             });
         });
@@ -114,19 +114,19 @@ function patch(request): Promise<Response> {
 }
 
 function deleteRequest(request): Promise<Response> {
-    let options = request.uri.asNativeNodeRequest;
+    const options = request.uri.asNativeNodeRequest;
     options['headers'] = request.headers;
     options.method = request.method;
 
     return new Promise(succ => {
-        let clientRequest = http.request(options, (res) => {
-            let chunks = [];
+        const clientRequest = http.request(options, (res) => {
+            const chunks = [];
             res.on('data', (chunk) => {
                 chunks.push(chunk);
             });
             res.on('end', () => {
-                let body = new Body(Buffer.concat(chunks));
-                let response = new Response(res.statusCode, body).setHeaders(res.headers);
+                const body = new Body(Buffer.concat(chunks));
+                const response = new Response(res.statusCode, body).setHeaders(res.headers);
                 return succ(response);
             });
         });
@@ -136,19 +136,19 @@ function deleteRequest(request): Promise<Response> {
 }
 
 function head(request): Promise<Response> {
-    let options = request.uri.asNativeNodeRequest;
+    const options = request.uri.asNativeNodeRequest;
     options['headers'] = request.headers;
     options.method = request.method;
 
     return new Promise(succ => {
-        let clientRequest = http.request(options, (res) => {
-            let chunks = [];
+        const clientRequest = http.request(options, (res) => {
+            const chunks = [];
             res.on('data', (chunk) => {
                 chunks.push(chunk);
             });
             res.on('end', () => {
-                let body = new Body(Buffer.concat(chunks));
-                let response = new Response(res.statusCode, body).setHeaders(res.headers);
+                const body = new Body(Buffer.concat(chunks));
+                const response = new Response(res.statusCode, body).setHeaders(res.headers);
                 return succ(response);
             });
         });
@@ -158,19 +158,19 @@ function head(request): Promise<Response> {
 }
 
 function options(request): Promise<Response> {
-    let options = request.uri.asNativeNodeRequest;
+    const options = request.uri.asNativeNodeRequest;
     options['headers'] = request.headers;
     options.method = request.method;
 
     return new Promise(succ => {
-        let clientRequest = http.request(options, (res) => {
-            let chunks = [];
+        const clientRequest = http.request(options, (res) => {
+            const chunks = [];
             res.on('data', (chunk) => {
                 chunks.push(chunk);
             });
             res.on('end', () => {
-                let body = new Body(Buffer.concat(chunks));
-                let response = new Response(res.statusCode, body).setHeaders(res.headers);
+                const body = new Body(Buffer.concat(chunks));
+                const response = new Response(res.statusCode, body).setHeaders(res.headers);
                 return succ(response);
             });
         });
@@ -180,19 +180,19 @@ function options(request): Promise<Response> {
 }
 
 function trace(request): Promise<Response> {
-    let options = request.uri.asNativeNodeRequest;
+    const options = request.uri.asNativeNodeRequest;
     options['headers'] = request.headers;
     options.method = request.method;
 
     return new Promise(succ => {
-        let clientRequest = http.request(options, (res) => {
-            let chunks = [];
+        const clientRequest = http.request(options, (res) => {
+            const chunks = [];
             res.on('data', (chunk) => {
                 chunks.push(chunk);
             });
             res.on('end', () => {
-                let body = new Body(Buffer.concat(chunks));
-                let response = new Response(res.statusCode, body).setHeaders(res.headers);
+                const body = new Body(Buffer.concat(chunks));
+                const response = new Response(res.statusCode, body).setHeaders(res.headers);
                 return succ(response);
             });
         });

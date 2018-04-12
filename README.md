@@ -26,13 +26,13 @@ import {Headers} from "./src/main/core/Headers";
 import {Method} from "./src/main/core/Methods";
 
 //handler takes a request and promises a response
-let handler = (req: Request) => {
-    let html = `<h1>${req.method} to ${req.uri.href} with req headers ${Object.keys(req.headers)}</h1>`;
+const handler = (req: Request) => {
+    const html = `<h1>${req.method} to ${req.uri.href} with req headers ${Object.keys(req.headers)}</h1>`;
     return Promise.resolve(new Response(Status.OK, html));
 };
 
 //add header to every request
-let headerFilter = (handler: HttpHandler) => {
+const headerFilter = (handler: HttpHandler) => {
     return (req: Request) => {
         return handler(req.setHeader(Headers.X_CSRF_TOKEN, Math.random()))
             .then(response => response.setHeader(Headers.VARY, "gzip"));

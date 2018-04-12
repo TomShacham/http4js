@@ -8,10 +8,10 @@ import {NativeServer} from "../../main/servers/NativeServer";
 
 describe("native node over the wire", () => {
 
-    let baseUrl = "http://localhost:3000";
+    const baseUrl = "http://localhost:3000";
 
-    let server = getTo("/", (req: Request) => {
-        let query = req.getQuery("tomQuery");
+    const server = getTo("/", (req: Request) => {
+        const query = req.getQuery("tomQuery");
         return new Promise(resolve => {
             resolve(
                 new Response(200, new Body(req.bodyString()))
@@ -59,7 +59,7 @@ describe("native node over the wire", () => {
     });
 
     it("sets post body", () => {
-        let request = new Request("POST", `${baseUrl}/post-body`, "my humps");
+        const request = new Request("POST", `${baseUrl}/post-body`, "my humps");
         return HttpClient(request)
             .then(succ => {
                 equal(succ.bodyString(), "my humps")
@@ -67,7 +67,7 @@ describe("native node over the wire", () => {
     });
 
     it("sets query params", () => {
-        let request = new Request("GET", baseUrl)
+        const request = new Request("GET", baseUrl)
             .setQuery("tomQuery", "likes to party");
 
         return HttpClient(request)
@@ -77,7 +77,7 @@ describe("native node over the wire", () => {
     });
 
     it("sets multiple headers of same name", () => {
-        let request = new Request("GET", baseUrl, null, {tom: ["smells", "smells more"]});
+        const request = new Request("GET", baseUrl, null, {tom: ["smells", "smells more"]});
         return HttpClient(request)
             .then(succ => {
                 deepEqual(succ.getHeader("tom"), "smells, smells more")
@@ -87,56 +87,56 @@ describe("native node over the wire", () => {
     describe("supports client verbs", () => {
 
         it("GET", () => {
-            let request = new Request("GET", `${baseUrl}/get`);
+            const request = new Request("GET", `${baseUrl}/get`);
             return HttpClient(request).then(response => {
                 equal(response.bodyString(), "Done a GET request init?");
             });
         });
 
         it("POST", () => {
-            let request = new Request("POST", `${baseUrl}/post`);
+            const request = new Request("POST", `${baseUrl}/post`);
             return HttpClient(request).then(response => {
                 equal(response.bodyString(), "Done a POST request init?");
             });
         });
 
         it("PUT", () => {
-            let request = new Request("PUT", `${baseUrl}/put`);
+            const request = new Request("PUT", `${baseUrl}/put`);
             return HttpClient(request).then(response => {
                 equal(response.bodyString(), "Done a PUT request init?");
             });
         });
 
         it("PATCH", () => {
-            let request = new Request("PATCH", `${baseUrl}/patch`);
+            const request = new Request("PATCH", `${baseUrl}/patch`);
             return HttpClient(request).then(response => {
                 equal(response.bodyString(), "Done a PATCH request init?");
             });
         });
 
         it("DELETE", () => {
-            let request = new Request("DELETE", `${baseUrl}/delete`);
+            const request = new Request("DELETE", `${baseUrl}/delete`);
             return HttpClient(request).then(response => {
                 equal(response.bodyString(), "Done a DELETE request init?");
             });
         });
 
         it("HEAD", () => {
-            let request = new Request("HEAD", `${baseUrl}/head`);
+            const request = new Request("HEAD", `${baseUrl}/head`);
             return HttpClient(request).then(response => {
                 equal(response.status, "200");
             });
         });
 
         it("OPTIONS", () => {
-            let request = new Request("OPTIONS", `${baseUrl}/options`);
+            const request = new Request("OPTIONS", `${baseUrl}/options`);
             return HttpClient(request).then(response => {
                 equal(response.bodyString(), "Done a OPTIONS request init?")
             });
         });
 
         it("TRACE", () => {
-            let request = new Request("TRACE", `${baseUrl}/trace`);
+            const request = new Request("TRACE", `${baseUrl}/trace`);
             return HttpClient(request).then(response => {
                 equal(response.bodyString(), "Done a TRACE request init?");
             });

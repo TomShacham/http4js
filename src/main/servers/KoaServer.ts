@@ -22,7 +22,7 @@ export class KoaServer implements Http4jsServer {
             const {headers, method, url} = ctx.request;
             let body = ctx.request.body && Object.keys(ctx.request.body).length != 0 ? ctx.request.body : [];
             if (headers['content-type'] == 'application/json') body = [Buffer.from(JSON.stringify(body))];
-            let response = this.createInMemResponse(body, method, url, headers);
+            const response = this.createInMemResponse(body, method, url, headers);
             response.then(response => {
                 Object.keys(response.headers).forEach(header => ctx.set(header, response.headers[header]));
                 ctx.response.body = response.body.bytes;
@@ -32,8 +32,8 @@ export class KoaServer implements Http4jsServer {
     }
 
     private createInMemResponse(chunks: Array<any>, method: any, url: any, headers: any): Promise<Response> {
-        let body = new Body(Buffer.concat(chunks));
-        let inMemRequest = new Request(method, url, body, headers);
+        const body = new Body(Buffer.concat(chunks));
+        const inMemRequest = new Request(method, url, body, headers);
         return this.routing.match(inMemRequest);
     }
 

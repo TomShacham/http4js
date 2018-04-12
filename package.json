@@ -1,6 +1,6 @@
 {
   "name": "http4js",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "description": "A lightweight HTTP toolkit",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

@@ -24,7 +24,7 @@ describe("Built in filters", () => {
             .withFilter(Filters.TIMING)
             .match(new Request("GET", "/"))
             .then(response => {
-                let requestTook10ms = parseInt(response.getHeader("Total-Time")) < 10;
+                const requestTook10ms = parseInt(response.getHeader("Total-Time")) < 10;
                 equal(requestTook10ms, true);
             });
     });

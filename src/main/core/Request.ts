@@ -29,7 +29,7 @@ export class Request {
         this.queries = this.getQueryParams();
         if (this.method == "POST") {
             this.body.bodyString().split("&").map(kv => {
-                let strings = kv.split("=");
+                const strings = kv.split("=");
                 this.form[strings[0]] = strings[1];
             })
         }
@@ -51,7 +51,7 @@ export class Request {
 
     setHeader(name: string, value: string): Request {
         const request = Request.clone(this);
-        let caseInsensitiveName = name.toLowerCase();
+        const caseInsensitiveName = name.toLowerCase();
         if (request.headers[caseInsensitiveName] == null) {
             request.headers[caseInsensitiveName] = value;
         } else if (typeof request.headers[caseInsensitiveName] == "string") {
@@ -100,9 +100,9 @@ export class Request {
 
     private getQueryParams(): object {
         if (isNullOrUndefined(this.uri.query)) return {};
-        let pairs = this.uri.query.split("&");
+        const pairs = this.uri.query.split("&");
         pairs.map(pair => {
-            let split = pair.split("=");
+            const split = pair.split("=");
             this.queries[split[0]] = split[1]
         });
         return this.queries;

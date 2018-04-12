@@ -12,7 +12,7 @@ Writing a proxy might look like this:
 
 ```typescript
 const upstream = routes(".*", ".*", (req: Request) => {
-    let response = new Response(200, req.headers);
+    const response = new Response(200, req.headers);
     console.log("*** UPSTREAM RESPONSE ***");
     console.log(response);
     return Promise.resolve(response);
@@ -21,7 +21,7 @@ const upstream = routes(".*", ".*", (req: Request) => {
     .start();
 
 const proxy = routes(".*", ".*", (req: Request) => {
-    let rewrittenRequest = req.setUri("http://localhost:3001/")
+    const rewrittenRequest = req.setUri("http://localhost:3001/")
         .setHeader("x-proxy", "header from proxy");
     console.log("*** REWRITTEN REQUEST ***");
     console.log(rewrittenRequest);
