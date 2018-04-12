@@ -20,45 +20,56 @@ export class Response implements HttpMessage {
     }
 
     setHeader(name: string, value: string): Response {
+        const response = Response.clone(this);
         const lowercaseName = name.toLowerCase();
-        if (this.headers[lowercaseName] == null) {
-            this.headers[lowercaseName] = value;
-        } else if (typeof this.headers[lowercaseName] == "string") {
-            this.headers[lowercaseName] = [this.headers[lowercaseName], value];
+        if (response.headers[lowercaseName] == null) {
+            response.headers[lowercaseName] = value;
+        } else if (typeof response.headers[lowercaseName] == "string") {
+            response.headers[lowercaseName] = [response.headers[lowercaseName], value];
         } else {
-            this.headers[lowercaseName].push(value);
+            response.headers[lowercaseName].push(value);
         }
-        return this;
+        return response;
     }
 
     setHeaders(headers: object): Response {
-        this.headers = headers;
-        return this;
+        const response = Response.clone(this);
+        response.headers = headers;
+        return response;
     }
 
-    allHeaders(headers: object): Response {
-        return undefined;
+    replaceAllHeaders(headers: object): Response {
+        const response = Response.clone(this);
+        response.headers = headers;
+        return response;
     }
 
     replaceHeader(name: string, value: string): Response {
-        this.headers[name] = value;
-        return this;
+        const response = Response.clone(this);
+        response.headers[name] = value;
+        return response;
     }
 
     removeHeader(name: string): Response {
-        delete this.headers[name];
-        return this;
+        const response = Response.clone(this);
+        delete response.headers[name];
+        return response;
     }
 
     setBody(body: Body | string): Response {
+        const response = Response.clone(this);
         typeof body == "string"
-            ? this.body.bytes = body
-            : this.body = body;
-        return this;
+            ? response.body.bytes = body
+            : response.body = body;
+        return response;
     }
 
     bodyString(): string {
         return this.body.bodyString();
+    }
+
+    private static clone(a) {
+        return Object.assign(Object.create(a), a)
     }
 
 }

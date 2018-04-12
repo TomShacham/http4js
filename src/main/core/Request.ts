@@ -36,6 +36,68 @@ export class Request {
         return this;
     }
 
+    setUri(uri: Uri | string): Request {
+        const request = Request.clone(this);
+        if (typeof uri == "string") {
+            request.uri = Uri.of(uri);
+        }
+        return request;
+    }
+
+    getHeader(name: string): string {
+        const request = Request.clone(this);
+        return request.headers[name.toLowerCase()];
+    }
+
+    setHeader(name: string, value: string): Request {
+        const request = Request.clone(this);
+        let caseInsensitiveName = name.toLowerCase();
+        if (request.headers[caseInsensitiveName] == null) {
+            request.headers[caseInsensitiveName] = value;
+        } else if (typeof request.headers[caseInsensitiveName] == "string") {
+            request.headers[caseInsensitiveName] = [request.headers[caseInsensitiveName], value];
+        } else {
+            request.headers[caseInsensitiveName].push(value);
+        }
+        return request;
+    }
+
+    replaceHeader(name: string, value: string): Request {
+        const request = Request.clone(this);
+        request.headers[name] = value;
+        return request;
+    }
+
+    removeHeader(name: string): Request {
+        const request = Request.clone(this);
+        delete(request.headers[name]);
+        return request;
+    }
+
+    setBody(body: Body | string): Request {
+        const request = Request.clone(this);
+        typeof body == "string"
+            ? request.body.bytes = body
+            : request.body = body;
+        return request;
+    }
+
+    bodyString(): string {
+        return this.body.bodyString();
+    }
+
+    setQuery(name: string, value: string): Request {
+        const request = Request.clone(this);
+        request.queries[name] = value;
+        request.uri = request.uri.withQuery(name, value);
+        return request;
+    }
+
+    getQuery(name: string): string {
+        const request = Request.clone(this);
+        return request.queries[name];
+    }
+
     private getQueryParams(): object {
         if (isNullOrUndefined(this.uri.query)) return {};
         let pairs = this.uri.query.split("&");
@@ -46,60 +108,9 @@ export class Request {
         return this.queries;
     }
 
-    setUri(uri: Uri | string): Request {
-        if (typeof uri == "string") {
-            this.uri = Uri.of(uri);
-        }
-        return this;
+    private static clone(a) {
+        return Object.assign(Object.create(a), a);
     }
-
-    getHeader(name: string): string {
-        return this.headers[name.toLowerCase()];
-    }
-
-    setHeader(name: string, value: string): Request {
-        let caseInsensitiveName = name.toLowerCase();
-        if (this.headers[caseInsensitiveName] == null) {
-            this.headers[caseInsensitiveName] = value;
-        } else if (typeof this.headers[caseInsensitiveName] == "string") {
-            this.headers[caseInsensitiveName] = [this.headers[caseInsensitiveName], value];
-        } else {
-            this.headers[caseInsensitiveName].push(value);
-        }
-        return this;
-    }
-
-    replaceHeader(name: string, value: string): Request {
-        this.headers[name] = value;
-        return this;
-    }
-
-    removeHeader(name: string): Request {
-        delete(this.headers[name]);
-        return this;
-    }
-
-    setBody(body: Body | string): Request {
-        typeof body == "string"
-            ? this.body.bytes = body
-            : this.body = body;
-        return this;
-    }
-
-    bodyString(): string {
-        return this.body.bodyString();
-    }
-
-    query(name: string, value: string): Request {
-        this.queries[name] = value;
-        this.uri = this.uri.withQuery(name, value);
-        return this;
-    }
-
-    getQuery(name: string): string {
-        return this.queries[name];
-    }
-
 }
 
 export function request(method: string,

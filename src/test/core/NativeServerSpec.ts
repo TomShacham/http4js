@@ -68,7 +68,7 @@ describe("native node over the wire", () => {
 
     it("sets query params", () => {
         let request = new Request("GET", baseUrl)
-            .query("tomQuery", "likes to party");
+            .setQuery("tomQuery", "likes to party");
 
         return HttpClient(request)
             .then(succ => {

@@ -1,9 +1,14 @@
-import * as assert from "assert";
-import {equal} from "assert";
+import {deepEqual, equal, notEqual} from "assert";
 import {Response} from "../../main/core/Response";
-import {Body} from "../../main/core/Body";
 
 describe("in mem response", () => {
+
+    it("is immutable", () => {
+        const response1 = new Response(200, "OK");
+        const response2 = response1.setHeader("tom", "tosh");
+
+        notEqual(response1, response2);
+    });
 
     it("set body", () => {
         equal(
@@ -30,7 +35,7 @@ describe("in mem response", () => {
     });
 
     it("concat same header on response", () => {
-        assert.deepEqual(
+        deepEqual(
             new Response()
                 .setHeader("tom", "smells")
                 .setHeader("tom", "smells more")

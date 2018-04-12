@@ -47,7 +47,7 @@ routes(Method.GET, ".*", handler)
 
 //make an http request to our server and log the response
 HttpClient(
-    new Request(Method.GET, Uri.of("http://localhost:3000/any/path"))
+    new Request(Method.GET, Uri.of("http://localhost:3000/{id}/path"))
 ).then(response => {
     console.log(response);
     console.log(response.bodyString());

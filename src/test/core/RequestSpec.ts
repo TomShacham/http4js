@@ -2,8 +2,16 @@ import * as assert from "assert";
 import {equal} from "assert";
 import {Request} from "../../main/core/Request";
 import {Body} from "../../main/core/Body";
+import {notEqual} from "assert";
 
 describe("in mem request", () => {
+
+    it("is immutable", () => {
+       const request1 = new Request("GET", "/");
+       const request2 = request1.setHeader("tom", "tosh");
+
+        notEqual(request1, request2);
+    });
 
     it("set method is case insensitive", () => {
         equal(
@@ -40,8 +48,8 @@ describe("in mem request", () => {
     it("sets query string", () => {
         equal(
             new Request("GET", "/tom")
-                .query("tom", "tosh")
-                .query("ben", "bosh")
+                .setQuery("tom", "tosh")
+                .setQuery("ben", "bosh")
                 .uri
                 .query,
             "tom=tosh&ben=bosh")
