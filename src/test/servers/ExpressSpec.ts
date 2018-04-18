@@ -36,7 +36,7 @@ describe("express", () => {
         .withHandler("/post-body", "POST", (req) => {
             return new Promise(resolve => resolve(new Response(200, req.bodyString())));
         })
-        .withHandler("/get", "GET", (req) => {
+        .withHandler("/get", "GET", () => {
             return new Promise(resolve => resolve(new Response(200, "Done a GET request init?")));
         })
         .withHandler("/post", "POST", (req) => {

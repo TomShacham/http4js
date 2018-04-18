@@ -1,6 +1,7 @@
 import {Body} from "./Body";
 import {Uri} from "./Uri";
 import {isNullOrUndefined} from "util";
+import {Headers, HeaderValues} from "./Headers";
 
 export class Request {
 
@@ -30,7 +31,7 @@ export class Request {
         if (this.method == "POST") {
             this.body.bodyString().split("&").map(kv => {
                 const strings = kv.split("=");
-                this.form[strings[0]] = strings[1];
+                if (strings.length > 1) this.form[strings[0]] = strings[1];
             })
         }
         return this;
@@ -82,8 +83,42 @@ export class Request {
         return request;
     }
 
+    setFormField(name: string, value: string | string[]): Request {
+        const request = Request.clone(this);
+        if (!request.getHeader(Headers.CONTENT_TYPE)) request.setHeader(Headers.CONTENT_TYPE, HeaderValues.FORM);
+        if (request.form[name]) {
+            typeof (request.form[name]) == "string"
+                ? request.form[name] = [request.form[name], value]
+                : request.form[name] = request.form[name].push(value);
+        } else {
+            request.form[name] = value;
+        }
+        return request;
+    }
+
+    setForm(form: object) {
+        const request = Request.clone(this);
+        if (!request.getHeader(Headers.CONTENT_TYPE)) request.setHeader(Headers.CONTENT_TYPE, HeaderValues.FORM)
+        request.form = form;
+        return request;
+    }
+
     bodyString(): string {
-        return this.body.bodyString();
+        if (Object.keys(this.form).length > 0) {
+            return this.formBodystring();
+        } else {
+            return this.body.bodyString();
+        }
+    }
+
+    formBodystring() {
+        let reduce = Object.keys(this.form).reduce((bodyParts, field) => {
+            typeof (this.form[field]) == "object"
+                ? this.form[field].map(value => bodyParts.push(`${field}=${value}`))
+                : bodyParts.push(`${field}=${this.form[field]}`);
+            return bodyParts;
+        }, []);
+        return reduce.join("&")
     }
 
     setQuery(name: string, value: string): Request {

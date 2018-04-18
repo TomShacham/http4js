@@ -107,6 +107,7 @@ npm test
 
 #### To do
 
+- set form body on request
 - complete http4js-eg
 - document unit testing with routing.match and approval testing and fakes
 - write a tutorial to complement docs

@@ -38,6 +38,8 @@ export enum Headers {
 
 export enum HeaderValues {
     APPLICATION_JSON = "application/json",
+    FORM = "application/x-www-form-urlencoded",
+    TEXT_PLAIN = "text/plain",
     TEXT_HTML = "text/html",
     MULTIPART_FORMDATA = "multipart/form-data",
     IMAGE_JPG = "image/jpg",

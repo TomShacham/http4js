@@ -1,8 +1,7 @@
 import * as assert from "assert";
-import {equal} from "assert";
+import {equal, notEqual} from "assert";
 import {Request} from "../../main/core/Request";
-import {Body} from "../../main/core/Body";
-import {notEqual} from "assert";
+import {Headers, HeaderValues} from "../../main/core/Headers";
 
 describe("in mem request", () => {
 
@@ -29,12 +28,70 @@ describe("in mem request", () => {
             "/tom")
     });
 
-    it("set body", () => {
+    it("set plain body", () => {
         equal(
             new Request("GET", "/")
                 .setBody("body boy")
                 .bodyString(),
             "body boy")
+    });
+
+    it("sets form field body on post", () => {
+        equal(
+            new Request("POST", "/")
+                .setFormField("name", "tosh")
+                .bodyString(),
+            "name=tosh"
+        )
+    });
+
+    it("sets many form fields body on post", () => {
+        const formRequest = new Request("POST", "/")
+            .setFormField("name", "tosh")
+            .setFormField("age", "27");
+        equal(formRequest.bodyString(), "name=tosh&age=27");
+    });
+
+    it("multiple same form fields lists all values", () => {
+        const formRequest = new Request("POST", "/")
+            .setFormField("name", "tosh")
+            .setFormField("name", "bosh");
+        equal(formRequest.bodyString(), "name=tosh&name=bosh");
+    });
+
+    it("gives form field as list of strings", () => {
+        const formRequest = new Request("POST", "/")
+            .setFormField("name", ["tosh", "bosh"]);
+        equal(formRequest.bodyString(), "name=tosh&name=bosh");
+    });
+
+    it("sets all form on post", () => {
+        equal(
+            new Request("POST", "/")
+                .setForm({name: ["tosh", "bosh"], age: 27})
+                .bodyString(),
+            "name=tosh&name=bosh&age=27"
+        )
+    });
+
+    it("sets form encoded header", () => {
+        equal(
+            new Request("POST", "/")
+                .setForm({name: ["tosh", "bosh"], age: 27})
+                .setFormField("name", "tosh")
+                .getHeader(Headers.CONTENT_TYPE),
+            HeaderValues.FORM
+        )
+    });
+
+    it("doesnt set form encoded header if content type header already set", () => {
+        equal(
+            new Request("POST", "/")
+                .setHeader(Headers.CONTENT_TYPE, HeaderValues.MULTIPART_FORMDATA)
+                .setForm({name: ["tosh", "bosh"], age: 27})
+                .getHeader(Headers.CONTENT_TYPE),
+            HeaderValues.MULTIPART_FORMDATA
+        )
     });
 
     it("set body string", () => {
