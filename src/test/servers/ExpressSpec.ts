@@ -10,7 +10,7 @@ import {deepEqual} from "assert";
 const bodyParser = require('body-parser');
 
 
-describe("express", () => {
+describe("express", async() => {
 
     const expressApp = express();
     expressApp.use(bodyParser.urlencoded({extended: true}));
@@ -33,133 +33,107 @@ describe("express", () => {
             )
         })
     })
-        .withHandler("/post-body", "POST", (req) => {
-            return new Promise(resolve => resolve(new Response(200, req.bodyString())));
-        })
-        .withHandler("/get", "GET", () => {
-            return new Promise(resolve => resolve(new Response(200, "Done a GET request init?")));
-        })
-        .withHandler("/post", "POST", (req) => {
-            return new Promise(resolve => resolve(new Response(200, "Done a POST request init?")));
-        })
-        .withHandler("/put", "PUT", (req) => {
-            return new Promise(resolve => resolve(new Response(200, "Done a PUT request init?")));
-        })
-        .withHandler("/patch", "PATCH", (req) => {
-            return new Promise(resolve => resolve(new Response(200, "Done a PATCH request init?")));
-        })
-        .withHandler("/delete", "DELETE", (req) => {
-            return new Promise(resolve => resolve(new Response(200, "Done a DELETE request init?")));
-        })
-        .withHandler("/options", "OPTIONS", (req) => {
-            return new Promise(resolve => resolve(new Response(200, "Done a OPTIONS request init?")));
-        })
-        .withHandler("/head", "HEAD", (req) => {
-            return new Promise(resolve => resolve(new Response(200, "Done a HEAD request init?")));
-        })
-        .withHandler("/trace", "TRACE", (req) => {
-            return new Promise(resolve => resolve(new Response(200, "Done a TRACE request init?")));
-        })
+        .withHandler("/post-body", "POST", (req) => Promise.resolve(new Response(200, req.bodyString())))
+        .withHandler("/post-form-body", "POST", (req) => Promise.resolve(new Response(200, JSON.stringify(req.form))))
+        .withHandler("/get", "GET", () => Promise.resolve(new Response(200, "Done a GET request init?")))
+        .withHandler("/post", "POST", () => Promise.resolve(new Response(200, "Done a POST request init?")))
+        .withHandler("/put", "PUT", () => Promise.resolve(new Response(200, "Done a PUT request init?")))
+        .withHandler("/patch", "PATCH", () => Promise.resolve(new Response(200, "Done a PATCH request init?")))
+        .withHandler("/delete", "DELETE", () => Promise.resolve(new Response(200, "Done a DELETE request init?")))
+        .withHandler("/options", "OPTIONS", () => Promise.resolve(new Response(200, "Done a OPTIONS request init?")))
+        .withHandler("/head", "HEAD", () => Promise.resolve(new Response(200, "Done a HEAD request init?")))
+        .withHandler("/trace", "TRACE", () => Promise.resolve(new Response(200, "Done a TRACE request init?")))
         .asServer(new ExpressServer(expressApp, 3001));
 
 
-    before(() => {
+    before(async() => {
         server.start();
     });
 
-    after(() => {
+    after(async() => {
         server.stop();
     });
 
-    it("respects middleware", () => {
-        return HttpClient(new Request("GET", baseUrl))
-            .then(succ => {
-                equal(succ.getHeader("express"), "middleware")
-            })
+    it("respects middleware", async() => {
+        let request = new Request("GET", baseUrl);
+        const response = await HttpClient(request);
+        equal(response.getHeader("express"), "middleware")
     });
 
-    it("sets post body", () => {
+    it("sets post body", async() => {
         const request = new Request("POST", "http://localhost:3001/post-body", '{"result": "my humps"}', {"Content-Type": "application/json"});
-        return HttpClient(request)
-            .then(succ => {
-                equal(JSON.parse(succ.bodyString())["result"], "my humps");
-            })
+        const response = await HttpClient(request);
+        equal(JSON.parse(response.bodyString())["result"], "my humps");
     });
 
-    it("sets query params", () => {
+    it("sets post form body", async() => {
+        const request = new Request("POST", `${baseUrl}/post-form-body`).setForm({name: ["tosh", "bosh", "losh"]});
+        const response = await HttpClient(request);
+        equal(response.bodyString(), JSON.stringify({name: ["tosh", "bosh", "losh"]}))
+    });
+
+    it("sets query params", async() => {
         const request = new Request("GET", baseUrl)
             .setQuery("tomQuery", "likes to party");
 
-        return HttpClient(request)
-            .then(succ => {
-                equal(succ.getHeader("tomquery"), "likes%20to%20party")
-            })
+        const response = await HttpClient(request);
+        equal(response.getHeader("tomquery"), "likes%20to%20party")
     });
 
-    it("sets multiple headers of same name", () => {
+    it("sets multiple headers of same name", async() => {
         const request = new Request("GET", baseUrl, null, {tom: ["smells", "smells more"]});
-        return HttpClient(request)
-            .then(succ => {
-                deepEqual(succ.getHeader("tom"), "smells, smells more")
-            })
+        const response = await HttpClient(request);
+        deepEqual(response.getHeader("tom"), "smells, smells more")
     });
 
-    describe("supports client verbs", () => {
+    describe("supports client verbs", async() => {
 
-        it("GET", () => {
+        it("GET", async() => {
             const request = new Request("GET", `${baseUrl}/get`);
-            return HttpClient(request).then(response => {
-                equal(response.bodyString(), "Done a GET request init?");
-            });
+            const response = await HttpClient(request);
+            equal(response.bodyString(), "Done a GET request init?");
         });
 
-        it("POST", () => {
+        it("POST", async() => {
             const request = new Request("POST", `${baseUrl}/post`);
-            return HttpClient(request).then(response => {
-                equal(response.bodyString(), "Done a POST request init?");
-            });
+            const response = await HttpClient(request);
+            equal(response.bodyString(), "Done a POST request init?");
         });
 
-        it("PUT", () => {
+        it("PUT", async() => {
             const request = new Request("PUT", `${baseUrl}/put`);
-            return HttpClient(request).then(response => {
-                equal(response.bodyString(), "Done a PUT request init?");
-            });
+            const response = await HttpClient(request);
+            equal(response.bodyString(), "Done a PUT request init?");
         });
 
-        it("PATCH", () => {
+        it("PATCH", async() => {
             const request = new Request("PATCH", `${baseUrl}/patch`);
-            return HttpClient(request).then(response => {
-                equal(response.bodyString(), "Done a PATCH request init?");
-            });
+            const response = await HttpClient(request);
+            equal(response.bodyString(), "Done a PATCH request init?");
         });
 
-        it("DELETE", () => {
+        it("DELETE", async() => {
             const request = new Request("DELETE", `${baseUrl}/delete`);
-            return HttpClient(request).then(response => {
-                equal(response.bodyString(), "Done a DELETE request init?");
-            });
+            const response = await HttpClient(request);
+            equal(response.bodyString(), "Done a DELETE request init?");
         });
 
-        it("HEAD", () => {
+        it("HEAD", async() => {
             const request = new Request("HEAD", `${baseUrl}/head`);
-            return HttpClient(request).then(response => {
-                equal(response.status, "200");
-            });
+            const response = await HttpClient(request);
+            equal(response.status, "200");
         });
 
-        it("OPTIONS", () => {
+        it("OPTIONS", async() => {
             const request = new Request("OPTIONS", `${baseUrl}/options`);
-            return HttpClient(request).then(response => {
-                equal(response.bodyString(), "Done a OPTIONS request init?")
-            });
+            const response = await HttpClient(request);
+            equal(response.bodyString(), "Done a OPTIONS request init?")
         });
 
-        it("TRACE", () => {
+        it("TRACE", async() => {
             const request = new Request("TRACE", `${baseUrl}/trace`);
-            return HttpClient(request).then(response => {
-                equal(response.bodyString(), "Done a TRACE request init?");
-            });
+            const response = await HttpClient(request);
+            equal(response.bodyString(), "Done a TRACE request init?");
         });
 
     })

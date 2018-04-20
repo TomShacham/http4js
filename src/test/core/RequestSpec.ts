@@ -55,8 +55,9 @@ describe("in mem request", () => {
     it("multiple same form fields lists all values", () => {
         const formRequest = new Request("POST", "/")
             .setFormField("name", "tosh")
-            .setFormField("name", "bosh");
-        equal(formRequest.bodyString(), "name=tosh&name=bosh");
+            .setFormField("name", "bosh")
+            .setFormField("name", "losh");
+        equal(formRequest.bodyString(), "name=tosh&name=bosh&name=losh");
     });
 
     it("gives form field as list of strings", () => {

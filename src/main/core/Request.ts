@@ -89,7 +89,7 @@ export class Request {
         if (request.form[name]) {
             typeof (request.form[name]) == "string"
                 ? request.form[name] = [request.form[name], value]
-                : request.form[name] = request.form[name].push(value);
+                : request.form[name].push(value);
         } else {
             request.form[name] = value;
         }
@@ -98,7 +98,7 @@ export class Request {
 
     setForm(form: object) {
         const request = Request.clone(this);
-        if (!request.getHeader(Headers.CONTENT_TYPE)) request.setHeader(Headers.CONTENT_TYPE, HeaderValues.FORM)
+        if (!request.getHeader(Headers.CONTENT_TYPE)) request.setHeader(Headers.CONTENT_TYPE, HeaderValues.FORM);
         request.form = form;
         return request;
     }

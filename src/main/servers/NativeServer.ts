@@ -4,6 +4,7 @@ import {Response} from "../core/Response";
 import {Body} from "../core/Body";
 import {Request} from "../core/Request";
 import {Http4jsServer} from "./Server";
+import {Headers, HeaderValues} from "../core/Headers";
 
 export class NativeServer implements Http4jsServer {
     server;
@@ -45,7 +46,22 @@ export class NativeServer implements Http4jsServer {
 
     private createInMemResponse(chunks: Array<any>, method: any, url: any, headers: any): Promise<Response> {
         const body = new Body(Buffer.concat(chunks));
-        const inMemRequest = new Request(method, url, body, headers);
+        const form = {};
+        if (headers['content-type'] == HeaderValues.FORM) {
+            body.bodyString().split("&").map(keyvalue => {
+                const strings = keyvalue.split("=");
+                const name = strings[0];
+                const value = strings[1];
+                if (form[name]) {
+                    typeof (form[name]) == "string"
+                        ? form[name] = [form[name], value]
+                        : form[name].push(value);
+                } else {
+                    form[name] = value;
+                }
+            })
+        }
+        const inMemRequest = new Request(method, url, body, headers).setForm(form);
         return this.routing.match(inMemRequest);
     }
 

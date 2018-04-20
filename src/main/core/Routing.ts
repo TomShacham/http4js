@@ -62,10 +62,9 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
         });
         const matchedHandler = exactMatch || fuzzyMatch;
         if (matchedHandler) {
-            const handler = matchedHandler.handler;
             const filtered = this.filters.reduce((acc, next) => {
                 return next(acc)
-            }, handler);
+            }, matchedHandler.handler);
             request.pathParams = matchedHandler.path.includes("{")
                 ? Uri.of(matchedHandler.path).extract(request.uri.path).matches
                 : {};
@@ -80,7 +79,7 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
 
     private defaultNotFoundHandler = (request: Request) => {
         const notFoundBodystring = `${request.method} to ${request.uri.template} did not match routes`;
-        return new Promise<Response>(resolve => resolve(new Response(404, notFoundBodystring)));
+        return Promise.resolve(new Response(404, notFoundBodystring));
     };
 
 }

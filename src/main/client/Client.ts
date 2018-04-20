@@ -64,7 +64,7 @@ function post(request): Promise<Response> {
                 return succ(response);
             });
         });
-        clientRequest.write(request.body.bodyString());
+        clientRequest.write(request.bodyString());
         clientRequest.end();
     });
 }
@@ -86,7 +86,7 @@ function put(request): Promise<Response> {
                 return succ(response);
             });
         });
-        clientRequest.write(request.body.bodyString());
+        clientRequest.write(request.bodyString());
         clientRequest.end();
     });
 }
@@ -108,7 +108,7 @@ function patch(request): Promise<Response> {
                 return succ(response);
             });
         });
-        clientRequest.write(request.body.bodyString());
+        clientRequest.write(request.bodyString());
         clientRequest.end();
     });
 }
@@ -130,7 +130,7 @@ function deleteRequest(request): Promise<Response> {
                 return succ(response);
             });
         });
-        clientRequest.write(request.body.bodyString());
+        clientRequest.write(request.bodyString());
         clientRequest.end();
     });
 }
@@ -152,7 +152,7 @@ function head(request): Promise<Response> {
                 return succ(response);
             });
         });
-        clientRequest.write(request.body.bodyString());
+        clientRequest.write(request.bodyString());
         clientRequest.end();
     });
 }
@@ -174,7 +174,7 @@ function options(request): Promise<Response> {
                 return succ(response);
             });
         });
-        clientRequest.write(request.body.bodyString());
+        clientRequest.write(request.bodyString());
         clientRequest.end();
     });
 }
@@ -196,7 +196,7 @@ function trace(request): Promise<Response> {
                 return succ(response);
             });
         });
-        clientRequest.write(request.body.bodyString());
+        clientRequest.write(request.bodyString());
         clientRequest.end();
     });
 }
