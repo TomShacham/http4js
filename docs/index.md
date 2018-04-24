@@ -2,26 +2,29 @@
 
 ### Table of Contents
 
-- [Overview](/http4js)
-- [Intro](/http4js/Intro)
-- [In Memory Server](/http4js/In-memory)
-- [Proxy](/http4js/Proxy)
+- [Overview](/http4js/#basics)
+- [Intro](/http4js/Intro/#intro)
+- [Handlers and Filters](/http4js/Handlers-and-filters/#Handlers-and-filters)
+- [Request and Response API](/http4js/Request-and-response-api/#request-and-response-api)
+- [URI API](/http4js/Uri-api/#uri-api)
+- [In Memory Testing](/http4js/In-memory-testing/#in-memory-testing)
+- [Approval testing with fakes](/http4js/Approval-testing-with-fakes/#approval-testing-with-fakes)
+- [Express or Koa Backend](/http4js/Express-or-koa-backend/#express-or-koa-backend)
+- [Proxy](/http4js/Proxy/#proxy)
 - [Example App](https://github.com/TomShacham/http4js-eg)
 
 ## Basics
 
-We provide a server and a client.
+http4js provides a server and a client.
 
-A server is simply a route with a handler attached to it and a handler is just a function.
+A server is simply a route with a function `(Request) => Promise<Response>` attached to it.
 We can choose to keep the server in memory or start it on a port:
 
 ```typescript
 //handler is just a function
 type HttpHandler = (Request) => Promise<Response> 
  
-const handler = (req: Request) => {
-    return new Promise(resolve => resolve(new Response(200)));
-}
+const handler = (req: Request) => Promise.resolve(new Response(200));
  
 //server is just a route with a handler
 routes("GET", "/", handler)
@@ -29,22 +32,14 @@ routes("GET", "/", handler)
     //.start()
 ```
 
-Our client has the same interface. It simply takes a `Request` and returns a `Promise<Response>`
+Our client has the same interface `(Request) => Promise<Response>`.
 
 ## Hello world
 
 ```typescript
-import {routes} from "./dist/main/core/RoutingHttpHandler";
-import {Request} from "./dist/main/core/Request";
-import {Response} from "./dist/main/core/Response";
-import {HttpClient} from "./dist/main/core/Client";
  
-routes("GET", "/", (req: Request) => {
-  return new Promise(resolve => {
-    resolve(new Response(200))
-  })
-})
-    .asServer(3000)
+routes("GET", "/", (req: Request) => Promise.resolve(new Response(200))
+    .asServer()
     .start();
  
 HttpClient(new Request("GET", "http://localhost:3000/path"))

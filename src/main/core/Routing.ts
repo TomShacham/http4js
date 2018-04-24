@@ -62,16 +62,16 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
         });
         const matchedHandler = exactMatch || fuzzyMatch;
         if (matchedHandler) {
-            const filtered = this.filters.reduce((acc, next) => {
-                return next(acc)
+            const filtered = this.filters.reduce((prev, next) => {
+                return next(prev)
             }, matchedHandler.handler);
             request.pathParams = matchedHandler.path.includes("{")
                 ? Uri.of(matchedHandler.path).extract(request.uri.path).matches
                 : {};
             return filtered(request);
         } else {
-            const filtered = this.filters.reduce((acc, next) => {
-                return next(acc)
+            const filtered = this.filters.reduce((prev, next) => {
+                return next(prev)
             }, this.defaultNotFoundHandler);
             return filtered(request);
         }

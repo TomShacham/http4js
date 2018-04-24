@@ -1,8 +1,10 @@
-## http4js
+# http4js
 
 A simple http library for typescript
 
-## Read the [docs](https://tomshacham.github.io/http4js/)
+## *** [read the docs](https://tomshacham.github.io/http4js/) ***
+
+## Using in your project
 
 #### To install:
 
@@ -15,15 +17,15 @@ npm install --save http4js
 An example server and client
 
 ```typescript
-import {Status} from "./src/main/core/Status";
+import {Status} from "./dist/main/core/Status";
 import {Request} from "./dist/main/core/Request";
 import {HttpHandler} from "./dist/main/core/HttpMessage";
 import {routes} from "./dist/main/core/Routing";
 import {Response} from "./dist/main/core/Response";
 import {HttpClient} from "./dist/main/client/Client";
 import {Uri} from "./dist/main/core/Uri";
-import {Headers} from "./src/main/core/Headers";
-import {Method} from "./src/main/core/Methods";
+import {Headers} from "./dist/main/core/Headers";
+import {Method} from "./dist/main/core/Methods";
 
 //handler takes a request and promises a response
 const handler = (req: Request) => {
@@ -47,7 +49,7 @@ routes(Method.GET, ".*", handler)
 
 //make an http request to our server and log the response
 HttpClient(
-    new Request(Method.GET, Uri.of("http://localhost:3000/{id}/path"))
+    new Request(Method.GET, "http://localhost:3000/any/path")
 ).then(response => {
     console.log(response);
     console.log(response.bodyString());
@@ -107,5 +109,11 @@ npm test
 
 #### To do
 
-- document unit testing with routing.match and approval testing and fakes
+- document 
+  - request and response api
+  - filters 
+  - uri api
+  - unit testing with routing.match 
+  - approval testing and fakes
+  - using express / koa backends
 - write a tutorial to complement docs
