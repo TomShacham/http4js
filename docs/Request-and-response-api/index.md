@@ -4,7 +4,7 @@
 
 - [Overview](/http4js/#basics)
 - [Intro](/http4js/Intro/#intro)
-- [Handlers and Filters](/http4js/Handlers-and-filters/#Handlers-and-filters)
+- [Handlers and Filters](/http4js/Handlers-and-filters/#handlers-and-filters)
 - [Request and Response API](/http4js/Request-and-response-api/#request-and-response-api)
 - [URI API](/http4js/Uri-api/#uri-api)
 - [In Memory Testing](/http4js/In-memory-testing/#in-memory-testing)
@@ -105,5 +105,4 @@ class Response {
 
     bodyString(): string 
 }
-
  ```

@@ -39,9 +39,7 @@ export class Request {
 
     setUri(uri: Uri | string): Request {
         const request = Request.clone(this);
-        if (typeof uri == "string") {
-            request.uri = Uri.of(uri);
-        }
+        request.uri = typeof uri == "string" ? Uri.of(uri) : uri;
         return request;
     }
 
@@ -134,8 +132,8 @@ export class Request {
     }
 
     private getQueryParams(): object {
-        if (isNullOrUndefined(this.uri.query)) return {};
-        const pairs = this.uri.query.split("&");
+        if (isNullOrUndefined(this.uri.queryString())) return {};
+        const pairs = this.uri.queryString().split("&");
         pairs.map(pair => {
             const split = pair.split("=");
             this.queries[split[0]] = split[1]

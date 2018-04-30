@@ -24,7 +24,7 @@ export function debugFilter(out): Filter {
     return (handler: HttpHandler) => (req: Request) => {
         const response = handler(req);
         return response.then(response => {
-            out.log(`${req.method} to ${req.uri.href} with response ${response.status}`);
+            out.log(`${req.method} to ${req.uri.asUriString()} with response ${response.status}`);
             return response;
         });
     }

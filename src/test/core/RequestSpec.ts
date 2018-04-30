@@ -109,7 +109,7 @@ describe("in mem request", () => {
                 .setQuery("tom", "tosh")
                 .setQuery("ben", "bosh")
                 .uri
-                .query,
+                .queryString(),
             "tom=tosh&ben=bosh")
     });
 

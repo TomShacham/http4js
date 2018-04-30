@@ -6,46 +6,43 @@ import {equal} from "assert";
 
 describe("Built in filters", () => {
 
-    it("upgrade to https", () => {
-        return routes("GET", "/", (req) => {
-            return new Promise(resolve => resolve(new Response(200, req.uri.protocol)));
+    it("upgrade to https", async() => {
+        const response = await routes("GET", "/", (req) => {
+            return Promise.resolve(new Response(200, req.uri.protocol()));
         })
             .withFilter(Filters.UPGRADE_TO_HTTPS)
-            .match(new Request("GET", "http:///"))
-            .then(response => {
-                equal(response.bodyString(), "https");
-            });
+            .match(new Request("GET", "http:///"));
+        equal(response.bodyString(), "https");
     });
 
-    it("timing filter", () => {
-        return routes("GET", "/", (req) => {
-            return new Promise(resolve => resolve(new Response(200, "OK")));
+    it("timing filter", async() => {
+        const response = await routes("GET", "/", () => {
+            return Promise.resolve(new Response(200, "OK"));
         })
             .withFilter(Filters.TIMING)
-            .match(new Request("GET", "/"))
-            .then(response => {
-                const requestTook10ms = parseInt(response.getHeader("Total-Time")) < 10;
-                equal(requestTook10ms, true);
-            });
+            .match(new Request("GET", "/"));
+
+        const requestTook10ms = parseInt(response.getHeader("Total-Time")) < 10;
+        equal(requestTook10ms, true);
     });
 
-    it("debugging filter", () => {
+    it("debugging filter", async() => {
         function memoryLogger() {
             this.messages = [];
             this.log = (msg) => {
                 this.messages.push(msg);
             }
         }
+
         const logger = new memoryLogger();
 
-        return routes("GET", "/", (req) => {
-            return new Promise(resolve => resolve(new Response(200, "OK")));
+        const response = await routes("GET", "/", (req) => {
+            return Promise.resolve(new Response(200, "OK"));
         })
             .withFilter(debugFilter(logger))
-            .match(new Request("GET", "/"))
-            .then(response => {
-                equal(logger.messages[0], 'GET to / with response 200');
-            });
+            .match(new Request("GET", "/"));
+
+        equal(logger.messages[0], 'GET to / with response 200');
     });
 
 });

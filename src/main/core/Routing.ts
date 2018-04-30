@@ -57,7 +57,7 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
         const fuzzyMatch = this.handlers.find(it => {
             if (it.path == "/") return false;
             return it.path.includes("{")
-                && Uri.of(it.path).templateMatch(request.uri.path)
+                && Uri.of(it.path).templateMatch(request.uri.path())
                 && request.method.match(it.verb) != null;
         });
         const matchedHandler = exactMatch || fuzzyMatch;
@@ -66,7 +66,7 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
                 return next(prev)
             }, matchedHandler.handler);
             request.pathParams = matchedHandler.path.includes("{")
-                ? Uri.of(matchedHandler.path).extract(request.uri.path).matches
+                ? Uri.of(matchedHandler.path).extract(request.uri.path()).matches
                 : {};
             return filtered(request);
         } else {

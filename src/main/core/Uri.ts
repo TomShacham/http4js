@@ -3,17 +3,21 @@ const URI = require('url');
 const pathParamMatchingRegex: RegExp = new RegExp(/\{(\w+)\}/g);
 const pathParamCaptureTemplate: string = "([\\w\\s]+)";
 
-export class Uri {
-    path: string;
-    protocol: string;
-    auth: string;
-    query: string;
-    hostname: string;
-    port: string;
-    href: string;
+export interface NodeURI {
+    protocol: string,
+    auth: string,
+    host: string, //have to change this to change hostname or port
+    port: string,
+    hostname: string,
+    query: string,
+    pathname: string,
+    path: string, //path with query
+    href: string //full url
+}
 
+export class Uri {
     template: string;
-    asNativeNodeRequest: object;
+    asNativeNodeRequest: NodeURI;
 
     matches: object = {};
 
@@ -22,17 +26,76 @@ export class Uri {
 
         this.asNativeNodeRequest = uri;
         this.template = uri.pathname;
-        this.protocol = uri.protocol;
-        this.auth = uri.auth;
-        this.hostname = uri.hostname;
-        this.path = uri.path;
-        this.port = uri.port;
-        this.query = uri.query;
-        this.href = uri.href;
     }
 
     static of(uri: string): Uri {
         return new Uri(uri)
+    }
+
+    asUriString(): string {
+        return URI.format(this.asNativeNodeRequest);
+    }
+
+    protocol() {
+        return this.asNativeNodeRequest.protocol.replace(/\:/g, "");
+    }
+
+    withProtocol(protocol: string): Uri {
+        const uri = Uri.clone(this);
+        uri.asNativeNodeRequest.protocol = protocol;
+        return Uri.of(uri.asUriString());
+    }
+
+    queryString(): string {
+        return this.asNativeNodeRequest.query;
+    }
+
+    withQuery(name: string, value: string): Uri {
+        if (this.queryString() && this.queryString().length > 0) {
+            return Uri.of(`${this.asUriString()}&${name}=${value}`);
+        } else {
+            return Uri.of(`${this.asUriString()}?${name}=${value}`);
+        }
+    }
+
+    path() {
+        return this.asNativeNodeRequest.pathname;
+    }
+
+    withPath(path: string): Uri {
+        const uri = Uri.clone(this);
+        uri.asNativeNodeRequest.pathname = path;
+        return Uri.of(uri.asUriString());
+    }
+
+    hostname() {
+        return this.asNativeNodeRequest.hostname;
+    }
+
+    withHostname(hostname: string): Uri {
+        const uri = Uri.clone(this);
+        uri.asNativeNodeRequest.host = `${hostname}:${uri.asNativeNodeRequest.port}`;
+        return Uri.of(uri.asUriString());
+    }
+
+    port() {
+        return this.asNativeNodeRequest.port;
+    }
+
+    withPort(port: number): Uri {
+        const uri = Uri.clone(this);
+        uri.asNativeNodeRequest.host = `${uri.asNativeNodeRequest.hostname}:${port}`;
+        return Uri.of(uri.asUriString());
+    }
+
+    auth() {
+        return this.asNativeNodeRequest.auth;
+    }
+
+    withAuth(username: string, password: string): Uri {
+        const uri = Uri.clone(this);
+        uri.asNativeNodeRequest.auth = `${username}:${password}`;
+        return Uri.of(uri.asUriString());
     }
 
     exactMatch(path: string): boolean {
@@ -58,21 +121,14 @@ export class Uri {
         return this.matches[name];
     }
 
-    withQuery(name: string, value: string): Uri {
-        return this.query && this.query.length > 0
-            ? Uri.of(this.href + `&${name}=${value}`)
-            : Uri.of(this.href + `?${name}=${value}`);
-    }
-
-    withProtocol(protocol: string): Uri {
-        this.protocol = protocol;
-        return this;
-    }
-
     private _uriTemplateToPathParamCapturingRegex (): RegExp {
         return new RegExp(this.template.replace(
             pathParamMatchingRegex,
             pathParamCaptureTemplate)
         );
+    }
+
+    private static clone(a) {
+        return Object.assign(Object.create(a), a);
     }
 }

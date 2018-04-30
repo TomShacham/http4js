@@ -13,7 +13,7 @@
 - [Proxy](/http4js/Proxy/#proxy)
 - [Example App](https://github.com/TomShacham/http4js-eg)
 
-# In Memory Testing
+# Approval testing with fakes
 
 If we don't start the server then we can still use it to serve requests in memory
 

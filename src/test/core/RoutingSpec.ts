@@ -100,7 +100,7 @@ describe('a basic in memory server', () => {
 
     it("matches path params only if specified a capture in route", () => {
         return getTo("/family", () => {
-            return Promise.resolve(new Response(200, new Body("losh,bosh,tosh")));
+            return Promise.resolve(new Response(200, "losh,bosh,tosh"));
         })
             .match(new Request("GET", "/family/123"))
             .then(response => equal(response.bodyString(), "GET to /family/123 did not match routes"))
@@ -136,7 +136,7 @@ describe('a basic in memory server', () => {
                 req.getQuery("bosh"),
                 req.getQuery("losh"),
             ];
-            return Promise.resolve(new Response(200, new Body(queries.join("|"))));
+            return Promise.resolve(new Response(200, queries.join("|")));
         })
             .match(new Request("GET", "/test?tosh=rocks&bosh=pwns&losh=killer"))
             .then(response => equal(response.bodyString(), "rocks|pwns|killer"));
@@ -144,7 +144,7 @@ describe('a basic in memory server', () => {
 
     it("unknown route returns a 404", () => {
         return getTo("/", () => {
-            return Promise.resolve(new Response(200, new Body("hello, world!")));
+            return Promise.resolve(new Response(200, "hello, world!"));
         })
             .match(new Request("GET", "/unknown"))
             .then(response => equal(response.status, 404));
@@ -152,16 +152,16 @@ describe('a basic in memory server', () => {
 
     it("custom 404s using filters", () => {
         return getTo("/", () => {
-            return Promise.resolve(new Response(200, new Body("hello, world!")));
+            return Promise.resolve(new Response(200, "hello, world!"));
         })
             .withFilter((handler: HttpHandler) => {
                 return (req: Request) => {
                     const responsePromise = handler(req);
                     return responsePromise.then(response => {
                         if (response.status == 404) {
-                            return new Promise<Response>(resolve => resolve(new Response(404, new Body("Page not found"))));
+                            return Promise.resolve(new Response(404, "Page not found"));
                         } else {
-                            return new Promise<Response>(resolve => resolve(response));
+                            return Promise.resolve(response);
                         }
                     });
                 }
