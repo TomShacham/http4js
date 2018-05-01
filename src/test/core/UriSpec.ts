@@ -12,9 +12,9 @@ describe("uri", () => {
 
     it("extracts path params", () => {
         equal(Uri.of("/tom/{is}/goodness")
-                .extract("/tom/is the sugar/goodness")
+                .extract("/tom/the sugar/goodness")
             .pathParam("is"),
-            "is the sugar")
+            "the sugar")
     });
 
     it("matches paths", () => {

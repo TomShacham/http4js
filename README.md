@@ -110,8 +110,7 @@ npm test
 #### To do
 
 - document 
-  - uri api
-  - unit testing with routing.match 
+  - unit testing with routing.serve 
   - approval testing and fakes
   - using express / koa backends
 - write a tutorial to complement docs

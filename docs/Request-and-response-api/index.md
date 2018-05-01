@@ -50,14 +50,6 @@ used in `new Response(200, req.bodyString())` because `Request` is immutable.
 
 ## API
 
-Every method that returns a `Request` will call 
-
-```typescript
-const request = Request.clone(this);
-```
-
-to achieve immutability.
-
 The full api is as follows:
 
 ```typescript

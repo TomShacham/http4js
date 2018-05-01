@@ -18,13 +18,32 @@
 Handy for manipulating a URI. You might want to update just the protocol or 
 get the hostname or port from a URI.
  
-
 ```typescript
-
+const uri = Uri.of("http://localhost:3000/my/cool/path?tosh=rocks&bosh=pwnage&losh=awsm")
+uri.hostname();    // localhost
+uri.protocol();    // http
+uri.port();        // 3000
+uri.queryString(); // tosh=rocks&bosh=pwnage&losh=awsm
+uri.auth();        // tom:password
 ```
 
-http4js also uses Uri internally to extract path params from a request.
+And we have methods to give us a new Uri with any of the above changed:
 
 ```typescript
+const uri = Uri.of("http://localhost:3000/my/cool/path?tosh=rocks&bosh=pwnage")
+uri.withHostname("google").asUriString();    
+// http://tom:password@google:3000/my/cool/path?tosh=rocks&bosh=pwnage 
+
+uri.withProtocol("https").asUriString();   
+// https://tom:password@localhost:3000/my/cool/path?tosh=rocks&bosh=pwnage
+
+uri.withPort(1234);  
+// http://tom:password@localhost:1234/my/cool/path?tosh=rocks&bosh=pwnage
+
+uri.withQuery("losh", "awsm").asUriString(); 
+// http://tom:password@localhost:3000/my/cool/path?tosh=rocks&bosh=pwnage&losh=awsm
+
+uri.withAuth("ben", "ben-password").asUriString();
+// http://ben:ben-password@localhost:3000/my/cool/path?tosh=rocks&bosh=pwnage
 
 ```
