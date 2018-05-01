@@ -30,7 +30,7 @@ const routing = getTo("/path", "GET", (req: Request) => {
 Then we can make an in memory call to this endpoint
 
 ```typescript
-routing.match(new Request("GET", "/path"))
+routing.serve(new Request("GET", "/path"))
      
 // Response { headers: {}, body: Body { bytes: '' }, status: 200 }
 
@@ -71,7 +71,7 @@ export class TestApp {
     }
 
     async serve(req: Request): Promise<Response> {
-        return this.routes.match(req);
+        return this.routes.serve(req);
     }
    
 }

@@ -62,7 +62,7 @@ export class NativeServer implements Http4jsServer {
             })
         }
         const inMemRequest = new Request(method, url, body, headers).setForm(form);
-        return this.routing.match(inMemRequest);
+        return this.routing.serve(inMemRequest);
     }
 
 }

@@ -110,8 +110,6 @@ npm test
 #### To do
 
 - document 
-  - request and response api
-  - filters 
   - uri api
   - unit testing with routing.match 
   - approval testing and fakes

@@ -5,13 +5,13 @@ import {Body} from "../../main/core/Body";
 import {Request} from "../../main/core/Request";
 import {HttpHandler} from "../../main/core/HttpMessage";
 
-describe('a basic in memory server', () => {
+describe('routing', () => {
 
     it("takes request and gives response", function () {
         return getTo("/test", (req: Request) => {
             return Promise.resolve(new Response(200, req.body));
         })
-            .match(new Request("GET", "/test", new Body("Got it.")))
+            .serve(new Request("GET", "/test", new Body("Got it.")))
             .then(response => equal(response.body.bodyString(), "Got it."))
     });
 
@@ -22,7 +22,7 @@ describe('a basic in memory server', () => {
             .withHandler("/nest", "GET", () => {
                 return Promise.resolve(new Response(200, new Body("nested")));
             })
-            .match(new Request("GET", "/test/nest"))
+            .serve(new Request("GET", "/test/nest"))
             .then(response => equal(response.body.bodyString(), "nested"))
     });
 
@@ -35,7 +35,7 @@ describe('a basic in memory server', () => {
                     return Promise.resolve(new Response(200, new Body("filtered")));
                 }
             })
-            .match(new Request("GET", "/test"))
+            .serve(new Request("GET", "/test"))
             .then(response => equal(response.body.bodyString(), "filtered"))
     });
 
@@ -53,7 +53,7 @@ describe('a basic in memory server', () => {
                     return Promise.resolve(handler(req).then(response => response.setHeader("another", "filter")))
                 }
             })
-            .match(new Request("GET", "/test"))
+            .serve(new Request("GET", "/test"))
             .then(response => {
                 equal(response.body.bodyString(), "filtered");
                 equal(response.getHeader("another"), "filter");
@@ -77,7 +77,7 @@ describe('a basic in memory server', () => {
                     return handler(req).then(response => response.setHeader("another", "filter2"));
                 }
             })
-            .match(new Request("GET", "/test/nest"))
+            .serve(new Request("GET", "/test/nest"))
             .then(response => {
                 equal(response.body.bodyString(), "nested");
                 equal(response.getHeader("a"), "filter1");
@@ -93,7 +93,7 @@ describe('a basic in memory server', () => {
             return Promise.resolve(new Response(200));
         })
             .withRoutes(nested)
-            .match(new Request("GET", "/nested"))
+            .serve(new Request("GET", "/nested"))
             .then(response => equal(response.bodyString(), "hi there deeply."))
 
     });
@@ -102,7 +102,7 @@ describe('a basic in memory server', () => {
         return getTo("/family", () => {
             return Promise.resolve(new Response(200, "losh,bosh,tosh"));
         })
-            .match(new Request("GET", "/family/123"))
+            .serve(new Request("GET", "/family/123"))
             .then(response => equal(response.bodyString(), "GET to /family/123 did not match routes"))
     });
 
@@ -110,7 +110,7 @@ describe('a basic in memory server', () => {
         return getTo("/{name}/test", (req) => {
             return Promise.resolve(new Response(200, new Body(req.pathParams["name"])));
         })
-            .match(new Request("GET", "/tom/test"))
+            .serve(new Request("GET", "/tom/test"))
             .then(response => equal(response.bodyString(), "tom"));
     });
 
@@ -120,7 +120,7 @@ describe('a basic in memory server', () => {
                 new Response(200, new Body(`${req.pathParams["name"]}, ${req.pathParams["age"]}, ${req.pathParams["personality"]}`))
             ))
         })
-            .match(new Request("GET", "/tom/test/26/bob/odd/fred"))
+            .serve(new Request("GET", "/tom/test/26/bob/odd/fred"))
             .then(response => {
                 const pathParams = response.bodyString().split(", ");
                 equal(pathParams[0], "tom");
@@ -138,7 +138,7 @@ describe('a basic in memory server', () => {
             ];
             return Promise.resolve(new Response(200, queries.join("|")));
         })
-            .match(new Request("GET", "/test?tosh=rocks&bosh=pwns&losh=killer"))
+            .serve(new Request("GET", "/test?tosh=rocks&bosh=pwns&losh=killer"))
             .then(response => equal(response.bodyString(), "rocks|pwns|killer"));
     });
 
@@ -146,7 +146,7 @@ describe('a basic in memory server', () => {
         return getTo("/", () => {
             return Promise.resolve(new Response(200, "hello, world!"));
         })
-            .match(new Request("GET", "/unknown"))
+            .serve(new Request("GET", "/unknown"))
             .then(response => equal(response.status, 404));
     });
 
@@ -166,7 +166,7 @@ describe('a basic in memory server', () => {
                     });
                 }
             })
-            .match(new Request("GET", "/unknown"))
+            .serve(new Request("GET", "/unknown"))
             .then(response => {
                 equal(response.status, 404);
                 equal(response.bodyString(), "Page not found");
@@ -181,7 +181,7 @@ describe('a basic in memory server', () => {
         }).withFilter((handler) => (req) => {
             return handler(req).then(response => response.replaceHeader("person", "bosh"));
         })
-            .match(new Request("GET", "/"))
+            .serve(new Request("GET", "/"))
             .then(response => equal(response.getHeader("person"), "bosh"))
     });
 
@@ -191,7 +191,7 @@ describe('a basic in memory server', () => {
         }).withFilter((handler) => (req) => {
             return handler(req.setHeader("pre-filter", "hello from pre-filter"))
         })
-            .match(new Request("GET", "/"))
+            .serve(new Request("GET", "/"))
             .then(response => equal(response.bodyString(), "hello from pre-filter"))
     });
 
@@ -205,7 +205,7 @@ describe('a basic in memory server', () => {
         }).withHandler("/family", "POST", () => {
             return Promise.resolve(new Response(200, new Body("post")));
         })
-            .match(new Request("GET", "/family"))
+            .serve(new Request("GET", "/family"))
             .then(response => equal(response.bodyString(), "exact"))
     });
 
@@ -225,11 +225,11 @@ describe('a basic in memory server', () => {
                 return Promise.resolve(new Response(302).setHeader("Location", "/family"));
             });
 
-        const postSideEffect1 = routes.match(new Request("POST", "/family", new Body("name=tosh")));
-        const postSideEffect2 = routes.match(new Request("POST", "/family", new Body("name=bosh")));
-        const postSideEffect3 = routes.match(new Request("POST", "/family", new Body("name=losh")));
+        const postSideEffect1 = routes.serve(new Request("POST", "/family", new Body("name=tosh")));
+        const postSideEffect2 = routes.serve(new Request("POST", "/family", new Body("name=bosh")));
+        const postSideEffect3 = routes.serve(new Request("POST", "/family", new Body("name=losh")));
 
-        return routes.match(new Request("GET", "/family"))
+        return routes.serve(new Request("GET", "/family"))
             .then(response => equal(response.bodyString(), "tosh, bosh, losh"))
 
 
@@ -239,7 +239,7 @@ describe('a basic in memory server', () => {
         return postTo("/family", (req) => {
             return Promise.resolve(new Response(200, new Body(req.form)));
         })
-            .match(new Request("POST", "/family", new Body("p1=1&p2=tom&p3=bosh&p4=losh")).setHeader("Content-Type", "application/x-www-form-urlencoded"))
+            .serve(new Request("POST", "/family", new Body("p1=1&p2=tom&p3=bosh&p4=losh")).setHeader("Content-Type", "application/x-www-form-urlencoded"))
             .then(response => {
                 deepStrictEqual(response.body.bytes, {p1: "1", p2: "tom", p3: "bosh", p4: "losh"})
             })
@@ -247,7 +247,7 @@ describe('a basic in memory server', () => {
 
     it("matches method by regex", () => {
         return routes(".*", "/", () => Promise.resolve(new Response(200, "matched")) )
-            .match(new Request("GET", "/"))
+            .serve(new Request("GET", "/"))
             .then(response => {
                 equal(response.bodyString(), "matched");
             })
@@ -255,7 +255,7 @@ describe('a basic in memory server', () => {
 
     it("matches path by regex", () => {
         return routes(".*", ".*", () => Promise.resolve(new Response(200, "matched")) )
-            .match(new Request("GET", "/any/path/matches"))
+            .serve(new Request("GET", "/any/path/matches"))
             .then(response => {
                 equal(response.bodyString(), "matched");
             })

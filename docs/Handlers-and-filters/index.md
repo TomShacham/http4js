@@ -91,18 +91,17 @@ The way that this hangs together behind the scenes is actually pretty simple.
 If an incoming `Request` path matches a path in our `Routing` then we apply 
 all of our filters to the `Request` with the `matchedHandler` taking the final `Request`
 that comes through our reduction. If no `Routing` path matches then we do the same but
-pass the final `Request` to a default handler for "not found". 
+our final handler that receives `Request` will be the http4js default handler for "not found". 
 
 ```typescript
-if (matchedHandler) {
+serve(request: Request): Promise<Response> {
+    const matchedHandler = this.match(request);
     const filtered = this.filters.reduce((prev, next) => {
         return next(prev)
     }, matchedHandler.handler);
-    return filtered(request);
-} else {
-    const filtered = this.filters.reduce((prev, next) => {
-        return next(prev)
-    }, this.defaultNotFoundHandler);
+    request.pathParams = matchedHandler.path.includes("{")
+        ? Uri.of(matchedHandler.path).extract(request.uri.path()).matches
+        : {};
     return filtered(request);
 }
 ```

@@ -11,7 +11,7 @@ describe("Built in filters", () => {
             return Promise.resolve(new Response(200, req.uri.protocol()));
         })
             .withFilter(Filters.UPGRADE_TO_HTTPS)
-            .match(new Request("GET", "http:///"));
+            .serve(new Request("GET", "http:///"));
         equal(response.bodyString(), "https");
     });
 
@@ -20,7 +20,7 @@ describe("Built in filters", () => {
             return Promise.resolve(new Response(200, "OK"));
         })
             .withFilter(Filters.TIMING)
-            .match(new Request("GET", "/"));
+            .serve(new Request("GET", "/"));
 
         const requestTook10ms = parseInt(response.getHeader("Total-Time")) < 10;
         equal(requestTook10ms, true);
@@ -40,7 +40,7 @@ describe("Built in filters", () => {
             return Promise.resolve(new Response(200, "OK"));
         })
             .withFilter(debugFilter(logger))
-            .match(new Request("GET", "/"));
+            .serve(new Request("GET", "/"));
 
         equal(logger.messages[0], 'GET to / with response 200');
     });

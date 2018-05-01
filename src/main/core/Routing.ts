@@ -10,14 +10,16 @@ import {NativeServer} from "../servers/NativeServer";
 export interface RoutingHttpHandler {
     withFilter(filter: (HttpHandler) => HttpHandler): RoutingHttpHandler
     asServer(server: Http4jsServer): Http4jsServer
-    match(request: Request): Promise<Response>
+    serve(request: Request): Promise<Response>
 }
+
+export type MountedHttpHandler = {path: string, verb: string, handler: HttpHandler}
 
 export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
 
     server: Http4jsServer;
     private root: string;
-    private handlers = [];
+    private handlers: MountedHttpHandler[] = [];
     private filters: Array<(HttpHandler) => HttpHandler> = [];
 
     constructor(path: string,
@@ -50,7 +52,18 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
         return this.server;
     }
 
-    match(request: Request): Promise<Response> {
+    serve(request: Request): Promise<Response> {
+        const matchedHandler = this.match(request);
+        const filtered = this.filters.reduce((prev, next) => {
+            return next(prev)
+        }, matchedHandler.handler);
+        request.pathParams = matchedHandler.path.includes("{")
+            ? Uri.of(matchedHandler.path).extract(request.uri.path()).matches
+            : {};
+        return filtered(request);
+    }
+
+    match(request: Request): MountedHttpHandler {
         const exactMatch = this.handlers.find(it => {
             return request.uri.exactMatch(it.path) && request.method.match(it.verb) != null;
         });
@@ -60,27 +73,18 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
                 && Uri.of(it.path).templateMatch(request.uri.path())
                 && request.method.match(it.verb) != null;
         });
-        const matchedHandler = exactMatch || fuzzyMatch;
-        if (matchedHandler) {
-            const filtered = this.filters.reduce((prev, next) => {
-                return next(prev)
-            }, matchedHandler.handler);
-            request.pathParams = matchedHandler.path.includes("{")
-                ? Uri.of(matchedHandler.path).extract(request.uri.path()).matches
-                : {};
-            return filtered(request);
-        } else {
-            const filtered = this.filters.reduce((prev, next) => {
-                return next(prev)
-            }, this.defaultNotFoundHandler);
-            return filtered(request);
+        return exactMatch || fuzzyMatch || this.mountedNotFoundHandler;
+    }
+
+    private mountedNotFoundHandler: MountedHttpHandler = {
+        path: ".*",
+        verb: ".*",
+        handler: (request: Request) => {
+            const notFoundBodystring = `${request.method} to ${request.uri.template} did not match routes`;
+            return Promise.resolve(new Response(404, notFoundBodystring));
         }
     }
 
-    private defaultNotFoundHandler = (request: Request) => {
-        const notFoundBodystring = `${request.method} to ${request.uri.template} did not match routes`;
-        return Promise.resolve(new Response(404, notFoundBodystring));
-    };
 
 }
 

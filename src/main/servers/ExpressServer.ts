@@ -36,7 +36,7 @@ export class ExpressServer implements Http4jsServer {
         const inMemRequest = headers['content-type'] == 'application/x-www-form-urlencoded'
             ? new Request(method, url, JSON.stringify(chunks), headers).setForm(chunks)
             : new Request(method, url, new Body(Buffer.concat(chunks)), headers);
-        return this.routing.match(inMemRequest);
+        return this.routing.serve(inMemRequest);
     }
 
     start(): void {
