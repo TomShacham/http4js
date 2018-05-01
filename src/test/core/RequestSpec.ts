@@ -24,7 +24,7 @@ describe("in mem request", () => {
             new Request("GET", "/")
                 .setUri("/tom")
                 .uri
-                .template,
+                .path(),
             "/tom")
     });
 

@@ -80,7 +80,7 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
         path: ".*",
         verb: ".*",
         handler: (request: Request) => {
-            const notFoundBodystring = `${request.method} to ${request.uri.template} did not match routes`;
+            const notFoundBodystring = `${request.method} to ${request.uri.path()} did not match routes`;
             return Promise.resolve(new Response(404, notFoundBodystring));
         }
     }

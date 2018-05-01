@@ -11,21 +11,15 @@ export interface NodeURI {
     hostname: string,
     query: string,
     pathname: string,
-    path: string, //path with query
-    href: string //full url
+    path: string, //pathname with query
 }
 
 export class Uri {
-    template: string;
     asNativeNodeRequest: NodeURI;
-
     matches: object = {};
 
     constructor(template: string) {
-        const uri = URI.parse(template);
-
-        this.asNativeNodeRequest = uri;
-        this.template = uri.pathname;
+        this.asNativeNodeRequest = URI.parse(template);
     }
 
     static of(uri: string): Uri {
@@ -98,19 +92,19 @@ export class Uri {
         return Uri.of(uri.asUriString());
     }
 
-    exactMatch(path: string): boolean {
-        return new RegExp(`^${path}$`).exec(this.template) != null;
+    exactMatch(matchingOnPath: string): boolean {
+        return new RegExp(`^${matchingOnPath}$`).exec(this.path()) != null;
     }
 
-    templateMatch(path: string): boolean {
-        return this._uriTemplateToPathParamCapturingRegex().exec(path) != null;
+    templateMatch(matchingOnPath: string): boolean {
+        return Uri.uriTemplateToPathParamCapturingRegex(this.path()).exec(matchingOnPath) != null;
     }
 
     extract(uri: string): Uri {
         const decodedUri = decodeURI(uri);
-        const pathParamNames = this.template.match(pathParamMatchingRegex)
+        const pathParamNames = this.path().match(pathParamMatchingRegex)
             .map(it => it.replace("{", "").replace("}", ""));
-        const pathParams = this._uriTemplateToPathParamCapturingRegex().exec(decodedUri);
+        const pathParams = Uri.uriTemplateToPathParamCapturingRegex(this.path()).exec(decodedUri);
         pathParamNames.map( (name, i) => {
             this.matches[name] = pathParams[i+1]
         });
@@ -121,8 +115,8 @@ export class Uri {
         return this.matches[name];
     }
 
-    private _uriTemplateToPathParamCapturingRegex (): RegExp {
-        return new RegExp(this.template.replace(
+    private static uriTemplateToPathParamCapturingRegex(template: string): RegExp {
+        return new RegExp(template.replace(
             pathParamMatchingRegex,
             pathParamCaptureTemplate)
         );

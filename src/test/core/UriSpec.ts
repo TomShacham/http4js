@@ -6,7 +6,7 @@ describe("uri", () => {
 
     it("encodes uris", () => {
         equal(
-            Uri.of("/tom/is the sugar/goodness").template,
+            Uri.of("/tom/is the sugar/goodness").path(),
             "/tom/is%20the%20sugar/goodness");
     });
 
