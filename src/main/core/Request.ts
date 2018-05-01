@@ -15,7 +15,7 @@ export class Request {
 
     constructor(method: string,
                 uri: Uri | string,
-                body: Body | string = new Body(new Buffer("")),
+                body: Body | string = "",
                 headers = null) {
         this.method = method.toUpperCase();
         if (typeof uri == "string") {
