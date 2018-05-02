@@ -109,8 +109,10 @@ npm test
 
 #### To do
 
+- refactor client
+- cache control header values
 - document 
-  - unit testing with routing.serve 
+  - withRoutes
   - approval testing and fakes
   - using express / koa backends
 - write a tutorial to complement docs

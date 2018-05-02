@@ -15,3 +15,7 @@
 
 # Express or Koa backend
 
+http4js is just a thin layer between http and a nice in memory API. So
+we can plug and play different backends. By default we just translate 
+to and from node's in-built http layer. But http4js also provides a 
+way to hook into 

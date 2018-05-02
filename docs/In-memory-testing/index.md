@@ -15,34 +15,22 @@
 
 # In Memory Testing
 
-If we don't start the server then we can still use it to serve requests in memory
+If we don't start the server then we can still use it to serve requests in memory:
 
 ```typescript
-const routing = getTo("/path", "GET", (req: Request) => {
-  return new Promise(resolve => {
-    resolve(new Response(200))
-  })
-})
+const routing = getTo("/path", (req: Request) => Promise.resolve(new Response(200)))
     //.asServer(3000)
     //.start()    
-```
-
-Then we can make an in memory call to this endpoint
-
-```typescript
+    
 routing.serve(new Request("GET", "/path"))
      
 // Response { headers: {}, body: Body { bytes: '' }, status: 200 }
-
 ```
 
-Our test might look something like this
+This allows us to write unit tests that cover routing logic. 
+Our test might look something like this:
 
 ```typescript
-import {equal} from "assert";
-import {TestApp} from "../TestApp";
-import {Request} from "http4js/dist/core/Request";
-
 describe("unknown routes", () => {
 
     it("404 page if no routes match", async () => {

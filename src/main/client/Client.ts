@@ -8,19 +8,19 @@ export function HttpClient(request: Request) {
         case "GET":
             return get(request);
         case "POST":
-            return post(request);
+            return wire(request);
         case "PUT":
-            return put(request);
+            return wire(request);
         case "PATCH":
-            return patch(request);
+            return wire(request);
         case "DELETE":
-            return deleteRequest(request);
+            return wire(request);
         case "HEAD":
-            return head(request);
+            return wire(request);
         case "OPTIONS":
-            return options(request);
+            return wire(request);
         case "TRACE":
-            return trace(request);
+            return wire(request);
 
         default:
             return get(request)
@@ -47,139 +47,7 @@ function get(request: Request): Promise<Response> {
     });
 }
 
-function post(request): Promise<Response> {
-    const options = request.uri.asNativeNodeRequest;
-    options['headers'] = request.headers;
-    options.method = request.method;
-
-    return new Promise(succ => {
-        const clientRequest = http.request(options, (res) => {
-            const chunks = [];
-            res.on('data', (chunk) => {
-                chunks.push(chunk);
-            });
-            res.on('end', () => {
-                const body = new Body(Buffer.concat(chunks));
-                const response = new Response(res.statusCode, body).setHeaders(res.headers);
-                return succ(response);
-            });
-        });
-        clientRequest.write(request.bodyString());
-        clientRequest.end();
-    });
-}
-
-function put(request): Promise<Response> {
-    const options = request.uri.asNativeNodeRequest;
-    options['headers'] = request.headers;
-    options.method = request.method;
-
-    return new Promise(succ => {
-        const clientRequest = http.request(options, (res) => {
-            const chunks = [];
-            res.on('data', (chunk) => {
-                chunks.push(chunk);
-            });
-            res.on('end', () => {
-                const body = new Body(Buffer.concat(chunks));
-                const response = new Response(res.statusCode, body).setHeaders(res.headers);
-                return succ(response);
-            });
-        });
-        clientRequest.write(request.bodyString());
-        clientRequest.end();
-    });
-}
-
-function patch(request): Promise<Response> {
-    const options = request.uri.asNativeNodeRequest;
-    options['headers'] = request.headers;
-    options.method = request.method;
-
-    return new Promise(succ => {
-        const clientRequest = http.request(options, (res) => {
-            const chunks = [];
-            res.on('data', (chunk) => {
-                chunks.push(chunk);
-            });
-            res.on('end', () => {
-                const body = new Body(Buffer.concat(chunks));
-                const response = new Response(res.statusCode, body).setHeaders(res.headers);
-                return succ(response);
-            });
-        });
-        clientRequest.write(request.bodyString());
-        clientRequest.end();
-    });
-}
-
-function deleteRequest(request): Promise<Response> {
-    const options = request.uri.asNativeNodeRequest;
-    options['headers'] = request.headers;
-    options.method = request.method;
-
-    return new Promise(succ => {
-        const clientRequest = http.request(options, (res) => {
-            const chunks = [];
-            res.on('data', (chunk) => {
-                chunks.push(chunk);
-            });
-            res.on('end', () => {
-                const body = new Body(Buffer.concat(chunks));
-                const response = new Response(res.statusCode, body).setHeaders(res.headers);
-                return succ(response);
-            });
-        });
-        clientRequest.write(request.bodyString());
-        clientRequest.end();
-    });
-}
-
-function head(request): Promise<Response> {
-    const options = request.uri.asNativeNodeRequest;
-    options['headers'] = request.headers;
-    options.method = request.method;
-
-    return new Promise(succ => {
-        const clientRequest = http.request(options, (res) => {
-            const chunks = [];
-            res.on('data', (chunk) => {
-                chunks.push(chunk);
-            });
-            res.on('end', () => {
-                const body = new Body(Buffer.concat(chunks));
-                const response = new Response(res.statusCode, body).setHeaders(res.headers);
-                return succ(response);
-            });
-        });
-        clientRequest.write(request.bodyString());
-        clientRequest.end();
-    });
-}
-
-function options(request): Promise<Response> {
-    const options = request.uri.asNativeNodeRequest;
-    options['headers'] = request.headers;
-    options.method = request.method;
-
-    return new Promise(succ => {
-        const clientRequest = http.request(options, (res) => {
-            const chunks = [];
-            res.on('data', (chunk) => {
-                chunks.push(chunk);
-            });
-            res.on('end', () => {
-                const body = new Body(Buffer.concat(chunks));
-                const response = new Response(res.statusCode, body).setHeaders(res.headers);
-                return succ(response);
-            });
-        });
-        clientRequest.write(request.bodyString());
-        clientRequest.end();
-    });
-}
-
-function trace(request): Promise<Response> {
+function wire(request: Request) {
     const options = request.uri.asNativeNodeRequest;
     options['headers'] = request.headers;
     options.method = request.method;

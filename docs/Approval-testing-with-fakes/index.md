@@ -15,3 +15,11 @@
 
 # Approval testing with fakes
 
+Since testing our routing is so easy and starting servers is also easy, 
+we can write end to end tests and even system tests using fakes. 
+And with approval testing we can test that what we intend to render is
+entirely correct in one fell swoop. 
+
+```typescript
+
+```
