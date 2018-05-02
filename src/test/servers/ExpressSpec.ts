@@ -24,14 +24,12 @@ describe("express", async() => {
     const baseUrl = "http://localhost:3001";
 
     const server = getTo("/", (req: Request) => {
-        const query = req.getQuery("tomQuery");
-        return new Promise(resolve => {
-            resolve(
-                new Response(200, new Body(req.bodyString()))
-                    .setHeaders(req.headers)
-                    .setHeader("tomQuery", query || "no tom query")
-            )
-        })
+        const query = req.query("tomQuery");
+        return Promise.resolve(
+            new Response(200, req.bodyString())
+                .withHeaders(req.headers)
+                .withHeader("tomQuery", query || "no tom query")
+        )
     })
         .withHandler("/post-body", "POST", (req) => Promise.resolve(new Response(200, req.bodyString())))
         .withHandler("/post-form-body", "POST", (req) => Promise.resolve(new Response(200, JSON.stringify(req.form))))
@@ -57,7 +55,7 @@ describe("express", async() => {
     it("respects middleware", async() => {
         let request = new Request("GET", baseUrl);
         const response = await HttpClient(request);
-        equal(response.getHeader("express"), "middleware")
+        equal(response.header("express"), "middleware")
     });
 
     it("sets post body", async() => {
@@ -67,23 +65,23 @@ describe("express", async() => {
     });
 
     it("sets post form body", async() => {
-        const request = new Request("POST", `${baseUrl}/post-form-body`).setForm({name: ["tosh", "bosh", "losh"]});
+        const request = new Request("POST", `${baseUrl}/post-form-body`).withForm({name: ["tosh", "bosh", "losh"]});
         const response = await HttpClient(request);
         equal(response.bodyString(), JSON.stringify({name: ["tosh", "bosh", "losh"]}))
     });
 
     it("sets query params", async() => {
         const request = new Request("GET", baseUrl)
-            .setQuery("tomQuery", "likes to party");
+            .withQuery("tomQuery", "likes to party");
 
         const response = await HttpClient(request);
-        equal(response.getHeader("tomquery"), "likes%20to%20party")
+        equal(response.header("tomquery"), "likes%20to%20party")
     });
 
     it("sets multiple headers of same name", async() => {
         const request = new Request("GET", baseUrl, null, {tom: ["smells", "smells more"]});
         const response = await HttpClient(request);
-        deepEqual(response.getHeader("tom"), "smells, smells more")
+        deepEqual(response.header("tom"), "smells, smells more")
     });
 
     describe("supports client verbs", async() => {

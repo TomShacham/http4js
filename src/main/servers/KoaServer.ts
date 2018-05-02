@@ -34,7 +34,7 @@ export class KoaServer implements Http4jsServer {
 
     private createInMemResponse(chunks: Array<any>, method: any, url: any, headers: any): Promise<Response> {
         const inMemRequest = headers['content-type'] == 'application/x-www-form-urlencoded'
-            ? new Request(method, url, JSON.stringify(chunks), headers).setForm(chunks)
+            ? new Request(method, url, JSON.stringify(chunks), headers).withForm(chunks)
             : new Request(method, url, new Body(Buffer.concat(chunks)), headers);
         return this.routing.serve(inMemRequest);
     }

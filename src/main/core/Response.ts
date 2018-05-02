@@ -15,11 +15,11 @@ export class Response implements HttpMessage {
         this.status = status;
     }
 
-    getHeader(name: string): string {
+    header(name: string): string {
         return this.headers[name.toLowerCase()];
     }
 
-    setHeader(name: string, value: string): Response {
+    withHeader(name: string, value: string): Response {
         const response = Response.clone(this);
         const lowercaseName = name.toLowerCase();
         if (response.headers[lowercaseName] == null) {
@@ -32,7 +32,7 @@ export class Response implements HttpMessage {
         return response;
     }
 
-    setHeaders(headers: object): Response {
+    withHeaders(headers: object): Response {
         const response = Response.clone(this);
         response.headers = headers;
         return response;
@@ -56,7 +56,7 @@ export class Response implements HttpMessage {
         return response;
     }
 
-    setBody(body: Body | string): Response {
+    withBody(body: Body | string): Response {
         const response = Response.clone(this);
         typeof body == "string"
             ? response.body.bytes = body

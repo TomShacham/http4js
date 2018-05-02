@@ -22,7 +22,7 @@ describe("Built in filters", () => {
             .withFilter(Filters.TIMING)
             .serve(new Request("GET", "/"));
 
-        const requestTook10ms = parseInt(response.getHeader("Total-Time")) < 10;
+        const requestTook10ms = parseInt(response.header("Total-Time")) < 10;
         equal(requestTook10ms, true);
     });
 

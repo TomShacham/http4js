@@ -5,7 +5,7 @@ describe("in mem response", () => {
 
     it("is immutable", () => {
         const response1 = new Response(200, "OK");
-        const response2 = response1.setHeader("tom", "tosh");
+        const response2 = response1.withHeader("tom", "tosh");
 
         notEqual(response1, response2);
     });
@@ -13,7 +13,7 @@ describe("in mem response", () => {
     it("set body", () => {
         equal(
             new Response()
-                .setBody("body boy")
+                .withBody("body boy")
                 .bodyString(),
             "body boy")
     });
@@ -21,7 +21,7 @@ describe("in mem response", () => {
     it("set body string", () => {
         equal(
             new Response()
-                .setBody("body boy-o")
+                .withBody("body boy-o")
                 .bodyString(),
             "body boy-o")
     });
@@ -29,36 +29,36 @@ describe("in mem response", () => {
     it("set header on response", () => {
         equal(
             new Response()
-                .setHeader("tom", "smells")
-                .getHeader("tom"),
+                .withHeader("tom", "smells")
+                .header("tom"),
             "smells");
     });
 
     it("concat same header on response", () => {
         deepEqual(
             new Response()
-                .setHeader("tom", "smells")
-                .setHeader("tom", "smells more")
-                .setHeader("tom", "smells some more")
-                .getHeader("tom"),
+                .withHeader("tom", "smells")
+                .withHeader("tom", "smells more")
+                .withHeader("tom", "smells some more")
+                .header("tom"),
             ["smells", "smells more", "smells some more"]);
     });
 
     it('replace header', () => {
         equal(
             new Response()
-                .setHeader("tom", "smells")
+                .withHeader("tom", "smells")
                 .replaceHeader("tom", "is nice")
-                .getHeader("tom"),
+                .header("tom"),
             "is nice");
     });
 
     it('remove header', () => {
         equal(
             new Response()
-                .setHeader("tom", "smells")
+                .withHeader("tom", "smells")
                 .removeHeader("tom")
-                .getHeader("tom"),
+                .header("tom"),
             undefined);
     });
 

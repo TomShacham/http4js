@@ -7,15 +7,15 @@ export interface HttpMessage {
     body: Body;
     uri: Uri;
 
-    getHeader(name: string): string;
+    header(name: string): string;
 
-    setHeader(name: string, value: string): HttpMessage;
+    withHeader(name: string, value: string): HttpMessage;
 
     replaceHeader(name: string, value: string): HttpMessage
 
     removeHeader(name: string): HttpMessage
 
-    setBody(body: Body): HttpMessage
+    withBody(body: Body): HttpMessage
 
     bodyString(): string
 

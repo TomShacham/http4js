@@ -50,13 +50,13 @@ describe('routing', () => {
             })
             .withFilter((handler: HttpHandler) => {
                 return (req: Request) => {
-                    return Promise.resolve(handler(req).then(response => response.setHeader("another", "filter")))
+                    return Promise.resolve(handler(req).then(response => response.withHeader("another", "filter")))
                 }
             })
             .serve(new Request("GET", "/test"))
             .then(response => {
                 equal(response.body.bodyString(), "filtered");
-                equal(response.getHeader("another"), "filter");
+                equal(response.header("another"), "filter");
             })
     });
 
@@ -69,25 +69,25 @@ describe('routing', () => {
             })
             .withFilter((handler: HttpHandler) => {
                 return (req: Request) => {
-                    return handler(req).then(response => response.setHeader("a", "filter1"));
+                    return handler(req).then(response => response.withHeader("a", "filter1"));
                 }
             })
             .withFilter((handler: HttpHandler) => {
                 return (req: Request) => {
-                    return handler(req).then(response => response.setHeader("another", "filter2"));
+                    return handler(req).then(response => response.withHeader("another", "filter2"));
                 }
             })
             .serve(new Request("GET", "/test/nest"))
             .then(response => {
                 equal(response.body.bodyString(), "nested");
-                equal(response.getHeader("a"), "filter1");
-                equal(response.getHeader("another"), "filter2");
+                equal(response.header("a"), "filter1");
+                equal(response.header("another"), "filter2");
             })
     });
 
     it("recursively defining routes", () => {
         const nested = getTo("/nested", () => {
-            return Promise.resolve(new Response(200).setBody("hi there deeply."));
+            return Promise.resolve(new Response(200).withBody("hi there deeply."));
         });
         return getTo("/", () => {
             return Promise.resolve(new Response(200));
@@ -132,9 +132,9 @@ describe('routing', () => {
     it("extracts query params", () => {
         return getTo("/test", (req) => {
             const queries = [
-                req.getQuery("tosh"),
-                req.getQuery("bosh"),
-                req.getQuery("losh"),
+                req.query("tosh"),
+                req.query("bosh"),
+                req.query("losh"),
             ];
             return Promise.resolve(new Response(200, queries.join("|")));
         })
@@ -182,14 +182,14 @@ describe('routing', () => {
             return handler(req).then(response => response.replaceHeader("person", "bosh"));
         })
             .serve(new Request("GET", "/"))
-            .then(response => equal(response.getHeader("person"), "bosh"))
+            .then(response => equal(response.header("person"), "bosh"))
     });
 
     it("can add stuff to request using filters", () => {
         return getTo("/", (req) => {
-            return Promise.resolve(new Response(200, new Body(req.getHeader("pre-filter") || "hello, world!")));
+            return Promise.resolve(new Response(200, new Body(req.header("pre-filter") || "hello, world!")));
         }).withFilter((handler) => (req) => {
-            return handler(req.setHeader("pre-filter", "hello from pre-filter"))
+            return handler(req.withHeader("pre-filter", "hello from pre-filter"))
         })
             .serve(new Request("GET", "/"))
             .then(response => equal(response.bodyString(), "hello from pre-filter"))
@@ -222,7 +222,7 @@ describe('routing', () => {
             })
             .withHandler("/family", "POST", (req) => {
                 friends.push(req.form["name"]);
-                return Promise.resolve(new Response(302).setHeader("Location", "/family"));
+                return Promise.resolve(new Response(302).withHeader("Location", "/family"));
             });
 
         const postSideEffect1 = routes.serve(new Request("POST", "/family", new Body("name=tosh")));
@@ -239,7 +239,7 @@ describe('routing', () => {
         return postTo("/family", (req) => {
             return Promise.resolve(new Response(200, new Body(req.form)));
         })
-            .serve(new Request("POST", "/family", new Body("p1=1&p2=tom&p3=bosh&p4=losh")).setHeader("Content-Type", "application/x-www-form-urlencoded"))
+            .serve(new Request("POST", "/family", new Body("p1=1&p2=tom&p3=bosh&p4=losh")).withHeader("Content-Type", "application/x-www-form-urlencoded"))
             .then(response => {
                 deepStrictEqual(response.body.bytes, {p1: "1", p2: "tom", p3: "bosh", p4: "losh"})
             })

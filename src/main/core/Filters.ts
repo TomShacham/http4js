@@ -5,14 +5,14 @@ export type Filter = (HttpHandler: HttpHandler) => HttpHandler
 
 export class Filters {
     static UPGRADE_TO_HTTPS: Filter = (handler: HttpHandler) => (req: Request) => {
-        return handler(req.setUri(req.uri.withProtocol("https")));
+        return handler(req.withUri(req.uri.withProtocol("https")));
     };
 
     static TIMING: Filter = (handler: HttpHandler) => (req: Request) => {
         const start = Date.now();
         return handler(req).then(response => {
             const total = Date.now() - start;
-            return response.setHeader("Total-Time", total.toString())
+            return response.withHeader("Total-Time", total.toString())
         });
     };
 

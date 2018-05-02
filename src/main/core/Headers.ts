@@ -42,7 +42,6 @@ export enum HeaderValues {
     APPLICATION_JSON = "application/json",
     CACHE_CONTROL_MAX_STALE = "max-stale=",
     CACHE_CONTROL_MIN_FRESH = "min-fresh=",
-    CACHE_CONTROL_NO_TRANSFORM = "no-transform",
     CACHE_CONTROL_ONLY_IF_CACHED = "only-if-cached",
     FORM = "application/x-www-form-urlencoded",
     TEXT_PLAIN = "text/plain",
@@ -56,7 +55,6 @@ export enum HeaderValues {
     // Response
     CACHE_CONTROL_OFF = "no-cache, no-store, must-revalidate",
     CACHE_CONTROL_MUST_REVALIDATE = "must-revalidate",
-    CACHE_CONTROL_NO_TRANSFORM = "no-transform",
     CACHE_CONTROL_PUBLIC = "public",
     CACHE_CONTROL_PRIVATE = "private",
     CACHE_CONTROL_PROXY_REVALIDATE = "proxy-revalidate",
@@ -68,7 +66,8 @@ export enum HeaderValues {
     // Request and Response
     CACHE_CONTROL_NO_CACHE = "no-cache",
     CACHE_CONTROL_NO_STORE = "no-store",
-    CACHE_CONTROL_MAX_AGE = "max-age="
+    CACHE_CONTROL_MAX_AGE = "max-age=",
+    CACHE_CONTROL_NO_TRANSFORM = "no-transform"
 
     /*
      see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control

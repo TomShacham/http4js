@@ -2,8 +2,9 @@ import {Body} from "./Body";
 import {Uri} from "./Uri";
 import {isNullOrUndefined} from "util";
 import {Headers, HeaderValues} from "./Headers";
+import {HttpMessage} from "./HttpMessage";
 
-export class Request {
+export class Request implements HttpMessage {
 
     uri: Uri;
     method: string;
@@ -37,18 +38,18 @@ export class Request {
         return this;
     }
 
-    setUri(uri: Uri | string): Request {
+    withUri(uri: Uri | string): Request {
         const request = Request.clone(this);
         request.uri = typeof uri == "string" ? Uri.of(uri) : uri;
         return request;
     }
 
-    getHeader(name: string): string {
+    header(name: string): string {
         const request = Request.clone(this);
         return request.headers[name.toLowerCase()];
     }
 
-    setHeader(name: string, value: string): Request {
+    withHeader(name: string, value: string): Request {
         const request = Request.clone(this);
         const caseInsensitiveName = name.toLowerCase();
         if (request.headers[caseInsensitiveName] == null) {
@@ -73,7 +74,7 @@ export class Request {
         return request;
     }
 
-    setBody(body: Body | string): Request {
+    withBody(body: Body | string): Request {
         const request = Request.clone(this);
         typeof body == "string"
             ? request.body.bytes = body
@@ -81,9 +82,9 @@ export class Request {
         return request;
     }
 
-    setFormField(name: string, value: string | string[]): Request {
+    withFormField(name: string, value: string | string[]): Request {
         const request = Request.clone(this);
-        if (!request.getHeader(Headers.CONTENT_TYPE)) request.setHeader(Headers.CONTENT_TYPE, HeaderValues.FORM);
+        if (!request.header(Headers.CONTENT_TYPE)) request.withHeader(Headers.CONTENT_TYPE, HeaderValues.FORM);
         if (request.form[name]) {
             typeof (request.form[name]) == "string"
                 ? request.form[name] = [request.form[name], value]
@@ -94,9 +95,9 @@ export class Request {
         return request;
     }
 
-    setForm(form: object) {
+    withForm(form: object) {
         const request = Request.clone(this);
-        if (!request.getHeader(Headers.CONTENT_TYPE)) request.setHeader(Headers.CONTENT_TYPE, HeaderValues.FORM);
+        if (!request.header(Headers.CONTENT_TYPE)) request.withHeader(Headers.CONTENT_TYPE, HeaderValues.FORM);
         request.form = form;
         return request;
     }
@@ -119,14 +120,14 @@ export class Request {
         return reduce.join("&")
     }
 
-    setQuery(name: string, value: string): Request {
+    withQuery(name: string, value: string): Request {
         const request = Request.clone(this);
         request.queries[name] = value;
         request.uri = request.uri.withQuery(name, value);
         return request;
     }
 
-    getQuery(name: string): string {
+    query(name: string): string {
         const request = Request.clone(this);
         return request.queries[name];
     }

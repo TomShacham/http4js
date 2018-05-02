@@ -40,7 +40,7 @@ function get(request: Request): Promise<Response> {
             });
             res.on('end', () => {
                 const body = new Body(Buffer.concat(chunks));
-                const response = new Response(res.statusCode, body).setHeaders(res.headers);
+                const response = new Response(res.statusCode, body).withHeaders(res.headers);
                 return succ(response);
             });
         }).end();
@@ -50,7 +50,7 @@ function get(request: Request): Promise<Response> {
 function wire(request: Request) {
     const options = request.uri.asNativeNodeRequest;
     options['headers'] = request.headers;
-    options.method = request.method;
+    options['method'] = request.method;
 
     return new Promise(succ => {
         const clientRequest = http.request(options, (res) => {
@@ -60,7 +60,7 @@ function wire(request: Request) {
             });
             res.on('end', () => {
                 const body = new Body(Buffer.concat(chunks));
-                const response = new Response(res.statusCode, body).setHeaders(res.headers);
+                const response = new Response(res.statusCode, body).withHeaders(res.headers);
                 return succ(response);
             });
         });
