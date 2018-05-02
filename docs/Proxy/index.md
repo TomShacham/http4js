@@ -28,8 +28,8 @@ const upstream = routes(".*", ".*", (req: Request) => {
     .start();
 
 const proxy = routes(".*", ".*", (req: Request) => {
-    const rewrittenRequest = req.setUri("http://localhost:3001/")
-        .setHeader("x-proxy", "header from proxy");
+    const rewrittenRequest = req.withUri("http://localhost:3001/")
+        .withHeader("x-proxy", "header from proxy");
     console.log("*** REWRITTEN REQUEST ***");
     console.log(rewrittenRequest);
     return HttpClient(rewrittenRequest);

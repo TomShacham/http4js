@@ -111,6 +111,5 @@ npm test
 
 - document 
   - withRoutes
-  - approval testing and fakes
   - using express / koa backends
 - write a tutorial to complement docs

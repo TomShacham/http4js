@@ -22,7 +22,7 @@ For example we might want to set a header on a `Request` but then replace it:
 
 ```typescript
 const request = new Request(Method.GET, "/")
-                    .setHeader(Headers.EXPIRES, "max-age=60")
+                    .withHeader(Headers.EXPIRES, "max-age=60")
                     
 const noMaxAgeRequest = request.replaceHeader(Headers.EXPIRES, "max-age=0");
 ```
@@ -38,7 +38,7 @@ getTo("/" , (req: Request) => {
 })
 
 function doSomethingOverThere(req: Request): number {
-    req.setHeader(Headers.CACHE_CONTROL, "no-cache, no-store, must-revalidate")
+    req.withHeader(Headers.CACHE_CONTROL, "no-cache, no-store, must-revalidate")
     return Math.random();
 }
 ```
@@ -55,37 +55,37 @@ The full api is as follows:
 ```typescript
 
 class Request {
-    setUri(uri: Uri | string): Request
+    withUri(uri: Uri | string): Request
     
-    getHeader(name: string): string 
+    header(name: string): string 
     
-    setHeader(name: string, value: string): Request 
+    withHeader(name: string, value: string): Request 
     
     replaceHeader(name: string, value: string): Request 
     
     removeHeader(name: string): Request
     
-    setBody(body: Body | string): Request
+    withBody(body: Body | string): Request
     
-    setFormField(name: string, value: string | string[]): Request 
+    withFormField(name: string, value: string | string[]): Request 
     
-    setForm(form: object): Request 
+    withForm(form: object): Request 
     
     bodyString(): string 
     
     formBodystring(): string 
     
-    setQuery(name: string, value: string): Request
+    withQuery(name: string, value: string): Request
     
-    getQuery(name: string): string
+    query(name: string): string
 }
 
 class Response {
-    getHeader(name: string): string
+    header(name: string): string
 
-    setHeader(name: string, value: string): Response 
+    withHeader(name: string, value: string): Response 
 
-    setHeaders(headers: object): Response 
+    withHeaders(headers: object): Response 
 
     replaceAllHeaders(headers: object): Response 
 
@@ -93,7 +93,7 @@ class Response {
 
     removeHeader(name: string): Response 
 
-    setBody(body: Body | string): Response 
+    withBody(body: Body | string): Response 
 
     bodyString(): string 
 }

@@ -53,11 +53,11 @@ getTo("/",
     (req: Request) => Promise.resolve(new Response(200, "OK")) //handler
 )
     .withFilter((handler: HttpHandler) => (req: Request) => {
-        return handler(req.setHeader("Filter-header", "Tom was here"))
+        return handler(req.withHeader("Filter-header", "Tom was here"))
     })
 ```
 
-which sets a header on every incoming `Request`.
+which withs a header on every incoming `Request`.
 
 # In built filters
 
@@ -65,14 +65,14 @@ We expose a few typically useful filters:
 
 ```typescript
 static UPGRADE_TO_HTTPS: Filter = (handler: HttpHandler) => (req: Request) => {
-    return handler(req.setUri(req.uri.withProtocol("https")));
+    return handler(req.withUri(req.uri.withProtocol("https")));
 };
 
 static TIMING: Filter = (handler: HttpHandler) => (req: Request) => {
     const start = Date.now();
     return handler(req).then(response => {
         const total = Date.now() - start;
-        return response.setHeader("Total-Time", total.toString())
+        return response.withHeader("Total-Time", total.toString())
     });
 };
 
