@@ -18,7 +18,7 @@ export enum Headers {
     X_FORWARDED_Host = "X-Forwarded-Host",
     X_CSRF_TOKEN = "X-Csrf-Token",
 
-    //Response headers
+        //Response headers
     ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin",
     ACCESS_CONTROL_ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials",
     ACCESS_CONTROL_EXPOSE_HEADERS = "Access-Control-Expose-Headers",
@@ -37,7 +37,13 @@ export enum Headers {
 }
 
 export enum HeaderValues {
+
+    // Request
     APPLICATION_JSON = "application/json",
+    CACHE_CONTROL_MAX_STALE = "max-stale=",
+    CACHE_CONTROL_MIN_FRESH = "min-fresh=",
+    CACHE_CONTROL_NO_TRANSFORM = "no-transform",
+    CACHE_CONTROL_ONLY_IF_CACHED = "only-if-cached",
     FORM = "application/x-www-form-urlencoded",
     TEXT_PLAIN = "text/plain",
     TEXT_HTML = "text/html",
@@ -46,5 +52,26 @@ export enum HeaderValues {
     IMAGE_PNG = "image/png",
     AUDIO_MPEG = "audio/mpeg",
     VIDEO_MP4 = "video/mp4",
+
+    // Response
+    CACHE_CONTROL_OFF = "no-cache, no-store, must-revalidate",
+    CACHE_CONTROL_MUST_REVALIDATE = "must-revalidate",
+    CACHE_CONTROL_NO_TRANSFORM = "no-transform",
+    CACHE_CONTROL_PUBLIC = "public",
+    CACHE_CONTROL_PRIVATE = "private",
+    CACHE_CONTROL_PROXY_REVALIDATE = "proxy-revalidate",
+    CACHE_CONTROL_S_MAX_AGE = "s-maxage=",
+    CACHE_CONTROL_IMMUTABLE = "immutable",
+    CACHE_CONTROL_STALE_WHILE_REVALIDATE = "stale-while-revalidate=",
+    CACHE_CONTROL_STALE_IF_ERROR = "stale-if-error=",
+
+    // Request and Response
+    CACHE_CONTROL_NO_CACHE = "no-cache",
+    CACHE_CONTROL_NO_STORE = "no-store",
+    CACHE_CONTROL_MAX_AGE = "max-age="
+
+    /*
+     see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
+     */
 
 }

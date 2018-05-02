@@ -109,8 +109,6 @@ npm test
 
 #### To do
 
-- refactor client
-- cache control header values
 - document 
   - withRoutes
   - approval testing and fakes
