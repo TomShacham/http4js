@@ -6,13 +6,16 @@ A simple http library for typescript
 
 ## Using in your project
 
-#### To install:
+### To install:
 
 ```
 npm install --save http4js
+#or
+yarn add http4js
 ```
 
-#### Example
+
+####Example
 
 An example server and client
 
@@ -70,21 +73,21 @@ Response {
  */
 ```
 
-#### History and Design
+## History and Design
 
-http4js is a port of [http4k](https://github.com/http4k/http4k): an HTTP toolkit written in Kotlin that enables the serving and consuming of HTTP services in a functional and consistent way. Inspiration for http4js is entirely thanks to [David Denton](https://github.com/daviddenton) and [Ivan Sanchez](https://github.com/s4nchez). Thanks! 
-
-If you wrote a thin API layer that translated the wire representation of HTTP into a few domain objects: Request, Response and Routing, and translated back again, you essentially wind up with the whole of http4js.
+http4js is a port of [http4k](https://github.com/http4k/http4k): 
+an HTTP toolkit written in Kotlin that enables the serving and 
+consuming of HTTP services in a functional and consistent way. 
 
 This seemingly basic idea is the beauty and power of http4js and the SaaF (Server as a Function) concept.
 
-We translate a wire request into a Request object. Our server is a function from Request -> Response, we translate a Response to a wire response. 
+We translate a wire request into a Request object. 
+Our server is a function from Request -> Promise<Response>.
+We translate a Response to a wire response. 
 
-We write all our routing logic with our ResourceRouting domain object. 
-
-Hence we can run server in memory and test our entire stack and therefore the only added benefit of functional testing is to test the translation between wire and domain.
- 
-We inject all of our dependencies to our Server so testing using fakes is easy peasy. We can even write simple fakes of external dependencies and spin them up in memory. 
+We write all our routing logic with our Routing domain object.
+This object allows us to serve requests in memory, or over the wire.
+Hence the only added benefit of functional testing is to test the translation between wire and domain.
 
 
 #### Contributing
@@ -96,15 +99,15 @@ I'd be very happy if you'd like to contribute :)
 ```
 git clone git@github.com:TomShacham/http4js.git  
 cd http4js
-npm install
-tsc; node index.js
+yarn #or npm install
+yarn start #or tsc; node index.js
 ```
 
 #### To test:
 
 ```
-npm install
-npm test
+yarn
+yarn test
 ```
 
 #### To do
