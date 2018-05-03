@@ -4,9 +4,7 @@ import {Response} from "../../main/core/Response";
 import {ExpressServer} from "../../main/servers/ExpressServer";
 import {HttpClient} from "../../main/client/Client";
 import {Request} from "../../main/core/Request";
-import {Body} from "../../main/core/Body";
-import {equal} from "assert";
-import {deepEqual} from "assert";
+import {equal, deepEqual} from "assert";
 const bodyParser = require('body-parser');
 
 

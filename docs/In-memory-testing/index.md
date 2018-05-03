@@ -19,7 +19,7 @@ If we don't start the server then we can still use it to serve requests in memor
 
 ```typescript
 const routing = getTo("/path", (req: Request) => Promise.resolve(new Response(200)))
-    //.asServer(3000)
+    //.asServer()
     //.start()    
     
 routing.serve(new Request("GET", "/path"))

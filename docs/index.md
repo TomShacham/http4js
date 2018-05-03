@@ -21,14 +21,10 @@ A server is simply a route with a function `(Request) => Promise<Response>` atta
 We can choose to keep the server in memory or start it on a port:
 
 ```typescript
-//handler is just a function
-type HttpHandler = (Request) => Promise<Response> 
  
-const handler = (req: Request) => Promise.resolve(new Response(200));
- 
-//server is just a route with a handler
-routes("GET", "/", handler)
-    //.asServer(3000) //if we want to run on a port
+//server is just a route with a handler: (Request) => Promise<Response>
+routes("GET", "/", (req: Request) => Promise.resolve(new Response(200)))
+    //.asServer() //if we want to start the server
     //.start()
 ```
 
@@ -42,8 +38,8 @@ routes("GET", "/", (req: Request) => Promise.resolve(new Response(200))
     .asServer()
     .start();
  
-HttpClient(new Request("GET", "http://localhost:3000/path"))
-    .then(response => console.log(response));
+const response = await HttpClient(new Request("GET", "http://localhost:3000/path"));
+console.log(response);
      
 /*
 Response {
@@ -59,16 +55,16 @@ Response {
 
 ## History and Design
 
-http4js is a port of [http4k](https://github.com/http4k/http4k): an HTTP toolkit written in Kotlin that enables the serving and consuming of HTTP services in a functional and consistent way. Inspiration for http4js is entirely thanks to [David Denton](https://github.com/daviddenton) and [Ivan Sanchez](https://github.com/s4nchez). Thanks! 
-
-If you wrote a thin API layer that translated the wire representation of HTTP into a few domain objects: Request, Response and Routing, and translated back again, you essentially wind up with the whole of http4js.
+http4js is a port of [http4k](https://github.com/http4k/http4k): 
+an HTTP toolkit written in Kotlin that enables the serving and 
+consuming of HTTP services in a functional and consistent way. 
 
 This seemingly basic idea is the beauty and power of http4js and the SaaF (Server as a Function) concept.
 
-We translate a wire request into a Request object. Our server is a function from Request -> Response, we translate a Response to a wire response. 
+We translate a wire request into a Request object. 
+Our server is a function from Request -> Promise<Response>.
+We translate a Response to a wire response. 
 
-We write all our routing logic with our ResourceRouting domain object. 
-
-Hence we can run server in memory and test our entire stack and therefore the only added benefit of functional testing is to test the translation between wire and domain.
- 
-We inject all of our dependencies to our Server so testing using fakes is easy peasy. We can even write simple fakes of external dependencies and spin them up in memory. 
+We write all our routing logic with our Routing domain object.
+This object allows us to serve requests in memory, or over the wire.
+Hence the only added benefit of functional testing is to test the translation between wire and domain.

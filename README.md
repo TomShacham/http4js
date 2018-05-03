@@ -109,7 +109,8 @@ npm test
 
 #### To do
 
-- document 
-  - withRoutes
-  - using express / koa backends
-- write a tutorial to complement docs
+- update example app
+- write skeleton app
+- move over to yarn
+
+- write a tutorial 

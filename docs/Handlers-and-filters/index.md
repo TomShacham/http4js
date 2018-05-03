@@ -57,7 +57,7 @@ getTo("/",
     })
 ```
 
-which withs a header on every incoming `Request`.
+which sets a header on every incoming `Request`.
 
 # In built filters
 
@@ -85,7 +85,7 @@ static DEBUG: Filter = (handler: HttpHandler) => (req: Request) => {
 }
 ```
 
-# How it works
+# Under the covers
 
 The way that this hangs together behind the scenes is actually pretty simple.
 If an incoming `Request` path matches a path in our `Routing` then we apply 
