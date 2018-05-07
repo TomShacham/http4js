@@ -1,4 +1,4 @@
-import {getTo} from "../../main/core/Routing";
+import {get} from "../../main/core/Routing";
 import {Request} from "../../main/core/Request";
 import {Response} from "../../main/core/Response";
 import {Body} from "../../main/core/Body";
@@ -10,7 +10,7 @@ describe("native node over the wire", () => {
 
     const baseUrl = "http://localhost:3000";
 
-    const server = getTo("/", (req: Request) => {
+    const server = get("/", (req: Request) => {
         const query = req.query("tomQuery");
         return new Promise(resolve => {
             resolve(

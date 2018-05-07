@@ -30,7 +30,7 @@ export class Uri {
         return URI.format(this.asNativeNodeRequest);
     }
 
-    protocol() {
+    protocol(): string {
         return this.asNativeNodeRequest.protocol.replace(/\:/g, "");
     }
 
@@ -52,7 +52,7 @@ export class Uri {
         }
     }
 
-    path() {
+    path(): string {
         return this.asNativeNodeRequest.pathname;
     }
 
@@ -62,7 +62,7 @@ export class Uri {
         return Uri.of(uri.asUriString());
     }
 
-    hostname() {
+    hostname(): string {
         return this.asNativeNodeRequest.hostname;
     }
 
@@ -72,7 +72,7 @@ export class Uri {
         return Uri.of(uri.asUriString());
     }
 
-    port() {
+    port(): string {
         return this.asNativeNodeRequest.port;
     }
 
@@ -82,7 +82,7 @@ export class Uri {
         return Uri.of(uri.asUriString());
     }
 
-    auth() {
+    auth(): string {
         return this.asNativeNodeRequest.auth;
     }
 

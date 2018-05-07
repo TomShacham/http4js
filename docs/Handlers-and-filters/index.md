@@ -19,7 +19,7 @@ Every route you specify in http4js has a handler attached to it.
 A handler is simply a function `(Request) => Promise<Response>`.
 
 ```typescript
-getTo("/", 
+get("/", 
     (req: Request) => Promise.resolve(new Response(200, "OK")) //handler
 );
 ```
@@ -29,7 +29,7 @@ A filter is simply a function from `(HttpHandler) => HttpHandler` and an
 `HttpHandler` is simply our function `(Request) => Promise<Response>`.
 
 ```typescript
-getTo("/", 
+get("/", 
     (req: Request) => Promise.resolve(new Response(200, "OK")) //handler
 )
     .withFilter((handler: HttpHandler) => (req: Request) => {
@@ -49,7 +49,7 @@ if it is then it will return a custom response: "Page not found".
 If instead of doing something to the response we wanted to do something to the request we might write:
 
 ```typescript
-getTo("/", 
+get("/", 
     (req: Request) => Promise.resolve(new Response(200, "OK")) //handler
 )
     .withFilter((handler: HttpHandler) => (req: Request) => {
@@ -84,6 +84,22 @@ static DEBUG: Filter = (handler: HttpHandler) => (req: Request) => {
    });
 }
 ```
+
+It can really aid debugging if we add the DEBUG filter to our routes. 
+
+```typescript
+return get("/hello", () => Promise.resolve(new Response(200, "Hello, world!")))
+            .withFilter(Filters.TIMING)
+            .withFilter(Filters.DEBUG);
+```
+
+Now we'll see output like this whenever a Request goes through our routes: 
+
+```text
+GET to /hello with response 200
+```
+
+And we can quickly uncover where there is an unexpected flow through our routes.
 
 # Under the covers
 

@@ -3,7 +3,7 @@ import {Response} from "../core/Response";
 import {Request} from "../core/Request";
 import {Body} from "../core/Body";
 
-export function HttpClient(request: Request) {
+export function HttpClient(request: Request): Promise<Response> {
     switch (request.method) {
         case "GET":
             return get(request);
@@ -47,7 +47,7 @@ function get(request: Request): Promise<Response> {
     });
 }
 
-function wire(request: Request) {
+function wire(request: Request): Promise<Response> {
     const options = request.uri.asNativeNodeRequest;
     options['headers'] = request.headers;
     options['method'] = request.method;

@@ -1,5 +1,5 @@
 import {deepStrictEqual, equal} from "assert";
-import {getTo, postTo, routes} from "../../main/core/Routing";
+import {get, post, routes} from "../../main/core/Routing";
 import {Response} from "../../main/core/Response";
 import {Body} from "../../main/core/Body";
 import {Request} from "../../main/core/Request";
@@ -8,7 +8,7 @@ import {HttpHandler} from "../../main/core/HttpMessage";
 describe('routing', () => {
 
     it("takes request and gives response", function () {
-        return getTo("/test", (req: Request) => {
+        return get("/test", (req: Request) => {
             return Promise.resolve(new Response(200, req.body));
         })
             .serve(new Request("GET", "/test", new Body("Got it.")))
@@ -16,7 +16,7 @@ describe('routing', () => {
     });
 
     it("nests handlers", () => {
-        return getTo("/test", () => {
+        return get("/test", () => {
             return Promise.resolve(new Response(200));
         })
             .withHandler("/nest", "GET", () => {
@@ -27,7 +27,7 @@ describe('routing', () => {
     });
 
     it("add a filter", () => {
-        return getTo("/test", () => {
+        return get("/test", () => {
             return Promise.resolve(new Response(200));
         })
             .withFilter(() => {
@@ -40,7 +40,7 @@ describe('routing', () => {
     });
 
     it("chains filters", () => {
-        return getTo("/test", () => {
+        return get("/test", () => {
             return Promise.resolve(new Response(200));
         })
             .withFilter(() => {
@@ -61,7 +61,7 @@ describe('routing', () => {
     });
 
     it("chains filters and handlers", () => {
-        return getTo("/test", () => {
+        return get("/test", () => {
             return Promise.resolve(new Response(200));
         })
             .withHandler("/nest", "GET", () => {
@@ -86,10 +86,10 @@ describe('routing', () => {
     });
 
     it("recursively defining routes", () => {
-        const nested = getTo("/nested", () => {
+        const nested = get("/nested", () => {
             return Promise.resolve(new Response(200).withBody("hi there deeply."));
         });
-        return getTo("/", () => {
+        return get("/", () => {
             return Promise.resolve(new Response(200));
         })
             .withRoutes(nested)
@@ -99,7 +99,7 @@ describe('routing', () => {
     });
 
     it("matches path params only if specified a capture in route", () => {
-        return getTo("/family", () => {
+        return get("/family", () => {
             return Promise.resolve(new Response(200, "losh,bosh,tosh"));
         })
             .serve(new Request("GET", "/family/123"))
@@ -107,7 +107,7 @@ describe('routing', () => {
     });
 
     it("extracts path param", () => {
-        return getTo("/{name}/test", (req) => {
+        return get("/{name}/test", (req) => {
             return Promise.resolve(new Response(200, new Body(req.pathParams["name"])));
         })
             .serve(new Request("GET", "/tom/test"))
@@ -115,7 +115,7 @@ describe('routing', () => {
     });
 
     it("extracts multiple path params", () => {
-        return getTo("/{name}/test/{age}/bob/{personality}/fred", (req) => {
+        return get("/{name}/test/{age}/bob/{personality}/fred", (req) => {
             return new Promise(resolve => resolve(
                 new Response(200, new Body(`${req.pathParams["name"]}, ${req.pathParams["age"]}, ${req.pathParams["personality"]}`))
             ))
@@ -130,7 +130,7 @@ describe('routing', () => {
     });
 
     it("extracts query params", () => {
-        return getTo("/test", (req) => {
+        return get("/test", (req) => {
             const queries = [
                 req.query("tosh"),
                 req.query("bosh"),
@@ -143,7 +143,7 @@ describe('routing', () => {
     });
 
     it("unknown route returns a 404", () => {
-        return getTo("/", () => {
+        return get("/", () => {
             return Promise.resolve(new Response(200, "hello, world!"));
         })
             .serve(new Request("GET", "/unknown"))
@@ -151,7 +151,7 @@ describe('routing', () => {
     });
 
     it("custom 404s using filters", () => {
-        return getTo("/", () => {
+        return get("/", () => {
             return Promise.resolve(new Response(200, "hello, world!"));
         })
             .withFilter((handler: HttpHandler) => {
@@ -174,7 +174,7 @@ describe('routing', () => {
     });
 
     it("ordering - filters apply in order they are declared", () => {
-        return getTo("/", () => {
+        return get("/", () => {
             return Promise.resolve(new Response(200, new Body("hello, world!")));
         }).withFilter((handler) => (req) => {
             return handler(req).then(response => response.replaceHeader("person", "tosh"));
@@ -186,7 +186,7 @@ describe('routing', () => {
     });
 
     it("can add stuff to request using filters", () => {
-        return getTo("/", (req) => {
+        return get("/", (req) => {
             return Promise.resolve(new Response(200, new Body(req.header("pre-filter") || "hello, world!")));
         }).withFilter((handler) => (req) => {
             return handler(req.withHeader("pre-filter", "hello from pre-filter"))
@@ -196,7 +196,7 @@ describe('routing', () => {
     });
 
     it("exact match handler", () => {
-        return getTo("/", () => {
+        return get("/", () => {
             return Promise.resolve(new Response(200, new Body("root")));
         }).withHandler("/family", "GET", () => {
             return Promise.resolve(new Response(200, new Body("exact")));
@@ -211,7 +211,7 @@ describe('routing', () => {
 
     it("Post redirect.", () => {
         const friends = [];
-        const routes = getTo("/", () => {
+        const routes = get("/", () => {
             return Promise.resolve(new Response(200, new Body("root")));
         })
             .withHandler("/family", "GET", () => {
@@ -236,7 +236,7 @@ describe('routing', () => {
     });
 
     it("extract form params", () => {
-        return postTo("/family", (req) => {
+        return post("/family", (req) => {
             return Promise.resolve(new Response(200, new Body(req.form)));
         })
             .serve(new Request("POST", "/family", new Body("p1=1&p2=tom&p3=bosh&p4=losh")).withHeader("Content-Type", "application/x-www-form-urlencoded"))

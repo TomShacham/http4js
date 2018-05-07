@@ -1,4 +1,4 @@
-import {getTo} from "./src/main/core/Routing";
+import {get} from "./src/main/core/Routing";
 import {Response} from "./src/main/core/Response";
 export * from "./dist/core/Routing";
 export * from "./dist/core/Request";
@@ -17,7 +17,7 @@ export * from "./dist/servers/KoaServer";
 
 export * from "./dist/client/Client";
 
-getTo("/path", () => {
+get("/path", () => {
     console.log("HI!");
     return Promise.resolve(new Response(200, "OK"))
 })

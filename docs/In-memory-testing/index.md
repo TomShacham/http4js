@@ -18,7 +18,7 @@
 If we don't start the server then we can still use it to serve requests in memory:
 
 ```typescript
-const routing = getTo("/path", (req: Request) => Promise.resolve(new Response(200)))
+const routing = get("/path", (req: Request) => Promise.resolve(new Response(200)))
     //.asServer()
     //.start()    
     

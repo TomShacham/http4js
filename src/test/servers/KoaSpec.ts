@@ -1,4 +1,4 @@
-import {getTo} from "../../main/core/Routing";
+import {get} from "../../main/core/Routing";
 import {Response} from "../../main/core/Response";
 import {HttpClient} from "../../main/client/Client";
 import {Request} from "../../main/core/Request";
@@ -19,7 +19,7 @@ describe("koa", () => {
 
     const baseUrl = "http://localhost:3002";
 
-    const server = getTo("/", (req: Request) => {
+    const server = get("/", (req: Request) => {
         const query = req.query("tomQuery");
         return Promise.resolve(
             new Response(200, req.bodyString())

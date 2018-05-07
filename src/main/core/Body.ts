@@ -6,7 +6,7 @@ export class Body {
 
     }
 
-    bodyString() {
+    bodyString(): string {
         if (typeof this.bytes == "string") {
             return this.bytes;
         } else {

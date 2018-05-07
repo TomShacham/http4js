@@ -15,7 +15,7 @@ export interface RoutingHttpHandler {
 
 export type MountedHttpHandler = {path: string, verb: string, handler: HttpHandler}
 
-export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
+export class Routing implements RoutingHttpHandler {
 
     server: Http4jsServer;
     private root: string;
@@ -29,17 +29,17 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
         this.handlers.push({path: path, verb: method, handler: handler});
     }
 
-    withRoutes(routes: ResourceRoutingHttpHandler): ResourceRoutingHttpHandler {
+    withRoutes(routes: Routing): Routing {
         this.handlers = this.handlers.concat(routes.handlers);
         return this;
     }
 
-    withFilter(filter: Filter): ResourceRoutingHttpHandler {
+    withFilter(filter: Filter): Routing {
         this.filters.push(filter);
         return this;
     }
 
-    withHandler(path: string, method: string, handler: HttpHandler): ResourceRoutingHttpHandler {
+    withHandler(path: string, method: string, handler: HttpHandler): Routing {
         const existingPath = this.root != "/" ? this.root : "";
         const nestedPath = existingPath + path;
         this.handlers.push({path: nestedPath, verb: method, handler: handler});
@@ -88,26 +88,22 @@ export class ResourceRoutingHttpHandler implements RoutingHttpHandler {
 
 }
 
-export function routes(method: string, path: string, handler: HttpHandler): ResourceRoutingHttpHandler {
-    return new ResourceRoutingHttpHandler(path, method, handler);
+export function routes(method: string, path: string, handler: HttpHandler): Routing {
+    return new Routing(path, method, handler);
 }
 
-export function getTo(path: string, handler: HttpHandler): ResourceRoutingHttpHandler {
-    return new ResourceRoutingHttpHandler(path, "GET", handler);
+export function get(path: string, handler: HttpHandler): Routing {
+    return new Routing(path, "GET", handler);
 }
 
-export function postTo(path: string, handler: HttpHandler): ResourceRoutingHttpHandler {
-    return new ResourceRoutingHttpHandler(path, "POST", handler);
+export function post(path: string, handler: HttpHandler): Routing {
+    return new Routing(path, "POST", handler);
 }
 
-export function putTo(path: string, handler: HttpHandler): ResourceRoutingHttpHandler {
-    return new ResourceRoutingHttpHandler(path, "PUT", handler);
+export function put(path: string, handler: HttpHandler): Routing {
+    return new Routing(path, "PUT", handler);
 }
 
-export function patchTo(path: string, handler: HttpHandler): ResourceRoutingHttpHandler {
-    return new ResourceRoutingHttpHandler(path, "PATCH", handler);
-}
-
-export function deleteTo(path: string, handler: HttpHandler): ResourceRoutingHttpHandler {
-    return new ResourceRoutingHttpHandler(path, "DELETE", handler);
+export function patch(path: string, handler: HttpHandler): Routing {
+    return new Routing(path, "PATCH", handler);
 }

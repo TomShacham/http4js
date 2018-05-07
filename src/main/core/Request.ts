@@ -95,7 +95,7 @@ export class Request implements HttpMessage {
         return request;
     }
 
-    withForm(form: object) {
+    withForm(form: object): Request {
         const request = Request.clone(this);
         if (!request.header(Headers.CONTENT_TYPE)) request.withHeader(Headers.CONTENT_TYPE, HeaderValues.FORM);
         request.form = form;
@@ -150,6 +150,6 @@ export class Request implements HttpMessage {
 export function request(method: string,
                         uri: Uri | string,
                         body: Body | string = new Body(new Buffer("")),
-                        headers = null){
+                        headers = null): Request {
     return new Request(method, uri, body, headers);
 }

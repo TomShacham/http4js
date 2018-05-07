@@ -1,5 +1,5 @@
 import * as express from "express";
-import {getTo} from "../../main/core/Routing";
+import {get} from "../../main/core/Routing";
 import {Response} from "../../main/core/Response";
 import {ExpressServer} from "../../main/servers/ExpressServer";
 import {HttpClient} from "../../main/client/Client";
@@ -21,7 +21,7 @@ describe("express", async() => {
 
     const baseUrl = "http://localhost:3001";
 
-    const server = getTo("/", (req: Request) => {
+    const server = get("/", (req: Request) => {
         const query = req.query("tomQuery");
         return Promise.resolve(
             new Response(200, req.bodyString())

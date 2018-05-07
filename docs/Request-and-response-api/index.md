@@ -32,7 +32,7 @@ state all over our codebase and finding it hard to know where our `Request` or `
 is mutated. For example, it stops the following:
 
 ```typescript
-getTo("/" , (req: Request) => {
+get("/" , (req: Request) => {
     doSomethingOverThere(req)
     return Promise.resolve(new Response(200, req.bodyString()));
 })
