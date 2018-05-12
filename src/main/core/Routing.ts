@@ -85,7 +85,6 @@ export class Routing implements RoutingHttpHandler {
         }
     }
 
-
 }
 
 export function routes(method: string, path: string, handler: HttpHandler): Routing {

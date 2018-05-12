@@ -20,15 +20,6 @@ yarn add http4js
 An example server and client
 
 ```typescript
-import {Status} from "./dist/main/core/Status";
-import {Request} from "./dist/main/core/Request";
-import {HttpHandler} from "./dist/main/core/HttpMessage";
-import {routes} from "./dist/main/core/Routing";
-import {Response} from "./dist/main/core/Response";
-import {HttpClient} from "./dist/main/client/Client";
-import {Uri} from "./dist/main/core/Uri";
-import {Headers} from "./dist/main/core/Headers";
-import {Method} from "./dist/main/core/Methods";
 
 //add csrf token header to every request and vary gzip to every response
 const headerFilter = (handler: HttpHandler) => {
@@ -94,19 +85,8 @@ yarn
 yarn test
 ```
 
-
 ## History and Design
 
-http4js is a port of [http4k](https://github.com/http4k/http4k): 
-an HTTP toolkit written in Kotlin that enables the serving and 
-consuming of HTTP services in a functional and consistent way. 
+http4js is a port of [http4k](https://github.com/http4k/http4k).
 
-This seemingly basic idea is the beauty and power of http4js and the SaaF (Server as a Function) concept.
-
-We translate a wire request into a Request object. 
-Our server is a function from Request -> Promise<Response>.
-We translate a Response to a wire response. 
-
-We write all our routing logic with our Routing domain object.
-This object allows us to serve requests in memory, or over the wire.
-Hence the only added benefit of functional testing is to test the translation between wire and domain.
+The concept is called Server as a Function (SaaF).
