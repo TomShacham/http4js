@@ -1,5 +1,3 @@
-import {get} from "./src/main/core/Routing";
-import {Response} from "./src/main/core/Response";
 export * from "./dist/core/Routing";
 export * from "./dist/core/Request";
 export * from "./dist/core/Response";
@@ -16,10 +14,3 @@ export * from "./dist/servers/ExpressServer";
 export * from "./dist/servers/KoaServer";
 
 export * from "./dist/client/Client";
-
-get("/path", () => {
-    console.log("HI!");
-    return Promise.resolve(new Response(200, "OK"))
-})
-    .asServer()
-    .start();
