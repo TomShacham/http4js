@@ -40,7 +40,7 @@ expressApp.use(bodyParser.urlencoded({extended: true}));
 expressApp.use(bodyParser.json());
 
 expressApp.use((req, res, next) => {
-    res.setHeader("express", "middleware");
+    res.withHeader("express", "middleware");
     next();
 });
 

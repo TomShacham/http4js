@@ -35,8 +35,8 @@ Our test might look something like this:
 describe("unknown routes", () => {
 
     it("404 page if no routes match", async () => {
-        let request = new Request("GET", "/unknown-route");
-        let testApp = new TestApp();
+        const request = new Request("GET", "/unknown-route");
+        const testApp = new TestApp();
 
         const response = await testApp.serve(request);
 

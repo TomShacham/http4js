@@ -28,7 +28,7 @@ test that makes sure we can view a friend one at a time.
 ```typescript
     it("shows one friend at a time", async () => {
         let testApp = new TestApp();
-        await testApp.serve(new Request("POST", "/friends").setForm({name: "Tosh"}));
+        await testApp.serve(new Request("POST", "/friends").withForm({name: "Tosh"}));
         await testApp.approve("one friend",
             new Request("GET", "/friends/Tosh"))
     });
@@ -71,7 +71,7 @@ So again, looking at our test:
     it("shows one friend at a time", async () => {
         let testApp = new TestApp();
         //setup
-        await testApp.serve(new Request("POST", "/friends").setForm({name: "Tosh"}));
+        await testApp.serve(new Request("POST", "/friends").withForm({name: "Tosh"}));
         //approve
         await testApp.approve("one friend",
             new Request("GET", "/friends/Tosh"))
