@@ -116,9 +116,6 @@ serve(request: Request): Promise<Response> {
     const filtered = this.filters.reduce((prev, next) => {
         return next(prev)
     }, matchedHandler.handler);
-    request.pathParams = matchedHandler.path.includes("{")
-        ? Uri.of(matchedHandler.path).extract(request.uri.path()).matches
-        : {};
     return filtered(request);
 }
 ```
@@ -144,3 +141,21 @@ return filtered(request);
 ```
 
 which gives us our final value `Promise<Response>`.
+
+## Why this pattern?
+
+This simple pattern allows us to just compose filters together, which is nice. It means we 
+have to write our filters as being aware of this chain of calls. Hence why a filter has type
+`(HttpHandler) => HttpHandler` and we write them aware of the previous handler. But it also 
+allows us to change the incoming request _as well as_ the outgoing response: 
+
+```typescript
+(handler: HttpHandler /*previous handler*/) => (req: Request) => {
+   const response = handler(req.withHeader("incoming", "new-header")/*add header to incoming request*/);
+   return response.then(response => {  
+       // log outgoing response
+       console.log(`${req.method} to ${req.uri.href} with response ${response.status}`);
+       return response;
+   });
+}
+```

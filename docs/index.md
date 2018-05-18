@@ -34,7 +34,7 @@ Our client has the same interface `(Request) => Promise<Response>`.
 
 ```typescript
  
-routes("GET", "/", (req: Request) => Promise.resolve(new Response(200))
+routes("GET", "/", (req: Request) => Promise.resolve(new Response(200)))
     .asServer()
     .start();
  
