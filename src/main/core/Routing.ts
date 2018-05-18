@@ -31,6 +31,7 @@ export class Routing implements RoutingHttpHandler {
 
     withRoutes(routes: Routing): Routing {
         this.handlers = this.handlers.concat(routes.handlers);
+        this.filters = this.filters.concat(routes.filters);
         return this;
     }
 

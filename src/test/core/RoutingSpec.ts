@@ -79,23 +79,27 @@ describe('routing', () => {
             })
             .serve(new Request("GET", "/test/nest"))
             .then(response => {
-                equal(response.body.bodyString(), "nested");
+                equal(response.bodyString(), "nested");
                 equal(response.header("a"), "filter1");
                 equal(response.header("another"), "filter2");
             })
     });
 
-    it("recursively defining routes", () => {
+    it("withRoutes mounts handlers and filters", async () => {
         const nested = get("/nested", () => {
             return Promise.resolve(new Response(200).withBody("hi there deeply."));
-        });
-        return get("/", () => {
+        }).withFilter((handler) => (req) => handler(req).then(response => response.withHeader("nested", "routes")));
+
+        const response = await get("/", () => {
             return Promise.resolve(new Response(200));
         })
+            .withFilter((handler) => (req) => handler(req).then(response => response.withHeader("top-level", "routes")))
             .withRoutes(nested)
-            .serve(new Request("GET", "/nested"))
-            .then(response => equal(response.bodyString(), "hi there deeply."))
+            .serve(new Request("GET", "/nested"));
 
+        equal(response.header("top-level"), "routes");
+        equal(response.header("nested"), "routes");
+        equal(response.bodyString(), "hi there deeply.");
     });
 
     it("matches path params only if specified a capture in route", () => {

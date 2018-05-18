@@ -21,20 +21,22 @@ An example server and client
 
 ```typescript
 
-//add csrf token header to every request and vary gzip to every response
-const headerFilter = (handler: HttpHandler) => {
-    return (req: Request) => {
-        return handler(req.setHeader(Headers.X_CSRF_TOKEN, Math.random()))
-            .then(response => response.setHeader(Headers.VARY, "gzip"));
-    }
-};
-
 //define our server routes and start on port 3000
-routes(Method.GET, ".*", (req: Request) => {
+//GET to any path returns `GET to {PATH} with req headers {HEADERS}`
+const routing = routes(Method.GET, ".*", (req: Request) => {
     const html = `<h1>${req.method} to ${req.uri.path()} with req headers ${Object.keys(req.headers)}</h1>`;
     return Promise.resolve(new Response(Status.OK, html));
 })
-    .withFilter(headerFilter)
+
+//add csrf token header to every request and vary gzip to every response
+const headerFilter = (handler: HttpHandler) => {
+    return (req: Request) => {
+        return handler(req.withHeader(Headers.X_CSRF_TOKEN, Math.random()))
+            .then(response => response.withHeader(Headers.VARY, "gzip"));
+    }
+};
+
+routing.withFilter(headerFilter)
     .asServer()
     .start();
 
