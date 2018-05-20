@@ -19,7 +19,7 @@ describe('routing', () => {
         return get("/test", () => {
             return Promise.resolve(new Response(200));
         })
-            .withHandler("/nest", "GET", () => {
+            .withHandler("GET", "/nest", () => {
                 return Promise.resolve(new Response(200, new Body("nested")));
             })
             .serve(new Request("GET", "/test/nest"))
@@ -64,7 +64,7 @@ describe('routing', () => {
         return get("/test", () => {
             return Promise.resolve(new Response(200));
         })
-            .withHandler("/nest", "GET", () => {
+            .withHandler("GET", "/nest", () => {
                 return Promise.resolve(new Response(200, new Body("nested")));
             })
             .withFilter((handler: HttpHandler) => {
@@ -202,11 +202,11 @@ describe('routing', () => {
     it("exact match handler", () => {
         return get("/", () => {
             return Promise.resolve(new Response(200, new Body("root")));
-        }).withHandler("/family", "GET", () => {
+        }).withHandler("GET", "/family", () => {
             return Promise.resolve(new Response(200, new Body("exact")));
-        }).withHandler("/family/{name}", "GET", () => {
+        }).withHandler("GET", "/family/{name}", () => {
             return Promise.resolve(new Response(200, new Body("fuzzy")));
-        }).withHandler("/family", "POST", () => {
+        }).withHandler("POST", "/family", () => {
             return Promise.resolve(new Response(200, new Body("post")));
         })
             .serve(new Request("GET", "/family"))
@@ -218,13 +218,13 @@ describe('routing', () => {
         const routes = get("/", () => {
             return Promise.resolve(new Response(200, new Body("root")));
         })
-            .withHandler("/family", "GET", () => {
+            .withHandler("GET", "/family", () => {
                 return Promise.resolve(new Response(200, new Body(friends.join(", "))));
             })
-            .withHandler("/family/{name}", "GET", () => {
+            .withHandler("GET", "/family/{name}", () => {
                 return Promise.resolve(new Response(200, new Body("fuzzy")));
             })
-            .withHandler("/family", "POST", (req) => {
+            .withHandler("POST", "/family", (req) => {
                 friends.push(req.form["name"]);
                 return Promise.resolve(new Response(302).withHeader("Location", "/family"));
             });

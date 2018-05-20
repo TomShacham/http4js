@@ -22,8 +22,8 @@ export class Routing implements RoutingHttpHandler {
     private handlers: MountedHttpHandler[] = [];
     private filters: Array<(HttpHandler) => HttpHandler> = [];
 
-    constructor(path: string,
-                method: string,
+    constructor(method: string,
+                path: string,
                 handler: HttpHandler) {
         this.root = path;
         this.handlers.push({path: path, verb: method, handler: handler});
@@ -40,7 +40,7 @@ export class Routing implements RoutingHttpHandler {
         return this;
     }
 
-    withHandler(path: string, method: string, handler: HttpHandler): Routing {
+    withHandler(method: string, path: string, handler: HttpHandler): Routing {
         const existingPath = this.root != "/" ? this.root : "";
         const nestedPath = existingPath + path;
         this.handlers.push({path: nestedPath, verb: method, handler: handler});
@@ -89,21 +89,21 @@ export class Routing implements RoutingHttpHandler {
 }
 
 export function routes(method: string, path: string, handler: HttpHandler): Routing {
-    return new Routing(path, method, handler);
+    return new Routing(method, path, handler);
 }
 
 export function get(path: string, handler: HttpHandler): Routing {
-    return new Routing(path, "GET", handler);
+    return new Routing("GET", path, handler);
 }
 
 export function post(path: string, handler: HttpHandler): Routing {
-    return new Routing(path, "POST", handler);
+    return new Routing("POST", path, handler);
 }
 
 export function put(path: string, handler: HttpHandler): Routing {
-    return new Routing(path, "PUT", handler);
+    return new Routing("PUT", path, handler);
 }
 
 export function patch(path: string, handler: HttpHandler): Routing {
-    return new Routing(path, "PATCH", handler);
+    return new Routing("PATCH", path, handler);
 }
