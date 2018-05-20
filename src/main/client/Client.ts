@@ -1,7 +1,6 @@
 import * as http from 'http';
 import {Response} from "../core/Response";
 import {Request} from "../core/Request";
-import {Body} from "../core/Body";
 
 export function HttpClient(request: Request): Promise<Response> {
     switch (request.method) {
@@ -32,19 +31,17 @@ function get(request: Request): Promise<Response> {
     const options = request.uri.asNativeNodeRequest;
     options['headers'] = request.headers;
 
-    return new Promise(succ => {
+    return new Promise(resolve => {
         http.request(options, (res) => {
             const chunks = [];
             res.on('data', (chunk) => {
                 chunks.push(chunk);
             });
             res.on('end', () => {
-                const body = new Body(Buffer.concat(chunks));
-                const response = new Response(res.statusCode, body).withHeaders(res.headers);
-                return succ(response);
+                return resolve(new Response(res.statusCode, Buffer.concat(chunks).toString(), res.headers));
             });
         }).end();
-    });
+    }).catch(rej => console.log(rej));
 }
 
 function wire(request: Request): Promise<Response> {
@@ -52,19 +49,17 @@ function wire(request: Request): Promise<Response> {
     options['headers'] = request.headers;
     options['method'] = request.method;
 
-    return new Promise(succ => {
+    return new Promise(resolve => {
         const clientRequest = http.request(options, (res) => {
             const chunks = [];
             res.on('data', (chunk) => {
                 chunks.push(chunk);
             });
             res.on('end', () => {
-                const body = new Body(Buffer.concat(chunks));
-                const response = new Response(res.statusCode, body).withHeaders(res.headers);
-                return succ(response);
+                return resolve(new Response(res.statusCode, Buffer.concat(chunks).toString(), res.headers));
             });
         });
         clientRequest.write(request.bodyString());
         clientRequest.end();
-    });
+    }).catch(rej => console.log(rej));
 }

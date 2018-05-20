@@ -47,7 +47,7 @@ function doSomethingOverThere(req: Request): number {
 where our function `doSomethingOverThere` takes a `Request` and tries to set a cache control directive
 but is actually doing something else - returning a number. Because `doSomethingOverThere` doesn't return
 the `Request` explicitly and because `Request` is immutable, it actually has no effect on the `Request`
-used in `new Response(200, req.bodyString())` because `Request` is immutable.
+used in `new Response(200, req.body)` because `Request` is immutable.
 
 ## API
 
@@ -66,7 +66,7 @@ class Request {
     
     removeHeader(name: string): Request
     
-    withBody(body: Body | string): Request
+    withBody(body: string): Request
     
     withFormField(name: string, value: string | string[]): Request 
     
@@ -94,7 +94,7 @@ class Response {
 
     removeHeader(name: string): Response 
 
-    withBody(body: Body | string): Response 
+    withBody(body: string): Response 
 
     bodyString(): string 
 }

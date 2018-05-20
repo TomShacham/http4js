@@ -1,4 +1,3 @@
-import {Body} from "./Body";
 import {Uri} from "./Uri";
 import {isNullOrUndefined} from "util";
 import {Headers, HeaderValues} from "./Headers";
@@ -9,28 +8,22 @@ export class Request implements HttpMessage {
     uri: Uri;
     method: string;
     headers: object = {};
-    body: Body;
+    body: string;
     queries = {};
     pathParams: object;
     form: object = {};
 
     constructor(method: string,
                 uri: Uri | string,
-                body: Body | string = "",
-                headers = null) {
+                body: string = "",
+                headers = {}) {
         this.method = method.toUpperCase();
-        if (typeof uri == "string") {
-            this.uri = Uri.of(uri);
-        } else {
-            this.uri = uri;
-        }
-        this.body = typeof body == "string"
-            ? new Body(body)
-            : body;
+        this.uri = typeof uri == "string" ? Uri.of(uri) : uri;
+        this.body = body;
         this.headers = headers ? headers : {};
         this.queries = this.getQueryParams();
         if (this.method == "POST") {
-            this.body.bodyString().split("&").map(kv => {
+            this.body.split("&").map(kv => {
                 const strings = kv.split("=");
                 if (strings.length > 1) this.form[strings[0]] = strings[1];
             })
@@ -74,11 +67,9 @@ export class Request implements HttpMessage {
         return request;
     }
 
-    withBody(body: Body | string): Request {
+    withBody(body: string): Request {
         const request = Request.clone(this);
-        typeof body == "string"
-            ? request.body.bytes = body
-            : request.body = body;
+        request.body = body;
         return request;
     }
 
@@ -106,11 +97,11 @@ export class Request implements HttpMessage {
         if (Object.keys(this.form).length > 0) {
             return this.formBodystring();
         } else {
-            return this.body.bodyString();
+            return this.body;
         }
     }
 
-    formBodystring() {
+    formBodystring(): string {
         let reduce = Object.keys(this.form).reduce((bodyParts, field) => {
             typeof (this.form[field]) == "object"
                 ? this.form[field].map(value => bodyParts.push(`${field}=${value}`))
@@ -149,7 +140,7 @@ export class Request implements HttpMessage {
 
 export function request(method: string,
                         uri: Uri | string,
-                        body: Body | string = new Body(new Buffer("")),
-                        headers = null): Request {
+                        body: string = "",
+                        headers = {}): Request {
     return new Request(method, uri, body, headers);
 }

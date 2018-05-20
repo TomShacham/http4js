@@ -84,7 +84,7 @@ Once we have a `Request` we pass it to our `Routing` and get our
 Here is the code for the Express backend:
 
 ```typescript
-    registerCatchAllHandler(routing: RoutingHttpHandler): void {
+    registerCatchAllHandler(routing: Routing): void {
         this.routing = routing;
         this.server.use((req, res, next) => {
             const {headers, method, url} = req;
@@ -93,16 +93,16 @@ Here is the code for the Express backend:
             const response = this.createInMemResponse(body, method, url, headers);
             response.then(response => {
                 Object.keys(response.headers).forEach(header => res.setHeader(header, response.headers[header]));
-                res.end(response.body.bytes);
+                res.end(response.bodyString());
             });
             next();
         });
     }
 
-    private createInMemResponse(chunks: Array<any>, method: any, url: any, headers: any): Promise<Response> {
+    private createInMemResponse(chunks: Array<any>, method: string, url: string, headers: {}): Promise<Response> {
         const inMemRequest = headers['content-type'] == 'application/x-www-form-urlencoded'
             ? new Request(method, url, JSON.stringify(chunks), headers).withForm(chunks)
-            : new Request(method, url, new Body(Buffer.concat(chunks)), headers);
+            : new Request(method, url, Buffer.concat(chunks).toString(), headers);
         return this.routing.serve(inMemRequest);
     }
 ```

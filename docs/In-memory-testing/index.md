@@ -25,7 +25,7 @@ const routing = get("/path", (req: Request) => Promise.resolve(new Response(200)
     
 routing.serve(new Request("GET", "/path"))
      
-// Response { headers: {}, body: Body { bytes: '' }, status: 200 }
+// Response { headers: {}, body: '' , status: 200 }
 ```
 
 This allows us to write unit tests that cover routing logic. 
@@ -51,7 +51,7 @@ where our test app is just our app with fake dependencies passed in
 
 ```typescript
 export class TestApp {
-    routes: RoutingHttpHandler;
+    routes: Routing;
 
     constructor(){
         const fakeDb = new FakeDb();

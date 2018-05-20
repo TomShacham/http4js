@@ -1,10 +1,9 @@
-import {Body} from "./Body";
 import {Uri} from "./Uri";
 import {Response} from "./Response";
 
 export interface HttpMessage {
     headers: object;
-    body: Body;
+    body: string;
     uri: Uri;
 
     header(name: string): string;
@@ -15,7 +14,7 @@ export interface HttpMessage {
 
     removeHeader(name: string): HttpMessage
 
-    withBody(body: Body): HttpMessage
+    withBody(body: string): HttpMessage
 
     bodyString(): string
 

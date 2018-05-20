@@ -1,7 +1,6 @@
 import {deepStrictEqual, equal} from "assert";
 import {get, post, routes} from "../../main/core/Routing";
 import {Response} from "../../main/core/Response";
-import {Body} from "../../main/core/Body";
 import {Request} from "../../main/core/Request";
 import {HttpHandler} from "../../main/core/HttpMessage";
 
@@ -11,8 +10,8 @@ describe('routing', () => {
         return get("/test", (req: Request) => {
             return Promise.resolve(new Response(200, req.body));
         })
-            .serve(new Request("GET", "/test", new Body("Got it.")))
-            .then(response => equal(response.body.bodyString(), "Got it."))
+            .serve(new Request("GET", "/test", "Got it."))
+            .then(response => equal(response.bodyString(), "Got it."))
     });
 
     it("nests handlers", () => {
@@ -20,10 +19,10 @@ describe('routing', () => {
             return Promise.resolve(new Response(200));
         })
             .withHandler("GET", "/nest", () => {
-                return Promise.resolve(new Response(200, new Body("nested")));
+                return Promise.resolve(new Response(200, "nested"));
             })
             .serve(new Request("GET", "/test/nest"))
-            .then(response => equal(response.body.bodyString(), "nested"))
+            .then(response => equal(response.bodyString(), "nested"))
     });
 
     it("add a filter", () => {
@@ -32,11 +31,11 @@ describe('routing', () => {
         })
             .withFilter(() => {
                 return () => {
-                    return Promise.resolve(new Response(200, new Body("filtered")));
+                    return Promise.resolve(new Response(200, "filtered"));
                 }
             })
             .serve(new Request("GET", "/test"))
-            .then(response => equal(response.body.bodyString(), "filtered"))
+            .then(response => equal(response.bodyString(), "filtered"))
     });
 
     it("chains filters", () => {
@@ -45,7 +44,7 @@ describe('routing', () => {
         })
             .withFilter(() => {
                 return () => {
-                    return Promise.resolve(new Response(200, new Body("filtered")))
+                    return Promise.resolve(new Response(200, "filtered"))
                 }
             })
             .withFilter((handler: HttpHandler) => {
@@ -55,7 +54,7 @@ describe('routing', () => {
             })
             .serve(new Request("GET", "/test"))
             .then(response => {
-                equal(response.body.bodyString(), "filtered");
+                equal(response.bodyString(), "filtered");
                 equal(response.header("another"), "filter");
             })
     });
@@ -65,7 +64,7 @@ describe('routing', () => {
             return Promise.resolve(new Response(200));
         })
             .withHandler("GET", "/nest", () => {
-                return Promise.resolve(new Response(200, new Body("nested")));
+                return Promise.resolve(new Response(200, "nested"));
             })
             .withFilter((handler: HttpHandler) => {
                 return (req: Request) => {
@@ -112,16 +111,16 @@ describe('routing', () => {
 
     it("extracts path param", () => {
         return get("/{name}/test", (req) => {
-            return Promise.resolve(new Response(200, new Body(req.pathParams["name"])));
+            return Promise.resolve(new Response(200, req.pathParams["name"]));
         })
-            .serve(new Request("GET", "/tom/test"))
-            .then(response => equal(response.bodyString(), "tom"));
+            .serve(new Request("GET", "/tom-param/test"))
+            .then(response => equal(response.bodyString(), "tom-param"));
     });
 
     it("extracts multiple path params", () => {
         return get("/{name}/test/{age}/bob/{personality}/fred", (req) => {
             return new Promise(resolve => resolve(
-                new Response(200, new Body(`${req.pathParams["name"]}, ${req.pathParams["age"]}, ${req.pathParams["personality"]}`))
+                new Response(200, `${req.pathParams["name"]}, ${req.pathParams["age"]}, ${req.pathParams["personality"]}`)
             ))
         })
             .serve(new Request("GET", "/tom/test/26/bob/odd/fred"))
@@ -179,7 +178,7 @@ describe('routing', () => {
 
     it("ordering - filters apply in order they are declared", () => {
         return get("/", () => {
-            return Promise.resolve(new Response(200, new Body("hello, world!")));
+            return Promise.resolve(new Response(200, "hello, world!"));
         }).withFilter((handler) => (req) => {
             return handler(req).then(response => response.replaceHeader("person", "tosh"));
         }).withFilter((handler) => (req) => {
@@ -191,7 +190,7 @@ describe('routing', () => {
 
     it("can add stuff to request using filters", () => {
         return get("/", (req) => {
-            return Promise.resolve(new Response(200, new Body(req.header("pre-filter") || "hello, world!")));
+            return Promise.resolve(new Response(200, req.header("pre-filter" || "hello, world!")));
         }).withFilter((handler) => (req) => {
             return handler(req.withHeader("pre-filter", "hello from pre-filter"))
         })
@@ -201,13 +200,13 @@ describe('routing', () => {
 
     it("exact match handler", () => {
         return get("/", () => {
-            return Promise.resolve(new Response(200, new Body("root")));
+            return Promise.resolve(new Response(200, "root"));
         }).withHandler("GET", "/family", () => {
-            return Promise.resolve(new Response(200, new Body("exact")));
+            return Promise.resolve(new Response(200, "exact"));
         }).withHandler("GET", "/family/{name}", () => {
-            return Promise.resolve(new Response(200, new Body("fuzzy")));
+            return Promise.resolve(new Response(200, "fuzzy"));
         }).withHandler("POST", "/family", () => {
-            return Promise.resolve(new Response(200, new Body("post")));
+            return Promise.resolve(new Response(200, "post"));
         })
             .serve(new Request("GET", "/family"))
             .then(response => equal(response.bodyString(), "exact"))
@@ -216,22 +215,22 @@ describe('routing', () => {
     it("Post redirect.", () => {
         const friends = [];
         const routes = get("/", () => {
-            return Promise.resolve(new Response(200, new Body("root")));
+            return Promise.resolve(new Response(200, "root"));
         })
             .withHandler("GET", "/family", () => {
-                return Promise.resolve(new Response(200, new Body(friends.join(", "))));
+                return Promise.resolve(new Response(200, friends.join(", ")));
             })
             .withHandler("GET", "/family/{name}", () => {
-                return Promise.resolve(new Response(200, new Body("fuzzy")));
+                return Promise.resolve(new Response(200, "fuzzy"));
             })
             .withHandler("POST", "/family", (req) => {
                 friends.push(req.form["name"]);
                 return Promise.resolve(new Response(302).withHeader("Location", "/family"));
             });
 
-        const postSideEffect1 = routes.serve(new Request("POST", "/family", new Body("name=tosh")));
-        const postSideEffect2 = routes.serve(new Request("POST", "/family", new Body("name=bosh")));
-        const postSideEffect3 = routes.serve(new Request("POST", "/family", new Body("name=losh")));
+        const postSideEffect1 = routes.serve(new Request("POST", "/family", "name=tosh"));
+        const postSideEffect2 = routes.serve(new Request("POST", "/family", "name=bosh"));
+        const postSideEffect3 = routes.serve(new Request("POST", "/family", "name=losh"));
 
         return routes.serve(new Request("GET", "/family"))
             .then(response => equal(response.bodyString(), "tosh, bosh, losh"))
@@ -241,11 +240,11 @@ describe('routing', () => {
 
     it("extract form params", () => {
         return post("/family", (req) => {
-            return Promise.resolve(new Response(200, new Body(req.form)));
+            return Promise.resolve(new Response(200, req.form));
         })
-            .serve(new Request("POST", "/family", new Body("p1=1&p2=tom&p3=bosh&p4=losh")).withHeader("Content-Type", "application/x-www-form-urlencoded"))
+            .serve(new Request("POST", "/family", "p1=1&p2=tom&p3=bosh&p4=losh").withHeader("Content-Type", "application/x-www-form-urlencoded"))
             .then(response => {
-                deepStrictEqual(response.body.bytes, {p1: "1", p2: "tom", p3: "bosh", p4: "losh"})
+                deepStrictEqual(response.bodyString(), {p1: "1", p2: "tom", p3: "bosh", p4: "losh"})
             })
     });
 

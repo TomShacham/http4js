@@ -1,7 +1,7 @@
 const URI = require('url');
 
 const pathParamMatchingRegex: RegExp = new RegExp(/\{(\w+)\}/g);
-const pathParamCaptureTemplate: string = "([\\w\\s]+)";
+const pathParamCaptureTemplate: string = "([\\w\\s\-]+)";
 
 export interface NodeURI {
     protocol: string,

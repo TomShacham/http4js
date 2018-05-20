@@ -1,21 +1,14 @@
 import {Response} from "./Response";
 import {HttpHandler} from "./HttpMessage";
 import {Request} from "./Request";
-import {Body} from "./Body";
 import {Uri} from "./Uri";
 import {Filter} from "./Filters";
 import {Http4jsServer} from "../servers/Server";
 import {NativeServer} from "../servers/NativeServer";
 
-export interface RoutingHttpHandler {
-    withFilter(filter: (HttpHandler) => HttpHandler): RoutingHttpHandler
-    asServer(server: Http4jsServer): Http4jsServer
-    serve(request: Request): Promise<Response>
-}
-
 export type MountedHttpHandler = {path: string, verb: string, handler: HttpHandler}
 
-export class Routing implements RoutingHttpHandler {
+export class Routing {
 
     server: Http4jsServer;
     private root: string;

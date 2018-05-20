@@ -56,9 +56,7 @@ Response {
         date: 'Sun, 08 Apr 2018 08:26:20 GMT',
         connection: 'close',
         'transfer-encoding': 'chunked' },
-    body:
-        Body {
-        bytes: <Buffer 3c 68 31 3e 47 45 54 20 74 6f 20 2f 61 6e 79 2f 70 61 74 68 20 77 69 74 68 20 72 65 71 20 68 65 61 64 65 72 73 20 68 6f 73 74 2c 63 6f 6e 6e 65 63 74 ... > },
+    body: ''<h1>GET to /any/path with req headers host,connection,content-type,x-csrf-token</h1>'',
     status: 200 }
     
 //response.bodyString()
@@ -92,3 +90,9 @@ yarn test
 http4js is a port of [http4k](https://github.com/http4k/http4k).
 
 The concept is called Server as a Function (SaaF).
+
+
+#### To do
+
+- document routing api
+  - withRoutes and nested handlers

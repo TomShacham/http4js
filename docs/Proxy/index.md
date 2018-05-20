@@ -83,7 +83,7 @@ Request {
      port: '3001',
      query: null,
      href: 'http://localhost:3001/' },
-  body: Body { bytes: <Buffer > },
+  body: '',
   pathParams: {} }
 
 *** UPSTREAM RESPONSE ***

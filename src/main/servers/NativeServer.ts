@@ -1,15 +1,14 @@
 import * as http from "http";
-import {RoutingHttpHandler} from "../core/Routing";
+import {Routing} from "../core/Routing";
 import {Response} from "../core/Response";
-import {Body} from "../core/Body";
 import {Request} from "../core/Request";
 import {Http4jsServer} from "./Server";
-import {Headers, HeaderValues} from "../core/Headers";
+import {HeaderValues} from "../core/Headers";
 
 export class NativeServer implements Http4jsServer {
     server;
     port: number;
-    routing: RoutingHttpHandler;
+    routing: Routing;
 
     constructor(port: number) {
         this.port = port;
@@ -17,7 +16,7 @@ export class NativeServer implements Http4jsServer {
         return this;
     }
 
-    registerCatchAllHandler(routing: RoutingHttpHandler): void {
+    registerCatchAllHandler(routing: Routing): void {
         this.routing = routing;
         this.server.on("request", (req, res) => {
             const {headers, method, url} = req;
@@ -30,8 +29,8 @@ export class NativeServer implements Http4jsServer {
                 const response = this.createInMemResponse(chunks, method, url, headers);
                 response.then(response => {
                     res.writeHead(response.status, response.headers);
-                    res.end(response.body.bytes);
-                });
+                    res.end(response.bodyString());
+                }).catch(rej => console.log(rej));
             })
         });
     }
@@ -45,10 +44,10 @@ export class NativeServer implements Http4jsServer {
     }
 
     private createInMemResponse(chunks: Array<any>, method: any, url: any, headers: any): Promise<Response> {
-        const body = new Body(Buffer.concat(chunks));
+        const body = Buffer.concat(chunks).toString();
         const form = {};
         if (headers['content-type'] == HeaderValues.FORM) {
-            body.bodyString().split("&").map(keyvalue => {
+            body.split("&").map(keyvalue => {
                 const strings = keyvalue.split("=");
                 const name = strings[0];
                 const value = strings[1];

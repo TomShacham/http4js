@@ -41,7 +41,7 @@ Response {
    { date: 'Sun, 25 Mar 2018 09:24:43 GMT',
      connection: 'close',
      'transfer-encoding': 'chunked' },
-  body: Body { bytes: <Buffer > },
+  body: '',
   status: 200 }
 */
 ```

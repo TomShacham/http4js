@@ -1,18 +1,16 @@
 import {HttpMessage} from "./HttpMessage";
-import {Body} from "./Body";
 import {Uri} from "./Uri";
 
 export class Response implements HttpMessage {
     uri: Uri;
     headers: object = {};
-    body: Body;
+    body: string;
     status: number;
 
-    constructor(status: number = 200, body: Body | string = new Body("")) {
-        this.body = typeof body == "string"
-            ? new Body(body)
-            : body;
+    constructor(status: number = 200, body: string = "", headers: {} = {}) {
         this.status = status;
+        this.body = body;
+        this.headers = headers;
     }
 
     header(name: string): string {
@@ -56,16 +54,14 @@ export class Response implements HttpMessage {
         return response;
     }
 
-    withBody(body: Body | string): Response {
+    withBody(body: string): Response {
         const response = Response.clone(this);
-        typeof body == "string"
-            ? response.body.bytes = body
-            : response.body = body;
+        response.body = body;
         return response;
     }
 
     bodyString(): string {
-        return this.body.bodyString();
+        return this.body;
     }
 
     private static clone(a) {
@@ -74,7 +70,7 @@ export class Response implements HttpMessage {
 
 }
 
-export function response(status: number = 200, body: Body | string = ""): Response {
-    return new Response(status, body);
+export function response(status: number = 200, body: string = "", headers: {} = {}): Response {
+    return new Response(status, body, headers);
 }
 

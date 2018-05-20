@@ -1,7 +1,6 @@
 import {get} from "../../main/core/Routing";
 import {Request} from "../../main/core/Request";
 import {Response} from "../../main/core/Response";
-import {Body} from "../../main/core/Body";
 import {deepEqual, equal} from "assert";
 import {HttpClient} from "../../main/client/Client";
 import {NativeServer} from "../../main/servers/NativeServer";
@@ -14,7 +13,7 @@ describe("native node over the wire", () => {
         const query = req.query("tomQuery");
         return new Promise(resolve => {
             resolve(
-                new Response(200, new Body(req.bodyString()))
+                new Response(200, req.bodyString())
                     .withHeaders(req.headers)
                     .withHeader("tomQuery", query || "no tom query")
             )

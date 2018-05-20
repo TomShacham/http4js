@@ -1,9 +1,7 @@
-import {RoutingHttpHandler} from "../core/Routing";
+import {Routing} from "../core/Routing";
 import {Response} from "../core/Response";
-import {Body} from "../core/Body";
 import {Request} from "../core/Request";
 import {Http4jsServer} from "./Server";
-import {HeaderValues} from "../core/Headers";
 
 export class ExpressServer implements Http4jsServer {
     server;
@@ -17,7 +15,7 @@ export class ExpressServer implements Http4jsServer {
         return this;
     }
 
-    registerCatchAllHandler(routing: RoutingHttpHandler): void {
+    registerCatchAllHandler(routing: Routing): void {
         this.routing = routing;
         this.server.use((req, res, next) => {
             const {headers, method, url} = req;
@@ -26,7 +24,7 @@ export class ExpressServer implements Http4jsServer {
             const response = this.createInMemResponse(body, method, url, headers);
             response.then(response => {
                 Object.keys(response.headers).forEach(header => res.setHeader(header, response.headers[header]));
-                res.end(response.body.bytes);
+                res.end(response.bodyString());
             });
             next();
         });
@@ -35,7 +33,7 @@ export class ExpressServer implements Http4jsServer {
     private createInMemResponse(chunks: Array<any>, method: any, url: any, headers: any): Promise<Response> {
         const inMemRequest = headers['content-type'] == 'application/x-www-form-urlencoded'
             ? new Request(method, url, JSON.stringify(chunks), headers).withForm(chunks)
-            : new Request(method, url, new Body(Buffer.concat(chunks)), headers);
+            : new Request(method, url, Buffer.concat(chunks).toString(), headers);
         return this.routing.serve(inMemRequest);
     }
 
