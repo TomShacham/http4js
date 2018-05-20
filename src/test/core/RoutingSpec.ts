@@ -198,13 +198,13 @@ describe('routing', () => {
             .then(response => equal(response.bodyString(), "hello from pre-filter"))
     });
 
-    it("exact match handler", () => {
+    it("exact match beats fuzzy match", () => {
         return get("/", () => {
             return Promise.resolve(new Response(200, "root"));
-        }).withHandler("GET", "/family", () => {
-            return Promise.resolve(new Response(200, "exact"));
         }).withHandler("GET", "/family/{name}", () => {
             return Promise.resolve(new Response(200, "fuzzy"));
+        }).withHandler("GET", "/family", () => {
+            return Promise.resolve(new Response(200, "exact"));
         }).withHandler("POST", "/family", () => {
             return Promise.resolve(new Response(200, "post"));
         })
@@ -263,5 +263,20 @@ describe('routing', () => {
                 equal(response.bodyString(), "matched");
             })
     });
+
+    it("more precise routing beats less precise", () => {
+        return get("/", () => {
+            return Promise.resolve(new Response(200, "root"));
+        }).withHandler("GET", "/family/{name}", () => {
+            return Promise.resolve(new Response(200, "least precise"));
+        }).withHandler("GET", "/family/{name}/then/more", () => {
+            return Promise.resolve(new Response(200, "most precise"));
+        }).withHandler("POST", "/family/{name}/less", () => {
+            return Promise.resolve(new Response(200, "medium precise"));
+        })
+            .serve(new Request("GET", "/family/shacham/then/more"))
+            .then(response => equal(response.bodyString(), "most precise"))
+    });
+
 
 });

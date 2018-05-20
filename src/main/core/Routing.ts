@@ -58,16 +58,23 @@ export class Routing {
     }
 
     match(request: Request): MountedHttpHandler {
-        const exactMatch = this.handlers.find(it => {
+        const handlersMostPreciseFirst = this.handlersMostPreciseFirst();
+        const exactMatch = handlersMostPreciseFirst.find(it => {
             return request.uri.exactMatch(it.path) && request.method.match(it.verb) != null;
         });
-        const fuzzyMatch = this.handlers.find(it => {
+        const fuzzyMatch = handlersMostPreciseFirst.find(it => {
             if (it.path == "/") return false;
             return it.path.includes("{")
                 && Uri.of(it.path).templateMatch(request.uri.path())
                 && request.method.match(it.verb) != null;
         });
         return exactMatch || fuzzyMatch || this.mountedNotFoundHandler;
+    }
+
+    private handlersMostPreciseFirst (): MountedHttpHandler[] {
+        return this.handlers.sort((h1, h2) => {
+            return h1.path.split("/").length > h2.path.split("/").length ? -1 : 1;
+        });
     }
 
     private mountedNotFoundHandler: MountedHttpHandler = {
