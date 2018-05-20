@@ -3,10 +3,10 @@
 ### Table of Contents
 
 - [Overview](/http4js/#basics)
-- [Intro](/http4js/Intro/#intro)
 - [Handlers and Filters](/http4js/Handlers-and-filters/#handlers-and-filters)
 - [Request and Response API](/http4js/Request-and-response-api/#request-and-response-api)
 - [URI API](/http4js/Uri-api/#uri-api)
+- [Routing API](/http4js/Routing-api/#routing-api)
 - [In Memory Testing](/http4js/In-memory-testing/#in-memory-testing)
 - [Approval testing with fakes](/http4js/Approval-testing-with-fakes/#approval-testing-with-fakes)
 - [Express or Koa Backend](/http4js/Express-or-koa-backend/#express-or-koa-backend)
@@ -159,3 +159,7 @@ allows us to change the incoming request _as well as_ the outgoing response:
    });
 }
 ```
+
+Prev: [Overview](/http4js/#basics)
+
+Next: [Request and Response API](/http4js/Request-and-response-api/#request-and-response-api)

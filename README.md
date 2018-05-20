@@ -94,5 +94,5 @@ The concept is called Server as a Function (SaaF).
 
 #### To do
 
-- document routing api
-  - withRoutes and nested handlers
+- update http4js-eg
+- add nested routes to skeleton app

@@ -15,7 +15,7 @@
     "type": "git",
     "url": "git+https://github.com/tomshacham/http4js.git"
   },
-  "author": "",
+  "author": "Tom Shacham",
   "license": "ISC",
   "keywords": [
     "http",

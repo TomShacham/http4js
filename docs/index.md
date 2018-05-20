@@ -2,44 +2,38 @@
 
 ### Table of Contents
 
-- [Overview](/http4js/#basics)
-- [Intro](/http4js/Intro/#intro)
+- [Overview](/http4js/#intro)
 - [Handlers and Filters](/http4js/Handlers-and-filters/#handlers-and-filters)
 - [Request and Response API](/http4js/Request-and-response-api/#request-and-response-api)
 - [URI API](/http4js/Uri-api/#uri-api)
+- [Routing API](/http4js/Routing-api/#routing-api)
 - [In Memory Testing](/http4js/In-memory-testing/#in-memory-testing)
 - [Approval testing with fakes](/http4js/Approval-testing-with-fakes/#approval-testing-with-fakes)
 - [Express or Koa Backend](/http4js/Express-or-koa-backend/#express-or-koa-backend)
 - [Proxy](/http4js/Proxy/#proxy)
+- [Use in Javascript](/http4js/Use-in-javascript/#how-to-require-and-use-http4js-in-js)
 - [Example App](https://github.com/TomShacham/http4js-eg)
 
-## Basics
+# Intro
 
-http4js provides a server and a client.
+http4js is a thin layer around node http. 
+Within this layer we can happily unit test our routing logic and easily spin up any function `(Request) => Promise<Response>` as a server.  
 
-A server is simply a route with a function `(Request) => Promise<Response>` attached to it.
-We can choose to keep the server in memory or start it on a port:
+## Basic Server
 
-```typescript
- 
-//server is just a route with a handler: (Request) => Promise<Response>
-routes("GET", "/", (req: Request) => Promise.resolve(new Response(200)))
-    //.asServer() //if we want to start the server
-    //.start()
-```
-
-Our client has the same interface `(Request) => Promise<Response>`.
-
-## Hello world
+We can route a path to a handler and start it as a server:
 
 ```typescript
- 
-routes("GET", "/", (req: Request) => Promise.resolve(new Response(200)))
+routes("GET", "/path", (req: Request) => Promise.resolve(new Response(200)))
     .asServer()
     .start();
- 
-const response = await HttpClient(new Request("GET", "http://localhost:3000/path"));
-console.log(response);
+```
+
+Then we can make a call to this endpoint
+
+```typescript
+HttpClient(new Request("GET", "http://localhost:3000/path"))
+    .then(response => console.log(response));
      
 /*
 Response {
@@ -50,21 +44,15 @@ Response {
   body: '',
   status: 200 }
 */
-
 ```
 
-## History and Design
+## What's the big idea?
 
-http4js is a port of [http4k](https://github.com/http4k/http4k): 
-an HTTP toolkit written in Kotlin that enables the serving and 
-consuming of HTTP services in a functional and consistent way. 
+- Having our routing and logic separate from our server and http layer means that we can unit test them away from http so now we do not have to write end to end tests to test our routing. 
+  
+- The only added benefit of end to end tests now is to test the interaction with the http layer. Testing the http layer is very useful for certain situations, like making sure that certain headers are respected by node's http layer, or knowing that a certain query string is valid at the http layer, but to test our app and its logic, we no longer need to have slow and painful end to end tests. 
 
-This seemingly basic idea is the beauty and power of http4js and the SaaF (Server as a Function) concept.
+- `Request` and `Response` are immutable, so you cannot pass a mutable "context" around your code base and mutate it here and there. If you want to jimmy around with the incoming `Request` then you build a new one, luckily every method on `Request` returns a new `Request`, but if you want functions to change your `Request` it obviously has to explicitly return it as `Request` is immutable. The same goes for `Response`.
 
-We translate a wire request into a Request object. 
-Our server is a function from Request -> Promise<Response>.
-We translate a Response to a wire response. 
 
-We write all our routing logic with our Routing domain object.
-This object allows us to serve requests in memory, or over the wire.
-Hence the only added benefit of functional testing is to test the translation between wire and domain.
+Next: [Handlers and Filters](/http4js/Handlers-and-filters/#handlers-and-filters)
