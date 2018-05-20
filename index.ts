@@ -1,7 +1,6 @@
 export * from "./dist/core/Routing";
 export * from "./dist/core/Request";
 export * from "./dist/core/Response";
-export * from "./dist/core/Body";
 export * from "./dist/core/Uri";
 export * from "./dist/core/Headers";
 export * from "./dist/core/HttpMessage";

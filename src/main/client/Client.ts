@@ -41,7 +41,7 @@ function get(request: Request): Promise<Response> {
                 return resolve(new Response(res.statusCode, Buffer.concat(chunks).toString(), res.headers));
             });
         }).end();
-    }).catch(rej => console.log(rej));
+    });
 }
 
 function wire(request: Request): Promise<Response> {
@@ -61,5 +61,5 @@ function wire(request: Request): Promise<Response> {
         });
         clientRequest.write(request.bodyString());
         clientRequest.end();
-    }).catch(rej => console.log(rej));
+    });
 }
