@@ -55,6 +55,25 @@ const hotels = {
 }
 ```
 
+The most specific handler is matched first:
+
+```typescript
+return get("/", () => {
+    return Promise.resolve(new Response(200, "root"));
+}).withHandler("GET", "/family/{name}", () => {
+    return Promise.resolve(new Response(200, "least precise"));
+}).withHandler("GET", "/family/{name}/then/more", () => {
+    return Promise.resolve(new Response(200, "most precise"));
+}).withHandler("POST", "/family/{name}/less", () => {
+    return Promise.resolve(new Response(200, "medium precise"));
+})
+    .serve(new Request("GET", "/family/shacham/then/more"))
+    .then(response => equal(response.bodyString(), "most precise"))
+```
+
+so despite the handler at `/family/{name}/then/more` being declared after the more
+generic handler at `/family/{name}` it is matched first.
+
 Prev: [URI API](/http4js/Uri-api/#uri-api)
 
 Next: [In Memory Testing](/http4js/In-memory-testing/#in-memory-testing)
