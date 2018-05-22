@@ -74,6 +74,48 @@ return get("/", () => {
 so despite the handler at `/family/{name}/then/more` being declared after the more
 generic handler at `/family/{name}` it is matched first.
 
+## Path params
+
+We've seen above how to specify path params:
+
+```typescript
+get("/hotels/{name}/property/{property}", (req) => {
+  return Promise.resolve(new Response(200, req.pathParams))
+}).serve(
+  new Request(Method.GET, "http://localhost:3000/hotels/Tom-Hotel/property/Cola-Beach")
+);
+
+//pathParams: { name: 'Tom-Hotel', property: 'Cola-Beach' }
+```
+
+## Query params
+
+Query params are available in a similar way.
+
+```typescript
+get("/hotels", (req) => {
+  const nameQuery = req.queries['name'];
+  const filteredHotels = hotels.filter(hotel => hotel.name === nameQuery);
+  return Promise.resolve(new Response(200, filteredHotels));
+}).serve(
+  new Request(Method.GET, "http://localhost:3000/hotels").withQuery("name", "Tom Hotel")
+);
+```
+
+## Form params
+
+And form params are available in a similar way too
+
+
+```typescript
+post("/hotels", (req) => {
+  const hotelName = req.form['name'];
+  return Promise.resolve(new Response(200, hotelName));
+}).serve(
+  new Request(Method.POST, "http://localhost:3000/hotels").withFormField("name", "Tom Hotel")
+);
+```
+
 Prev: [URI API](/http4js/Uri-api/#uri-api)
 
 Next: [In Memory Testing](/http4js/In-memory-testing/#in-memory-testing)
