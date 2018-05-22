@@ -70,7 +70,7 @@ export class Response implements HttpMessage {
 
 }
 
-export function response(status: number = 200, body: string = "", headers: {} = {}): Response {
+export function Res(status: number = 200, body: string = "", headers: {} = {}): Response {
     return new Response(status, body, headers);
 }
 

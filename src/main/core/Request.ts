@@ -138,9 +138,9 @@ export class Request implements HttpMessage {
     }
 }
 
-export function request(method: string,
-                        uri: Uri | string,
-                        body: string = "",
-                        headers = {}): Request {
+export function Req(method: string,
+                    uri: Uri | string,
+                    body: string = "",
+                    headers = {}): Request {
     return new Request(method, uri, body, headers);
 }
