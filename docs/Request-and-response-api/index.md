@@ -51,6 +51,17 @@ used in `new Response(200, req.body)` because `Request` is immutable.
 
 ## API
 
+We provide builder functions `Req` and `Res` because `Request` and `Response` 
+conflict with other libraries using the same name, so you might write:
+
+```typescript
+get("/", (req) => Promise.resolve(Res(200, "Hello, world!")))
+    .asServer()
+    .start();
+
+HttpClient(Req("GET", "http://localhost:3000/")).then(res=>console.log(res));
+```
+
 The full api is as follows:
 
 ```typescript
