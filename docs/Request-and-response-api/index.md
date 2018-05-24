@@ -89,6 +89,8 @@ class Request {
     
     withQuery(name: string, value: string): Request
     
+    withQueries(queries: {}): Request
+    
     query(name: string): string
 }
 

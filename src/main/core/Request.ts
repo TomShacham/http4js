@@ -118,9 +118,18 @@ export class Request implements HttpMessage {
         return request;
     }
 
-    query(name: string): string {
+    withQueries(queries: {}): Request {
         const request = Request.clone(this);
-        return request.queries[name];
+        for (let name in queries){
+            const value = queries[name];
+            request.queries[name] = value;
+            request.uri = request.uri.withQuery(name, value);
+        }
+        return request;
+    }
+
+    query(name: string): string {
+        return this.queries[name];
     }
 
     private getQueryParams(): object {

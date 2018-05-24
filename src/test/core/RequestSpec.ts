@@ -113,6 +113,15 @@ describe("in mem request", () => {
             "tom=tosh&ben=bosh")
     });
 
+    it("sets query string using object of key-values", () => {
+        equal(
+            new Request("GET", "/tom")
+                .withQueries({tom: "tosh", ben: "bosh"})
+                .uri
+                .queryString(),
+            "tom=tosh&ben=bosh")
+    });
+
     it("get header is case insensitive", () => {
         equal(
             new Request("GET", "some/url")
