@@ -30,7 +30,7 @@ export class ExpressServer implements Http4jsServer {
         });
     }
 
-    private createInMemResponse(chunks: Array<any>, method: any, url: any, headers: any): Promise<Response> {
+    private createInMemResponse(chunks: any, method: string, url: string, headers: {}): Promise<Response> {
         const inMemRequest = headers['content-type'] == 'application/x-www-form-urlencoded'
             ? new Request(method, url, JSON.stringify(chunks), headers).withForm(chunks)
             : new Request(method, url, Buffer.concat(chunks).toString(), headers);

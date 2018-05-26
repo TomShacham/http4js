@@ -48,12 +48,11 @@ export class Routing {
 
     serve(request: Request): Promise<Response> {
         const matchedHandler = this.match(request);
+        if (matchedHandler.path.includes("{"))
+            request.pathParams = Uri.of(matchedHandler.path).extract(request.uri.path()).matches;
         const filtered = this.filters.reduce((prev, next) => {
             return next(prev)
         }, matchedHandler.handler);
-        request.pathParams = matchedHandler.path.includes("{")
-            ? Uri.of(matchedHandler.path).extract(request.uri.path()).matches
-            : {};
         return filtered(request);
     }
 
@@ -71,7 +70,7 @@ export class Routing {
         return exactMatch || fuzzyMatch || this.mountedNotFoundHandler;
     }
 
-    private handlersMostPreciseFirst (): MountedHttpHandler[] {
+    private handlersMostPreciseFirst(): MountedHttpHandler[] {
         return this.handlers.sort((h1, h2) => {
             return h1.path.split("/").length > h2.path.split("/").length ? -1 : 1;
         });

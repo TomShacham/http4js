@@ -3,15 +3,17 @@ import {isNullOrUndefined} from "util";
 import {Headers, HeaderValues} from "./Headers";
 import {HttpMessage} from "./HttpMessage";
 
+export type KeyValues = {[key:string]: string};
+
 export class Request implements HttpMessage {
 
     uri: Uri;
     method: string;
-    headers: object = {};
+    headers: KeyValues = {};
     body: string;
-    queries = {};
-    pathParams: object;
-    form: object = {};
+    queries: KeyValues = {};
+    pathParams: KeyValues = {};
+    form: {} = {};
 
     constructor(method: string,
                 uri: Uri | string,
@@ -86,7 +88,7 @@ export class Request implements HttpMessage {
         return request;
     }
 
-    withForm(form: object): Request {
+    withForm(form: {}): Request {
         const request = Request.clone(this);
         if (!request.header(Headers.CONTENT_TYPE)) request.withHeader(Headers.CONTENT_TYPE, HeaderValues.FORM);
         request.form = form;
@@ -103,7 +105,7 @@ export class Request implements HttpMessage {
 
     formBodystring(): string {
         let reduce = Object.keys(this.form).reduce((bodyParts, field) => {
-            typeof (this.form[field]) == "object"
+            typeof (this.form[field]) === "object"
                 ? this.form[field].map(value => bodyParts.push(`${field}=${value}`))
                 : bodyParts.push(`${field}=${this.form[field]}`);
             return bodyParts;
@@ -132,7 +134,7 @@ export class Request implements HttpMessage {
         return this.queries[name];
     }
 
-    private getQueryParams(): object {
+    private getQueryParams(): KeyValues {
         if (isNullOrUndefined(this.uri.queryString())) return {};
         const pairs = this.uri.queryString().split("&");
         pairs.map(pair => {

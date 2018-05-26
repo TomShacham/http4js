@@ -3,7 +3,7 @@ import {Uri} from "./Uri";
 
 export class Response implements HttpMessage {
     uri: Uri;
-    headers: object = {};
+    headers: {[key:string]: string} = {};
     body: string;
     status: number;
 

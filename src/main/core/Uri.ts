@@ -1,3 +1,4 @@
+import {KeyValues} from "./Request";
 const URI = require('url');
 
 const pathParamMatchingRegex: RegExp = new RegExp(/\{(\w+)\}/g);
@@ -16,7 +17,7 @@ export interface NodeURI {
 
 export class Uri {
     asNativeNodeRequest: NodeURI;
-    matches: object = {};
+    matches: KeyValues = {};
 
     constructor(template: string) {
         this.asNativeNodeRequest = URI.parse(template);
