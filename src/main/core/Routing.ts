@@ -70,6 +70,34 @@ export class Routing {
         return exactMatch || fuzzyMatch || this.mountedNotFoundHandler;
     }
 
+    withGet(path: string, handler: HttpHandler): Routing {
+        return this.withHandler("GET", path, handler);
+    }
+
+    withPost(path: string, handler: HttpHandler): Routing {
+      return this.withHandler("POST", path, handler);
+    }
+
+    withPut(path: string, handler: HttpHandler): Routing {
+      return this.withHandler("PUT", path, handler);
+    }
+
+    withPatch(path: string, handler: HttpHandler): Routing {
+      return this.withHandler("PATCH", path, handler);
+    }
+
+    withDelete(path: string, handler: HttpHandler): Routing {
+      return this.withHandler("DELETE", path, handler);
+    }
+
+    withOptions(path: string, handler: HttpHandler): Routing {
+      return this.withHandler("OPTIONS", path, handler);
+    }
+
+    withHead(path: string, handler: HttpHandler): Routing {
+      return this.withHandler("HEAD", path, handler);
+    }
+
     private handlersMostPreciseFirst(): MountedHttpHandler[] {
         return this.handlers.sort((h1, h2) => {
             return h1.path.split("/").length > h2.path.split("/").length ? -1 : 1;
@@ -105,4 +133,12 @@ export function put(path: string, handler: HttpHandler): Routing {
 
 export function patch(path: string, handler: HttpHandler): Routing {
     return new Routing("PATCH", path, handler);
+}
+
+export function options(path: string, handler: HttpHandler): Routing {
+    return new Routing("OPTIONS", path, handler);
+}
+
+export function head(path: string, handler: HttpHandler): Routing {
+    return new Routing("HEAD", path, handler);
 }
