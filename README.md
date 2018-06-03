@@ -91,6 +91,7 @@ http4js is a port of [http4k](https://github.com/http4k/http4k).
 
 The concept is called Server as a Function (SaaF).
 
+Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utterly Idle](https://github.com/bodar/utterlyidle)
 
 #### To do
 
