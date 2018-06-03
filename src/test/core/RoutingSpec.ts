@@ -1,7 +1,7 @@
 import {deepStrictEqual, equal} from "assert";
 import {get, post, routes} from "../../main/core/Routing";
-import {Response} from "../../main/core/Response";
-import {Request} from "../../main/core/Request";
+import {Response, Res} from "../../main/core/Response";
+import {Request, Req} from "../../main/core/Request";
 import {HttpHandler} from "../../main/core/HttpMessage";
 
 describe('routing', () => {
@@ -278,5 +278,12 @@ describe('routing', () => {
             .then(response => equal(response.bodyString(), "most precise"))
     });
 
+    it("withX convenience method", async () => {
+        const response = await get("/", async() => Res())
+            .withGet("/tom", async() => Res(200, "Hiyur"))
+            .serve(Req("GET", "/tom"));
+
+        equal(response.bodyString(), "Hiyur");
+    });
 
 });
