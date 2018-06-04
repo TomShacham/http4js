@@ -118,12 +118,14 @@ post("/hotels", async (req) => {
 
 ## Convenience methods
 
+We have `withGet`, `withPost`, etc...
+
 For terseness we can rewrite:
 
 ```typescript
 return get("/", async () => {
     return Res(200, "root");
-}).withHandler("GET", "/family/{name}", async () => {
+}).withHandler("GET", "/family/{name}", async () => { //withHandler
     return Res(200, "least precise");
 })
 ```
@@ -133,7 +135,7 @@ as the following
 ```typescript
 return get("/", async () => {
     return Res(200, "root");
-}).withGet("/family/{name}", async () => {
+}).withGet("/family/{name}", async () => { //withGet
     return Res(200, "least precise");
 })
 ```

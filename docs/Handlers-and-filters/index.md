@@ -20,9 +20,7 @@ Every route you specify in http4js has a handler attached to it.
 A handler is simply a function `(Request) => Promise<Response>`.
 
 ```typescript
-get("/", 
-    (req: Request) => Promise.resolve(new Response(200, "OK")) //handler
-);
+get("/", async (req: Request) => Res(200, "OK")); //handler
 ```
 
 If we want to write a function that sees every incoming `Request` then we write a filter.
@@ -30,17 +28,14 @@ A filter is simply a function from `(HttpHandler) => HttpHandler` and an
 `HttpHandler` is simply our function `(Request) => Promise<Response>`.
 
 ```typescript
-get("/", 
-    (req: Request) => Promise.resolve(new Response(200, "OK")) //handler
-)
-    .withFilter((handler: HttpHandler) => (req: Request) => {
-        return handler(req).then(response => {
-            if (response.status == 404) {
-                return Promise.resolve(new Response(404, "Page not found"));
-            } else {
-                return response;
-            }
-        })
+get("/", async (req: Request) => Res(200, "OK")) //handler
+    .withFilter((handler: HttpHandler) => async (req: Request) => {
+        const response = await handler(req);
+        if (response.status == 404) {
+            return Res(404, "Page not found");
+        } else {
+            return response;
+        }
     })
 ```
 
@@ -50,9 +45,7 @@ if it is then it will return a custom response: "Page not found".
 If instead of doing something to the response we wanted to do something to the request we might write:
 
 ```typescript
-get("/", 
-    (req: Request) => Promise.resolve(new Response(200, "OK")) //handler
-)
+get("/", async (req: Request) => Res(200, "OK")) //handler
     .withFilter((handler: HttpHandler) => (req: Request) => {
         return handler(req.withHeader("Filter-header", "Tom was here"))
     })
@@ -89,7 +82,7 @@ static DEBUG: Filter = (handler: HttpHandler) => (req: Request) => {
 It can really aid debugging if we add the DEBUG filter to our routes. 
 
 ```typescript
-return get("/hello", () => Promise.resolve(new Response(200, "Hello, world!")))
+return get("/hello", async () => Res(200, "Hello, world!"))
             .withFilter(Filters.TIMING)
             .withFilter(Filters.DEBUG);
 ```

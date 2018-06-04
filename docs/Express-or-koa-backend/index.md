@@ -22,7 +22,7 @@ to and from node's in-built http layer. But http4js also provides a
 way to hook into Express or Koa, allowing you to use their features.
 
 ```typescript
-get("/path", () => Promise.resolve(new Response(200, "OK")))
+get("/path", async () => Res(200, "OK"))
     .asServer(new NativeServer(3001)) // default value
     .start();
 ```
@@ -44,7 +44,7 @@ expressApp.use((req, res, next) => {
     next();
 });
 
-get("/path", () => Promise.resolve(new Response(200, "OK")))
+get("/path", async () => Res(200, "OK"))
     .asServer(new ExpressServer(expressApp, 3001));
 
 ```
@@ -65,7 +65,7 @@ koaApp.use((ctx, next) => {
     next();
 });
 
-get("/path", () => Promise.resolve(new Response(200, "OK")))
+get("/path", async () => Res(200, "OK"))
     .asServer(new KoaServer(koaApp, 3002))
     .start();
 ```
