@@ -95,5 +95,6 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 
 #### To do
 
+- copy package.json into dist 
 - update http4js-eg
 - add nested routes to skeleton app

@@ -1,6 +1,6 @@
 import * as express from "express";
 import {get} from "../../main/core/Routing";
-import {Response} from "../../main/core/Response";
+import {Res} from "../../main/core/Response";
 import {ExpressServer} from "../../main/servers/ExpressServer";
 import {HttpClient} from "../../main/client/Client";
 import {Request} from "../../main/core/Request";
@@ -21,24 +21,22 @@ describe("express", async() => {
 
     const baseUrl = "http://localhost:3001";
 
-    const server = get("/", (req: Request) => {
-        const query = req.query("tomQuery");
-        return Promise.resolve(
-            new Response(200, req.bodyString())
+    const server = get("/", async (req) => {
+            const query = req.query("tomQuery");
+            return Res(200, req.bodyString())
                 .withHeaders(req.headers)
                 .withHeader("tomQuery", query || "no tom query")
-        )
-    })
-        .withHandler("POST", "/post-body", (req) => Promise.resolve(new Response(200, req.bodyString())))
-        .withHandler("POST", "/post-form-body", (req) => Promise.resolve(new Response(200, JSON.stringify(req.form))))
-        .withHandler("GET", "/get", () => Promise.resolve(new Response(200, "Done a GET request init?")))
-        .withHandler("POST", "/post", () => Promise.resolve(new Response(200, "Done a POST request init?")))
-        .withHandler("PUT", "/put", () => Promise.resolve(new Response(200, "Done a PUT request init?")))
-        .withHandler("PATCH", "/patch", () => Promise.resolve(new Response(200, "Done a PATCH request init?")))
-        .withHandler("DELETE", "/delete", () => Promise.resolve(new Response(200, "Done a DELETE request init?")))
-        .withHandler("OPTIONS", "/options", () => Promise.resolve(new Response(200, "Done a OPTIONS request init?")))
-        .withHandler("HEAD", "/head", () => Promise.resolve(new Response(200, "Done a HEAD request init?")))
-        .withHandler("TRACE", "/trace", () => Promise.resolve(new Response(200, "Done a TRACE request init?")))
+        })
+        .withHandler("POST", "/post-body", async (req) => Res(200, req.bodyString()))
+        .withHandler("POST", "/post-form-body", async (req) => Res(200, JSON.stringify(req.form)))
+        .withHandler("GET", "/get", async () => Res(200, "Done a GET request init?"))
+        .withHandler("POST", "/post", async () => Res(200, "Done a POST request init?"))
+        .withHandler("PUT", "/put", async () => Res(200, "Done a PUT request init?"))
+        .withHandler("PATCH", "/patch", async () => Res(200, "Done a PATCH request init?"))
+        .withHandler("DELETE", "/delete", async () => Res(200, "Done a DELETE request init?"))
+        .withHandler("OPTIONS", "/options", async () => Res(200, "Done a OPTIONS request init?"))
+        .withHandler("HEAD", "/head", async () => Res(200, "Done a HEAD request init?"))
+        .withHandler("TRACE", "/trace", async () => Res(200, "Done a TRACE request init?"))
         .asServer(new ExpressServer(expressApp, 3001));
 
 

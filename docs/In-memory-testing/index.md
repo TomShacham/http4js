@@ -19,11 +19,11 @@
 If we don't start the server then we can still use it to serve requests in memory:
 
 ```typescript
-const routing = get("/path", (req: Request) => Promise.resolve(new Response(200)))
+const routing = get("/path", async (req: Request) => Res(200))
     //.asServer()
     //.start()    
     
-routing.serve(new Request("GET", "/path"))
+routing.serve(Req("GET", "/path"))
      
 // Response { headers: {}, body: '' , status: 200 }
 ```

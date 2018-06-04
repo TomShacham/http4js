@@ -19,24 +19,24 @@
 Routing is declared from a root. We start with something basic and add to it:
 
 ```typescript
-get("/", () => Promise.resolve(new Response(200, "Root")))
-    .withHandler(Method.GET, "/about", () => Promise.resolve(new Response(200, "About us.")));
+get("/", async () => Res(200, "Root"))
+    .withHandler(Method.GET, "/about", async () => Res(200, "About us."));
 ```
 
 If we want to nest our handlers we can combine them at a later time:
 
 ```typescript
 // root stays the same 
-const root = get("/", () => Promise.resolve(new Response(200, "Root")))
-    .withHandler(Method.GET, "/about", () => Promise.resolve(new Response(200, "About us.")));
+const root = get("/", async () => Res(200, "Root"))
+    .withHandler(Method.GET, "/about", async () => Res(200, "About us."));
 
 // some other routes whose root is /hotels/{name}
-const nestedRoutes = get("/hotels/{name}", (req) => {
-    return Promise.resolve(new Response(200, hotels[req.pathParams.name]));
-}).withHandler(Method.GET, "/properties/{property}", (req) => {
+const nestedRoutes = get("/hotels/{name}", async (req) => {
+    return Res(200, hotels[req.pathParams.name]);
+}).withHandler(Method.GET, "/properties/{property}", async (req) => {
     // now we have a handler on /hotels/{name}/properties/{property} and can see both path params
     const body = hotels[req.pathParams.name].properties[req.pathParams.property];
-    return Promise.resolve(new Response(200, body)) 
+    return Res(200, body); 
 })
 
 // combine them
@@ -58,14 +58,14 @@ const hotels = {
 The most specific handler is matched first:
 
 ```typescript
-return get("/", () => {
-    return Promise.resolve(new Response(200, "root"));
-}).withHandler("GET", "/family/{name}", () => {
-    return Promise.resolve(new Response(200, "least precise"));
-}).withHandler("GET", "/family/{name}/then/more", () => {
-    return Promise.resolve(new Response(200, "most precise"));
-}).withHandler("POST", "/family/{name}/less", () => {
-    return Promise.resolve(new Response(200, "medium precise"));
+return get("/", async () => {
+    return Res(200, "root");
+}).withHandler("GET", "/family/{name}", async () => {
+    return Res(200, "least precise");
+}).withHandler("GET", "/family/{name}/then/more", async () => {
+    return Res(200, "most precise");
+}).withHandler("POST", "/family/{name}/less", async () => {
+    return Res(200, "medium precise");
 })
     .serve(new Request("GET", "/family/shacham/then/more"))
     .then(response => equal(response.bodyString(), "most precise"))
@@ -79,10 +79,10 @@ generic handler at `/family/{name}` it is matched first.
 We've seen above how to specify path params:
 
 ```typescript
-get("/hotels/{name}/property/{property}", (req) => {
-  return Promise.resolve(new Response(200, req.pathParams))
+get("/hotels/{name}/property/{property}", async (req) => {
+  return Res(200, req.pathParams)
 }).serve(
-  new Request(Method.GET, "http://localhost:3000/hotels/Tom-Hotel/property/Cola-Beach")
+  Req(Method.GET, "http://localhost:3000/hotels/Tom-Hotel/property/Cola-Beach")
 );
 
 //pathParams: { name: 'Tom-Hotel', property: 'Cola-Beach' }
@@ -93,12 +93,12 @@ get("/hotels/{name}/property/{property}", (req) => {
 Query params are available in a similar way.
 
 ```typescript
-get("/hotels", (req) => {
+get("/hotels", async (req) => {
   const nameQuery = req.queries['name'];
   const filteredHotels = hotels.filter(hotel => hotel.name === nameQuery);
-  return Promise.resolve(new Response(200, filteredHotels));
+  return Res(200, filteredHotels);
 }).serve(
-  new Request(Method.GET, "http://localhost:3000/hotels").withQuery("name", "Tom Hotel")
+  Req(Method.GET, "http://localhost:3000/hotels").withQuery("name", "Tom Hotel")
 );
 ```
 
@@ -108,12 +108,34 @@ And form params are available in a similar way too
 
 
 ```typescript
-post("/hotels", (req) => {
+post("/hotels", async (req) => {
   const hotelName = req.form['name'];
-  return Promise.resolve(new Response(200, hotelName));
+  return Res(200, hotelName);
 }).serve(
-  new Request(Method.POST, "http://localhost:3000/hotels").withFormField("name", "Tom Hotel")
+  Req(Method.POST, "http://localhost:3000/hotels").withFormField("name", "Tom Hotel")
 );
+```
+
+## Convenience methods
+
+For terseness we can rewrite:
+
+```typescript
+return get("/", async () => {
+    return Res(200, "root");
+}).withHandler("GET", "/family/{name}", async () => {
+    return Res(200, "least precise");
+})
+```
+
+as the following
+
+```typescript
+return get("/", async () => {
+    return Res(200, "root");
+}).withGet("/family/{name}", async () => {
+    return Res(200, "least precise");
+})
 ```
 
 Prev: [URI API](/http4js/Uri-api/#uri-api)

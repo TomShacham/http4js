@@ -1,5 +1,5 @@
 import {routes} from "../../main/core/Routing";
-import {Response} from "../../main/core/Response";
+import {Response, Res} from "../../main/core/Response";
 import {Request} from "../../main/core/Request";
 import {debugFilter, Filters} from "../../main/core/Filters";
 import {equal} from "assert";
@@ -7,18 +7,15 @@ import {equal} from "assert";
 describe("Built in filters", () => {
 
     it("upgrade to https", async() => {
-        const response = await routes("GET", "/", (req) => {
-            return Promise.resolve(new Response(200, req.uri.protocol()));
-        })
+        const response = await routes("GET", "/", async (req) => Res(200, req.uri.protocol()))
             .withFilter(Filters.UPGRADE_TO_HTTPS)
-            .serve(new Request("GET", "http:///"));
+            .serve(new Request("GET", "http:///" +
+                ""));
         equal(response.bodyString(), "https");
     });
 
     it("timing filter", async() => {
-        const response = await routes("GET", "/", () => {
-            return Promise.resolve(new Response(200, "OK"));
-        })
+        const response = await routes("GET", "/", async () => Res(200, "OK"))
             .withFilter(Filters.TIMING)
             .serve(new Request("GET", "/"));
 
@@ -36,9 +33,7 @@ describe("Built in filters", () => {
 
         const logger = new memoryLogger();
 
-        const response = await routes("GET", "/", (req) => {
-            return Promise.resolve(new Response(200, "OK"));
-        })
+        const response = await routes("GET", "/", async () => Res(200, "OK"))
             .withFilter(debugFilter(logger))
             .serve(new Request("GET", "/"));
 

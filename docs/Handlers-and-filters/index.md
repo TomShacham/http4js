@@ -150,13 +150,11 @@ have to write our filters as being aware of this chain of calls. Hence why a fil
 allows us to change the incoming request _as well as_ the outgoing response: 
 
 ```typescript
-(handler: HttpHandler /*previous handler*/) => (req: Request) => {
-   const response = handler(req.withHeader("incoming", "new-header")/*add header to incoming request*/);
-   return response.then(response => {  
-       // log outgoing response
-       console.log(`${req.method} to ${req.uri.href} with response ${response.status}`);
-       return response;
-   });
+ (handler: HttpHandler /*previous handler*/) => async (req: Request) => {
+    const response = await handler(req.withHeader("incoming", "new-header")/*add header to incoming request*/);
+    // log outgoing response
+    console.log(`${req.method} to ${req.uri.href} with status ${response.status}`);
+    return response;
 }
 ```
 

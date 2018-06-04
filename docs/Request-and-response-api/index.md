@@ -22,7 +22,7 @@ Both `Request` and `Response` are immutable, so every method on them returns a n
 For example we might want to set a header on a `Request` but then replace it:
 
 ```typescript
-const request = new Request(Method.GET, "/")
+const request = Req(Method.GET, "/")
                     .withHeader(Headers.EXPIRES, "max-age=60")
                     
 const noMaxAgeRequest = request.replaceHeader(Headers.EXPIRES, "max-age=0");
@@ -33,9 +33,9 @@ state all over our codebase and finding it hard to know where our `Request` or `
 is mutated. For example, it stops the following:
 
 ```typescript
-get("/" , (req: Request) => {
+get("/" , async (req: Request) => {
     doSomethingOverThere(req)
-    return Promise.resolve(new Response(200, req.bodyString()));
+    return Res(200, req.bodyString());
 })
 
 function doSomethingOverThere(req: Request): number {
@@ -55,7 +55,7 @@ We provide builder functions `Req` and `Res` because `Request` and `Response`
 conflict with other libraries using the same name, so you might write:
 
 ```typescript
-get("/", (req) => Promise.resolve(Res(200, "Hello, world!")))
+get("/", async (req) => Res(200, "Hello, world!"))
     .asServer()
     .start();
 

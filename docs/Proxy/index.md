@@ -19,11 +19,11 @@
 Writing a proxy might look like this:
 
 ```typescript
-const upstream = routes(".*", ".*", (req: Request) => {
-    const response = new Response(200, req.headers);
+const upstream = routes(".*", ".*", async (req: Request) => {
+    const response = Res(200, req.headers);
     console.log("*** UPSTREAM RESPONSE ***");
     console.log(response);
-    return Promise.resolve(response);
+    return response;
 })
     .asServer(new NativeServer(3001))
     .start();

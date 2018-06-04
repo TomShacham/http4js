@@ -4,68 +4,58 @@ import {Response, Res} from "../../main/core/Response";
 import {Request, Req} from "../../main/core/Request";
 import {HttpHandler} from "../../main/core/HttpMessage";
 
-describe('routing', () => {
+describe('routing', async () => {
 
-    it("takes request and gives response", function () {
-        return get("/test", (req: Request) => {
-            return Promise.resolve(new Response(200, req.body));
-        })
-            .serve(new Request("GET", "/test", "Got it."))
-            .then(response => equal(response.bodyString(), "Got it."))
+    it("takes request and gives response", async () => {
+        const response = await get("/test", async(req: Request) => Res(200, req.body))
+            .serve(new Request("GET", "/test", "Got it."));
+
+        equal(response.bodyString(), "Got it.");
     });
 
-    it("nests handlers", () => {
-        return get("/test", () => {
-            return Promise.resolve(new Response(200));
-        })
-            .withHandler("GET", "/nest", () => {
-                return Promise.resolve(new Response(200, "nested"));
-            })
-            .serve(new Request("GET", "/test/nest"))
-            .then(response => equal(response.bodyString(), "nested"))
+    it("nests handlers", async () => {
+        const response = await get("/test", async() => Res(200))
+            .withHandler("GET", "/nest", async() => Res(200, "nested"))
+            .serve(new Request("GET", "/test/nest"));
+
+        equal(response.bodyString(), "nested");
     });
 
-    it("add a filter", () => {
-        return get("/test", () => {
+    it("add a filter", async () => {
+        const response = await get("/test", () => {
             return Promise.resolve(new Response(200));
         })
             .withFilter(() => {
-                return () => {
-                    return Promise.resolve(new Response(200, "filtered"));
+                return async () => {
+                    return Res(200, "filtered");
                 }
             })
-            .serve(new Request("GET", "/test"))
-            .then(response => equal(response.bodyString(), "filtered"))
+            .serve(new Request("GET", "/test"));
+
+        equal(response.bodyString(), "filtered");
     });
 
-    it("chains filters", () => {
-        return get("/test", () => {
-            return Promise.resolve(new Response(200));
-        })
+    it("chains filters", async () => {
+        const response = await get("/test", async() => Res(200))
             .withFilter(() => {
-                return () => {
-                    return Promise.resolve(new Response(200, "filtered"))
-                }
+                return async() => Res(200, "filtered");
             })
             .withFilter((handler: HttpHandler) => {
-                return (req: Request) => {
-                    return Promise.resolve(handler(req).then(response => response.withHeader("another", "filter")))
+                return async(req: Request) => {
+                    const response = await handler(req);
+                    return response.withHeader("another", "filter");
                 }
             })
-            .serve(new Request("GET", "/test"))
-            .then(response => {
-                equal(response.bodyString(), "filtered");
-                equal(response.header("another"), "filter");
-            })
+            .serve(new Request("GET", "/test"));
+
+        equal(response.bodyString(), "filtered");
+        equal(response.header("another"), "filter");
+
     });
 
-    it("chains filters and handlers", () => {
-        return get("/test", () => {
-            return Promise.resolve(new Response(200));
-        })
-            .withHandler("GET", "/nest", () => {
-                return Promise.resolve(new Response(200, "nested"));
-            })
+    it("chains filters and handlers", async () => {
+        const response = await get("/test", async() => Res(200))
+            .withHandler("GET", "/nest", async() => Res(200, "nested"))
             .withFilter((handler: HttpHandler) => {
                 return (req: Request) => {
                     return handler(req).then(response => response.withHeader("a", "filter1"));
@@ -76,23 +66,24 @@ describe('routing', () => {
                     return handler(req).then(response => response.withHeader("another", "filter2"));
                 }
             })
-            .serve(new Request("GET", "/test/nest"))
-            .then(response => {
-                equal(response.bodyString(), "nested");
-                equal(response.header("a"), "filter1");
-                equal(response.header("another"), "filter2");
-            })
+            .serve(new Request("GET", "/test/nest"));
+
+        equal(response.bodyString(), "nested");
+        equal(response.header("a"), "filter1");
+        equal(response.header("another"), "filter2");
     });
 
     it("withRoutes mounts handlers and filters", async () => {
-        const nested = get("/nested", () => {
-            return Promise.resolve(new Response(200).withBody("hi there deeply."));
-        }).withFilter((handler) => (req) => handler(req).then(response => response.withHeader("nested", "routes")));
+        const nested = get("/nested", async () => {
+            return Res(200).withBody("hi there deeply.")
+        }).withFilter((handler) => {
+            return (req) => handler(req).then(response => response.withHeader("nested", "routes"))
+        });
 
-        const response = await get("/", () => {
-            return Promise.resolve(new Response(200));
-        })
-            .withFilter((handler) => (req) => handler(req).then(response => response.withHeader("top-level", "routes")))
+        const response = await get("/", async () => Res(200))
+            .withFilter((handler) => {
+                return (req) => handler(req).then(response => response.withHeader("top-level", "routes"))
+            })
             .withRoutes(nested)
             .serve(new Request("GET", "/nested"));
 
@@ -101,181 +92,153 @@ describe('routing', () => {
         equal(response.bodyString(), "hi there deeply.");
     });
 
-    it("matches path params only if specified a capture in route", () => {
-        return get("/family", () => {
-            return Promise.resolve(new Response(200, "losh,bosh,tosh"));
-        })
-            .serve(new Request("GET", "/family/123"))
-            .then(response => equal(response.bodyString(), "GET to /family/123 did not match routes"))
+    it("matches path params only if specified a capture in route", async () => {
+        const response = await get("/family", async() => Res(200, "losh,bosh,tosh"))
+            .serve(new Request("GET", "/family/123"));
+
+        equal(response.bodyString(), "GET to /family/123 did not match routes");
     });
 
-    it("extracts path param", () => {
-        return get("/{name}/test", (req) => {
-            return Promise.resolve(new Response(200, req.pathParams["name"]));
-        })
-            .serve(new Request("GET", "/tom-param/test"))
-            .then(response => equal(response.bodyString(), "tom-param"));
+    it("extracts path param", async () => {
+        const response = await get("/{name}/test", async(req) => Res(200, req.pathParams["name"]))
+            .serve(new Request("GET", "/tom-param/test"));
+
+        equal(response.bodyString(), "tom-param");
     });
 
-    it("extracts multiple path params", () => {
-        return get("/{name}/test/{age}/bob/{personality}/fred", (req) => {
-            return new Promise(resolve => resolve(
-                new Response(200, `${req.pathParams["name"]}, ${req.pathParams["age"]}, ${req.pathParams["personality"]}`)
-            ))
+    it("extracts multiple path params", async () => {
+        const response = await get("/{name}/test/{age}/bob/{personality}/fred", async(req) => {
+            return Res(200, `${req.pathParams["name"]}, ${req.pathParams["age"]}, ${req.pathParams["personality"]}`)
         })
-            .serve(new Request("GET", "/tom/test/26/bob/odd/fred"))
-            .then(response => {
-                const pathParams = response.bodyString().split(", ");
-                equal(pathParams[0], "tom");
-                equal(pathParams[1], "26");
-                equal(pathParams[2], "odd");
-            })
+            .serve(new Request("GET", "/tom/test/26/bob/odd/fred"));
+
+        const pathParams = response.bodyString().split(", ");
+        equal(pathParams[0], "tom");
+        equal(pathParams[1], "26");
+        equal(pathParams[2], "odd");
     });
 
-    it("extracts query params", () => {
-        return get("/test", (req) => {
+    it("extracts query params", async () => {
+        const response = await get("/test", async(req) => {
             const queries = [
                 req.query("tosh"),
                 req.query("bosh"),
                 req.query("losh"),
             ];
-            return Promise.resolve(new Response(200, queries.join("|")));
+            return Res(200, queries.join("|"));
         })
-            .serve(new Request("GET", "/test?tosh=rocks&bosh=pwns&losh=killer"))
-            .then(response => equal(response.bodyString(), "rocks|pwns|killer"));
+            .serve(new Request("GET", "/test?tosh=rocks&bosh=pwns&losh=killer"));
+
+        equal(response.bodyString(), "rocks|pwns|killer");
     });
 
-    it("unknown route returns a 404", () => {
-        return get("/", () => {
-            return Promise.resolve(new Response(200, "hello, world!"));
-        })
-            .serve(new Request("GET", "/unknown"))
-            .then(response => equal(response.status, 404));
+    it("unknown route returns a 404", async () => {
+        const response = await get("/", async() => Res(200, "hello, world!"))
+            .serve(new Request("GET", "/unknown"));
+
+        equal(response.status, 404);
     });
 
-    it("custom 404s using filters", () => {
-        return get("/", () => {
-            return Promise.resolve(new Response(200, "hello, world!"));
-        })
+    it("custom 404s using filters", async () => {
+        const response = await get("/", async() => Res(200, "hello, world!"))
             .withFilter((handler: HttpHandler) => {
-                return (req: Request) => {
-                    const responsePromise = handler(req);
-                    return responsePromise.then(response => {
-                        if (response.status == 404) {
-                            return Promise.resolve(new Response(404, "Page not found"));
-                        } else {
-                            return Promise.resolve(response);
-                        }
-                    });
+                return async (req: Request) => {
+                    const response = await handler(req);
+                    if (response.status == 404) {
+                        return Res(404, "Page not found");
+                    } else {
+                        return response;
+                    }
                 }
             })
-            .serve(new Request("GET", "/unknown"))
-            .then(response => {
-                equal(response.status, 404);
-                equal(response.bodyString(), "Page not found");
-            });
+            .serve(new Request("GET", "/unknown"));
+
+        equal(response.status, 404);
+        equal(response.bodyString(), "Page not found");
+
     });
 
-    it("ordering - filters apply in order they are declared", () => {
-        return get("/", () => {
-            return Promise.resolve(new Response(200, "hello, world!"));
-        }).withFilter((handler) => (req) => {
-            return handler(req).then(response => response.replaceHeader("person", "tosh"));
-        }).withFilter((handler) => (req) => {
-            return handler(req).then(response => response.replaceHeader("person", "bosh"));
-        })
-            .serve(new Request("GET", "/"))
-            .then(response => equal(response.header("person"), "bosh"))
+    it("ordering - filters apply in order they are declared", async () => {
+        const response = await get("/", async() => Res(200, "hello, world!"))
+            .withFilter((handler) => async(req) => {
+                return handler(req).then(response => response.replaceHeader("person", "tosh"));
+            }).withFilter((handler) => async(req) => {
+                return handler(req).then(response => response.replaceHeader("person", "bosh"));
+            })
+            .serve(new Request("GET", "/"));
+
+        equal(response.header("person"), "bosh");
     });
 
-    it("can add stuff to request using filters", () => {
-        return get("/", (req) => {
-            return Promise.resolve(new Response(200, req.header("pre-filter" || "hello, world!")));
-        }).withFilter((handler) => (req) => {
+    it("can add stuff to request using filters", async () => {
+        const response = await get("/", async(req) => {
+            return Res(200, req.header("pre-filter" || "hello, world!"));
+        }).withFilter((handler) => async(req) => {
             return handler(req.withHeader("pre-filter", "hello from pre-filter"))
         })
-            .serve(new Request("GET", "/"))
-            .then(response => equal(response.bodyString(), "hello from pre-filter"))
+            .serve(new Request("GET", "/"));
+
+        equal(response.bodyString(), "hello from pre-filter");
     });
 
-    it("exact match beats fuzzy match", () => {
-        return get("/", () => {
-            return Promise.resolve(new Response(200, "root"));
-        }).withHandler("GET", "/family/{name}", () => {
-            return Promise.resolve(new Response(200, "fuzzy"));
-        }).withHandler("GET", "/family", () => {
-            return Promise.resolve(new Response(200, "exact"));
-        }).withHandler("POST", "/family", () => {
-            return Promise.resolve(new Response(200, "post"));
-        })
-            .serve(new Request("GET", "/family"))
-            .then(response => equal(response.bodyString(), "exact"))
+    it("exact match beats fuzzy match", async () => {
+        const response = await get("/", async() => Res(200, "root"))
+            .withHandler("GET", "/family/{name}", async() => Res(200, "fuzzy"))
+            .withHandler("GET", "/family", async() => Res(200, "exact"))
+            .withHandler("POST", "/family", async() => Res(200, "post"))
+            .serve(new Request("GET", "/family"));
+
+        equal(response.bodyString(), "exact");
     });
 
-    it("Post redirect.", () => {
+    it("Post redirect.", async () => {
         const friends = [];
-        const routes = get("/", () => {
-            return Promise.resolve(new Response(200, "root"));
-        })
-            .withHandler("GET", "/family", () => {
-                return Promise.resolve(new Response(200, friends.join(", ")));
-            })
-            .withHandler("GET", "/family/{name}", () => {
-                return Promise.resolve(new Response(200, "fuzzy"));
-            })
-            .withHandler("POST", "/family", (req) => {
+        const routes = get("/", async () => Res(200, "root"))
+            .withHandler("GET", "/family", async () => Res(200, friends.join(", ")))
+            .withHandler("GET", "/family/{name}", async () => Res(200, "fuzzy"))
+            .withHandler("POST", "/family", async (req) => {
                 friends.push(req.form["name"]);
-                return Promise.resolve(new Response(302).withHeader("Location", "/family"));
+                Res(302).withHeader("Location", "/family");
             });
 
         const postSideEffect1 = routes.serve(new Request("POST", "/family", "name=tosh"));
         const postSideEffect2 = routes.serve(new Request("POST", "/family", "name=bosh"));
         const postSideEffect3 = routes.serve(new Request("POST", "/family", "name=losh"));
 
-        return routes.serve(new Request("GET", "/family"))
-            .then(response => equal(response.bodyString(), "tosh, bosh, losh"))
-
-
+        const response = await routes.serve(new Request("GET", "/family"));
+        equal(response.bodyString(), "tosh, bosh, losh");
     });
 
-    it("extract form params", () => {
-        return post("/family", (req) => {
-            return Promise.resolve(new Response(200, req.form));
-        })
-            .serve(new Request("POST", "/family", "p1=1&p2=tom&p3=bosh&p4=losh").withHeader("Content-Type", "application/x-www-form-urlencoded"))
-            .then(response => {
-                deepStrictEqual(response.bodyString(), {p1: "1", p2: "tom", p3: "bosh", p4: "losh"})
-            })
+    it("extract form params", async () => {
+        const response = await post("/family", async(req) => Res(200, req.form))
+            .serve(Req("POST", "/family", "p1=1&p2=tom&p3=bosh&p4=losh")
+                .withHeader("Content-Type", "application/x-www-form-urlencoded"));
+
+        deepStrictEqual(response.bodyString(), {p1: "1", p2: "tom", p3: "bosh", p4: "losh"});
     });
 
-    it("matches method by regex", () => {
-        return routes(".*", "/", () => Promise.resolve(new Response(200, "matched")) )
-            .serve(new Request("GET", "/"))
-            .then(response => {
-                equal(response.bodyString(), "matched");
-            })
+    it("matches method by regex", async () => {
+        const response = await routes(".*", "/", () => Promise.resolve(new Response(200, "matched")))
+            .serve(new Request("GET", "/"));
+
+        equal(response.bodyString(), "matched");
     });
 
-    it("matches path by regex", () => {
-        return routes(".*", ".*", () => Promise.resolve(new Response(200, "matched")) )
-            .serve(new Request("GET", "/any/path/matches"))
-            .then(response => {
-                equal(response.bodyString(), "matched");
-            })
+    it("matches path by regex", async () => {
+        const response = await routes(".*", ".*", async () => Res(200, "matched"))
+            .serve(new Request("GET", "/any/path/matches"));
+
+        equal(response.bodyString(), "matched");
     });
 
-    it("more precise routing beats less precise", () => {
-        return get("/", () => {
-            return Promise.resolve(new Response(200, "root"));
-        }).withHandler("GET", "/family/{name}", () => {
-            return Promise.resolve(new Response(200, "least precise"));
-        }).withHandler("GET", "/family/{name}/then/more", () => {
-            return Promise.resolve(new Response(200, "most precise"));
-        }).withHandler("POST", "/family/{name}/less", () => {
-            return Promise.resolve(new Response(200, "medium precise"));
-        })
-            .serve(new Request("GET", "/family/shacham/then/more"))
-            .then(response => equal(response.bodyString(), "most precise"))
+    it("more precise routing beats less precise", async () => {
+        const response = await get("/", async() => Res(200, "root"))
+            .withHandler("GET", "/family/{name}", async() => Res(200, "least precise"))
+            .withHandler("GET", "/family/{name}/then/more", async() => Res(200, "most precise"))
+            .withHandler("POST", "/family/{name}/less", async() => Res(200, "medium precise"))
+            .serve(new Request("GET", "/family/shacham/then/more"));
+
+        equal(response.bodyString(), "most precise");
     });
 
     it("withX convenience method", async () => {
