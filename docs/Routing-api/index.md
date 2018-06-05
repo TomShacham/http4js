@@ -74,6 +74,20 @@ return get("/", async () => {
 so despite the handler at `/family/{name}/then/more` being declared after the more
 generic handler at `/family/{name}` it is matched first.
 
+## Symmetry of routing and serving
+
+We can also declare a route using a Req object: 
+
+```typescript
+const requestAcceptText = Req("GET", "/tom").withHeader(Headers.ACCEPT, HeaderValues.APPLICATION_JSON);
+const requestAcceptJson = Req("GET", "/tom").withHeader(Headers.ACCEPT, HeaderValues.TEXT_HTML);
+
+const response = await route(Req("GET", "/"), async() => Res(200, "Hiyur"))
+    .withRoute(requestAcceptText, async() => Res(200, "Hiyur text")) //will match this route based on header
+    .withRoute(requestAcceptJson, async() => Res(200, "Hiyur json"))
+    .serve(requestAcceptText);  //serve with same request used to declare routing
+```
+
 ## Path params
 
 We've seen above how to specify path params:
@@ -138,6 +152,63 @@ return get("/", async () => {
 }).withGet("/family/{name}", async () => { //withGet
     return Res(200, "least precise");
 })
+```
+
+The full API is as follows: 
+
+```typescript
+class Routing {
+    server: Http4jsServer;
+    
+    constructor(method: string,
+                    path: string,
+                    headers: KeyValues = {},
+                    handler: HttpHandler)
+
+    withRoutes(routes: Routing): Routing 
+
+    withRoute(request: Request, handler: HttpHandler): Routing 
+
+    withFilter(filter: Filter): Routing 
+
+    withHandler(method: string, path: string, handler: HttpHandler, headers: KeyValues = {}): Routing
+
+    asServer(server: Http4jsServer = new NativeServer(3000)): Http4jsServer
+
+    serve(request: Request): Promise<Response> 
+
+    match(request: Request): MountedHttpHandler 
+
+    withGet(path: string, handler: HttpHandler): Routing 
+
+    withPost(path: string, handler: HttpHandler): Routing
+
+    withPut(path: string, handler: HttpHandler): Routing 
+
+    withPatch(path: string, handler: HttpHandler): Routing 
+
+    withDelete(path: string, handler: HttpHandler): Routing 
+
+    withOptions(path: string, handler: HttpHandler): Routing 
+
+    withHead(path: string, handler: HttpHandler): Routing
+}
+
+routes(method: string, path: string, handler: HttpHandler, headers: KeyValues = {}): Routing
+
+route(request: Request, handler: HttpHandler): Routing
+
+get(path: string, handler: HttpHandler, headers: KeyValues = {}): Routing
+
+post(path: string, handler: HttpHandler, headers: KeyValues = {}): Routing
+
+put(path: string, handler: HttpHandler, headers: KeyValues = {}): Routing
+
+patch(path: string, handler: HttpHandler, headers: KeyValues = {}): Routing
+
+options(path: string, handler: HttpHandler, headers: KeyValues = {}): Routing
+
+head(path: string, handler: HttpHandler, headers: KeyValues = {}): Routing
 ```
 
 Prev: [URI API](/http4js/Uri-api/#uri-api)

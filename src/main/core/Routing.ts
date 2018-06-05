@@ -6,7 +6,8 @@ import {Filter} from "./Filters";
 import {Http4jsServer} from "../servers/Server";
 import {NativeServer} from "../servers/NativeServer";
 
-export type MountedHttpHandler = {path: string, verb: string, handler: HttpHandler}
+type KeyValues = {[key:string]: string};
+export type MountedHttpHandler = {path: string, method: string, headers: KeyValues, handler: HttpHandler}
 
 export class Routing {
 
@@ -17,9 +18,10 @@ export class Routing {
 
     constructor(method: string,
                 path: string,
+                headers: KeyValues = {},
                 handler: HttpHandler) {
         this.root = path;
-        this.handlers.push({path: path, verb: method, handler: handler});
+        this.handlers.push({path: path, method: method, headers: headers, handler: handler});
     }
 
     withRoutes(routes: Routing): Routing {
@@ -28,15 +30,22 @@ export class Routing {
         return this;
     }
 
+    withRoute(request: Request, handler: HttpHandler): Routing {
+        const existingPath = this.root != "/" ? this.root : "";
+        const nestedPath = existingPath + request.uri.path();
+        this.handlers.push({path: nestedPath, method: request.method, handler: handler, headers: request.headers});
+        return this;
+    }
+
     withFilter(filter: Filter): Routing {
         this.filters.push(filter);
         return this;
     }
 
-    withHandler(method: string, path: string, handler: HttpHandler): Routing {
+    withHandler(method: string, path: string, handler: HttpHandler, headers: KeyValues = {}): Routing {
         const existingPath = this.root != "/" ? this.root : "";
         const nestedPath = existingPath + path;
-        this.handlers.push({path: nestedPath, verb: method, handler: handler});
+        this.handlers.push({path: nestedPath, method, headers, handler});
         return this;
     }
 
@@ -59,13 +68,16 @@ export class Routing {
     match(request: Request): MountedHttpHandler {
         const handlersMostPreciseFirst = this.handlersMostPreciseFirst();
         const exactMatch = handlersMostPreciseFirst.find(it => {
-            return request.uri.exactMatch(it.path) && request.method.match(it.verb) != null;
+            return request.uri.exactMatch(it.path) &&
+                request.method.match(it.method) != null &&
+                (JSON.stringify(request.headers) === JSON.stringify(it.headers) || JSON.stringify(it.headers) === JSON.stringify({}));
         });
         const fuzzyMatch = handlersMostPreciseFirst.find(it => {
             if (it.path == "/") return false;
-            return it.path.includes("{")
-                && Uri.of(it.path).templateMatch(request.uri.path())
-                && request.method.match(it.verb) != null;
+            return it.path.includes("{") &&
+                Uri.of(it.path).templateMatch(request.uri.path()) &&
+                request.method.match(it.method) != null &&
+                (JSON.stringify(request.headers) === JSON.stringify(it.headers) || JSON.stringify(it.headers) === JSON.stringify({}));
         });
         return exactMatch || fuzzyMatch || this.mountedNotFoundHandler;
     }
@@ -106,7 +118,7 @@ export class Routing {
 
     private mountedNotFoundHandler: MountedHttpHandler = {
         path: ".*",
-        verb: ".*",
+        method: ".*",
         handler: (request: Request) => {
             const notFoundBodystring = `${request.method} to ${request.uri.path()} did not match routes`;
             return Promise.resolve(new Response(404, notFoundBodystring));
@@ -115,30 +127,34 @@ export class Routing {
 
 }
 
-export function routes(method: string, path: string, handler: HttpHandler): Routing {
-    return new Routing(method, path, handler);
+export function routes(method: string, path: string, handler: HttpHandler, headers: KeyValues = {}): Routing {
+    return new Routing(method, path, headers, handler);
 }
 
-export function get(path: string, handler: HttpHandler): Routing {
-    return new Routing("GET", path, handler);
+export function route(request: Request, handler: HttpHandler): Routing {
+    return new Routing(request.method, request.uri.path(), request.headers, handler);
 }
 
-export function post(path: string, handler: HttpHandler): Routing {
-    return new Routing("POST", path, handler);
+export function get(path: string, handler: HttpHandler, headers: KeyValues = {}): Routing {
+    return new Routing("GET", path, headers, handler);
 }
 
-export function put(path: string, handler: HttpHandler): Routing {
-    return new Routing("PUT", path, handler);
+export function post(path: string, handler: HttpHandler, headers: KeyValues = {}): Routing {
+    return new Routing("POST", path, headers, handler);
 }
 
-export function patch(path: string, handler: HttpHandler): Routing {
-    return new Routing("PATCH", path, handler);
+export function put(path: string, handler: HttpHandler, headers: KeyValues = {}): Routing {
+    return new Routing("PUT", path, headers, handler);
 }
 
-export function options(path: string, handler: HttpHandler): Routing {
-    return new Routing("OPTIONS", path, handler);
+export function patch(path: string, handler: HttpHandler, headers: KeyValues = {}): Routing {
+    return new Routing("PATCH", path, headers, handler);
 }
 
-export function head(path: string, handler: HttpHandler): Routing {
-    return new Routing("HEAD", path, handler);
+export function options(path: string, handler: HttpHandler, headers: KeyValues = {}): Routing {
+    return new Routing("OPTIONS", path, headers, handler);
+}
+
+export function head(path: string, handler: HttpHandler, headers: KeyValues = {}): Routing {
+    return new Routing("HEAD", path, headers, handler);
 }
