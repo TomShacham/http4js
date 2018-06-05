@@ -2,8 +2,7 @@ import {Uri} from "./Uri";
 import {isNullOrUndefined} from "util";
 import {Headers, HeaderValues} from "./Headers";
 import {HttpMessage} from "./HttpMessage";
-
-export type KeyValues = {[key:string]: string};
+import {KeyValues} from "./HttpMessage";
 
 export class Request implements HttpMessage {
 

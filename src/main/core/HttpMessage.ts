@@ -1,6 +1,8 @@
 import {Uri} from "./Uri";
 import {Response} from "./Response";
 
+export type KeyValues = {[key:string]: string};
+
 export interface HttpMessage {
     headers: object;
     body: string;

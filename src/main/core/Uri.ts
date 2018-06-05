@@ -1,4 +1,4 @@
-import {KeyValues} from "./Request";
+import {KeyValues} from "./HttpMessage";
 const URI = require('url');
 
 const pathParamMatchingRegex: RegExp = new RegExp(/\{(\w+)\}/g);

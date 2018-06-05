@@ -1,12 +1,11 @@
 import {Response} from "./Response";
-import {HttpHandler} from "./HttpMessage";
+import {HttpHandler, KeyValues} from "./HttpMessage";
 import {Request} from "./Request";
 import {Uri} from "./Uri";
 import {Filter} from "./Filters";
 import {Http4jsServer} from "../servers/Server";
 import {NativeServer} from "../servers/NativeServer";
 
-type KeyValues = {[key:string]: string};
 export type MountedHttpHandler = {path: string, method: string, headers: KeyValues, handler: HttpHandler}
 
 export class Routing {
@@ -119,6 +118,7 @@ export class Routing {
     private mountedNotFoundHandler: MountedHttpHandler = {
         path: ".*",
         method: ".*",
+        headers: {},
         handler: (request: Request) => {
             const notFoundBodystring = `${request.method} to ${request.uri.path()} did not match routes`;
             return Promise.resolve(new Response(404, notFoundBodystring));
