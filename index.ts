@@ -1,15 +1,16 @@
-export * from "./dist/core/Routing";
-export * from "./dist/core/Request";
-export * from "./dist/core/Response";
-export * from "./dist/core/Uri";
-export * from "./dist/core/Headers";
-export * from "./dist/core/HttpMessage";
-export * from "./dist/core/Methods";
-export * from "./dist/core/Filters";
-export * from "./dist/core/Status";
+export * from "./core/Routing";
+export * from "./core/Request";
+export * from "./core/Response";
+export * from "./core/Uri";
+export * from "./core/Headers";
+export * from "./core/HttpMessage";
+export * from "./core/Methods";
+export * from "./core/Filters";
+export * from "./core/Status";
 
-export * from "./dist/servers/Server";
-export * from "./dist/servers/ExpressServer";
-export * from "./dist/servers/KoaServer";
+export * from "./servers/Server";
+export * from "./servers/ExpressServer";
+export * from "./servers/KoaServer";
 
-export * from "./dist/client/Client";
+export * from "./client/Client";
+

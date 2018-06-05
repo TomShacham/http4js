@@ -23,16 +23,16 @@ An example server and client
 
 //define our server routes and start on port 3000
 //GET to any path returns `GET to {PATH} with req headers {HEADERS}`
-const routing = routes(Method.GET, ".*", (req: Request) => {
+const routing = routes(Method.GET, ".*", async (req: Request) => {
     const html = `<h1>${req.method} to ${req.uri.path()} with req headers ${Object.keys(req.headers)}</h1>`;
-    return Promise.resolve(new Response(Status.OK, html));
+    return Res(Status.OK, html);
 })
 
 //add csrf token header to every request and vary gzip to every response
 const headerFilter = (handler: HttpHandler) => {
-    return (req: Request) => {
-        return handler(req.withHeader(Headers.X_CSRF_TOKEN, Math.random()))
-            .then(response => response.withHeader(Headers.VARY, "gzip"));
+    return async (req: Request) => {
+        const response = await handler(req.withHeader(Headers.X_CSRF_TOKEN, Math.random()))
+        return response.withHeader(Headers.VARY, "gzip");
     }
 };
 
@@ -41,12 +41,10 @@ routing.withFilter(headerFilter)
     .start();
 
 //make an http request to our server and log the response
-HttpClient(
-    new Request(Method.GET, "http://localhost:3000/any/path")
-).then(response => {
-    console.log(response);
-    console.log(response.bodyString());
-});
+const response = await HttpClient(Req(Method.GET, "http://localhost:3000/any/path"))
+console.log(response);
+console.log(response.bodyString());
+
 
 /*
 //response
@@ -95,6 +93,5 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 
 #### To do
 
-- copy package.json into dist 
 - update http4js-eg
 - add nested routes to skeleton app

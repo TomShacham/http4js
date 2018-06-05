@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 set -x
 
-rm -rf ./dist && tsc -p ./ --outDir dist/
-cp package.json ./dist/
+find src -type f -name "*.js" -delete
+find src -type f -name "*.d.ts" -delete
+tsc
+rm -rf dist
+cp -r src/main dist
+cp package.json tsconfig.json index.ts index.js dist
+pushd dist
+npm publish
+popd
