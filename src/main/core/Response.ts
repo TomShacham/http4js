@@ -74,3 +74,7 @@ export function Res(status: number = 200, body: string = "", headers: {} = {}): 
     return new Response(status, body, headers);
 }
 
+export function Redirect(status: number = 301, path: string, headers: {} = {}): Response {
+    return new Response(status, "", headers).withHeader("Location", path);
+}
+

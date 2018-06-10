@@ -1,5 +1,5 @@
 import {deepEqual, equal, notEqual} from "assert";
-import {Response} from "../../main/core/Response";
+import {Response, Redirect} from "../../main/core/Response";
 
 describe("in mem response", () => {
 
@@ -68,5 +68,11 @@ describe("in mem response", () => {
                 .bodyString(),
             "some string made into a Body")
     });
+
+    it("Redirect is sugar for Response withHeader Location", () => {
+        equal(Redirect(302, "/tosh").header("Location"),
+            "/tosh"
+        )
+    })
 
 });
