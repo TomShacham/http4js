@@ -62,6 +62,14 @@ get("/", async (req) => Res(200, "Hello, world!"))
 HttpClient(Req("GET", "http://localhost:3000/")).then(res=>console.log(res));
 ```
 
+We also have a dumb redirect helper 
+
+```typescript
+Redirect(302, "/somewhere/else") 
+```
+
+which is just sugar for `Res(302).withHeader("Location", "/somewhere/else")`
+
 The full api is as follows:
 
 ```typescript
