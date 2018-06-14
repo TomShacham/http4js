@@ -5,8 +5,7 @@
     "declaration": true
   },
   "include": [
-    "src/main/**/*",
-    "index"
+    "src/main/**/*"
   ],
   "exclude": [
     "node_modules",
