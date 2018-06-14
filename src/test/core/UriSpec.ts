@@ -17,6 +17,25 @@ describe("uri", () => {
             "the sugar")
     });
 
+    it("handles encoded characters in path params", () => {
+        let uri = Uri.of("/tom/{is}");
+        const specialCharacters = [
+         [':', '%3A'],
+         ['/', '%2F'],
+         ['#', '%23'],
+         ['?', '%3F'],
+         ['&', '%26'],
+         ['@', '%40'],
+         ['%', '%25'],
+         ['+', '%2B'],
+         [' ', '%20'],
+        ];
+
+        for (const [special, encoded] of specialCharacters) {
+            equal(uri.extract(`/tom/foo${encoded}`).pathParam('is'), `foo${special}`);
+        }
+    });
+
     it("matches paths", () => {
         equal(Uri.of("/tom/{is}/goodness")
                 .templateMatch("/tom/is the sugar/goodness/gracious/me"),

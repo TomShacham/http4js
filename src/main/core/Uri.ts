@@ -2,7 +2,7 @@ import {KeyValues} from "./HttpMessage";
 const URI = require('url');
 
 const pathParamMatchingRegex: RegExp = new RegExp(/\{(\w+)\}/g);
-const pathParamCaptureTemplate: string = "([\\w\\s\-]+)";
+const pathParamCaptureTemplate: string = "([\\w\\s\-\%]+)";
 
 export interface NodeURI {
     protocol: string,
@@ -102,12 +102,11 @@ export class Uri {
     }
 
     extract(uri: string): Uri {
-        const decodedUri = decodeURI(uri);
         const pathParamNames = this.path().match(pathParamMatchingRegex)
             .map(it => it.replace("{", "").replace("}", ""));
-        const pathParams = Uri.uriTemplateToPathParamCapturingRegex(this.path()).exec(decodedUri);
+        const pathParams = Uri.uriTemplateToPathParamCapturingRegex(this.path()).exec(uri);
         pathParamNames.map( (name, i) => {
-            this.matches[name] = pathParams[i+1]
+            this.matches[name] = decodeURIComponent(pathParams[i+1]);
         });
         return this;
     }
