@@ -70,16 +70,10 @@ I'd be very happy if you'd like to contribute :)
 ### To run:
 
 ```
-git clone git@github.com:TomShacham/http4js.git  
-cd http4js
-yarn #or npm install
-yarn start #or tsc; node index.js
-```
-
-#### To test:
-
-```
-yarn
+git clone git@github.com:TomShacham/http4js.git && \ 
+cd http4js && \
+yarn && \
+yarn build && \
 yarn test
 ```
 
@@ -90,8 +84,3 @@ http4js is a port of [http4k](https://github.com/http4k/http4k).
 The concept is called Server as a Function (SaaF).
 
 Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utterly Idle](https://github.com/bodar/utterlyidle)
-
-#### To do
-
-- update http4js-eg
-- add nested routes to skeleton app
