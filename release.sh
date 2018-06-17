@@ -9,4 +9,5 @@ cp -r src/main dist && \
 cp package.json tsconfig.json dist && \
 pushd dist && \
 npm publish && \
-popd
+popd && \
+rm -r dist

@@ -29,12 +29,15 @@ export function HttpClient(request: Request): Promise<Response> {
 
 function get(request: Request): Promise<Response> {
     const options = request.uri.asNativeNodeRequest;
-    options['headers'] = request.headers;
+    const requestOptions = {
+        ...options,
+        headers: request.headers
+    };
 
     return new Promise(resolve => {
-        http.request(options, (res) => {
-            const chunks = [];
-            res.on('data', (chunk) => {
+        http.request(requestOptions, (res) => {
+            const chunks: Buffer[] = [];
+            res.on('data', (chunk: Buffer) => {
                 chunks.push(chunk);
             });
             res.on('end', () => {
@@ -46,13 +49,16 @@ function get(request: Request): Promise<Response> {
 
 function wire(request: Request): Promise<Response> {
     const options = request.uri.asNativeNodeRequest;
-    options['headers'] = request.headers;
-    options['method'] = request.method;
+    const requestOptions = {
+        ...options,
+        headers: request.headers,
+        method: request.method,
+    };
 
     return new Promise(resolve => {
-        const clientRequest = http.request(options, (res) => {
-            const chunks = [];
-            res.on('data', (chunk) => {
+        const clientRequest = http.request(requestOptions, (res) => {
+            const chunks: Buffer[] = [];
+            res.on('data', (chunk: Buffer) => {
                 chunks.push(chunk);
             });
             res.on('end', () => {

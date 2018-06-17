@@ -1,7 +1,7 @@
 import {Routing} from "../core/Routing";
 
 export interface Http4jsServer {
-    server;
+    server: any;
     port: number;
 
     registerCatchAllHandler(routing: Routing): void

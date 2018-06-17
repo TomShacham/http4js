@@ -20,7 +20,7 @@ export class Filters {
 
 }
 
-export function debugFilter(out): Filter {
+export function debugFilter(out: any): Filter {
     return (handler: HttpHandler) => (req: Request) => {
         const response = handler(req);
         return response.then(response => {

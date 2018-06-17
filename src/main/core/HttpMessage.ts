@@ -1,7 +1,10 @@
 import {Uri} from "./Uri";
 import {Response} from "./Response";
+import {Request} from "./Request";
 
 export type KeyValues = {[key:string]: string};
+export type Form = {[key:string]: string|string[]};
+
 
 export interface HttpMessage {
     headers: object;
@@ -22,4 +25,4 @@ export interface HttpMessage {
 
 }
 
-export type HttpHandler = (Request) => Promise<Response>
+export type HttpHandler = (request: Request) => Promise<Response>

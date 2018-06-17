@@ -64,7 +64,7 @@ export class Response implements HttpMessage {
         return this.body;
     }
 
-    private static clone(a) {
+    private static clone(a: {}) {
         return Object.assign(Object.create(a), a)
     }
 

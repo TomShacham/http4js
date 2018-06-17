@@ -13,7 +13,7 @@ export class Routing {
     server: Http4jsServer;
     private root: string;
     private handlers: MountedHttpHandler[] = [];
-    private filters: Array<(HttpHandler) => HttpHandler> = [];
+    private filters: Array<(httpHandler: HttpHandler) => HttpHandler> = [];
 
     constructor(method: string,
                 path: string,

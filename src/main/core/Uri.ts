@@ -102,11 +102,13 @@ export class Uri {
     }
 
     extract(uri: string): Uri {
-        const pathParamNames = this.path().match(pathParamMatchingRegex)
+        const path = this.path();
+        const match = path.match(pathParamMatchingRegex) || [];
+        const pathParamNames = match
             .map(it => it.replace("{", "").replace("}", ""));
-        const pathParams = Uri.uriTemplateToPathParamCapturingRegex(this.path()).exec(uri);
-        pathParamNames.map( (name, i) => {
-            this.matches[name] = decodeURIComponent(pathParams[i+1]);
+        const pathParams: string[] = Uri.uriTemplateToPathParamCapturingRegex(path).exec(uri) || [];
+        pathParamNames.map( (name, index) => {
+            this.matches[name] = decodeURIComponent(pathParams[index + 1]);
         });
         return this;
     }
@@ -122,7 +124,7 @@ export class Uri {
         );
     }
 
-    private static clone(a) {
+    private static clone(a: {}) {
         return Object.assign(Object.create(a), a);
     }
 }

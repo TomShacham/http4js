@@ -3,6 +3,7 @@ import {isNullOrUndefined} from "util";
 import {Headers, HeaderValues} from "./Headers";
 import {HttpMessage} from "./HttpMessage";
 import {KeyValues} from "./HttpMessage";
+import {Form} from "./HttpMessage";
 
 export class Request implements HttpMessage {
 
@@ -12,7 +13,7 @@ export class Request implements HttpMessage {
     body: string;
     queries: KeyValues = {};
     pathParams: KeyValues = {};
-    form: {} = {};
+    form: Form = {};
 
     constructor(method: string,
                 uri: Uri | string,
@@ -25,8 +26,8 @@ export class Request implements HttpMessage {
         this.queries = this.getQueryParams();
         if (this.method == "POST") {
             this.body.split("&").map(kv => {
-                const strings = kv.split("=");
-                if (strings.length > 1) this.form[strings[0]] = strings[1];
+                const pair = kv.split("=");
+                if (pair.length > 1) this.form[pair[0]] = pair[1];
             })
         }
         return this;
@@ -103,9 +104,9 @@ export class Request implements HttpMessage {
     }
 
     formBodystring(): string {
-        let reduce = Object.keys(this.form).reduce((bodyParts, field) => {
+        let reduce: string[] = Object.keys(this.form).reduce((bodyParts: string[], field: string) => {
             typeof (this.form[field]) === "object"
-                ? this.form[field].map(value => bodyParts.push(`${field}=${value}`))
+                ? (this.form[field] as string[]).map(value => bodyParts.push(`${field}=${value}`))
                 : bodyParts.push(`${field}=${this.form[field]}`);
             return bodyParts;
         }, []);
@@ -119,7 +120,7 @@ export class Request implements HttpMessage {
         return request;
     }
 
-    withQueries(queries: {}): Request {
+    withQueries(queries: KeyValues): Request {
         const request = Request.clone(this);
         for (let name in queries){
             const value = queries[name];
@@ -143,7 +144,7 @@ export class Request implements HttpMessage {
         return this.queries;
     }
 
-    private static clone(a) {
+    private static clone(a: {}) {
         return Object.assign(Object.create(a), a);
     }
 }
