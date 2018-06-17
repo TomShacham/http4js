@@ -5,6 +5,7 @@ import {Request, Req} from "../../main/core/Request";
 import {HttpHandler} from "../../main/core/HttpMessage";
 import {route} from "../../main/core/Routing";
 import {Headers, HeaderValues} from "../../main/core/Headers";
+import {deepEqual} from "assert";
 
 describe('routing', async () => {
 
@@ -272,6 +273,21 @@ describe('routing', async () => {
             .serve(requestAcceptText);
 
         equal(response.bodyString(), "Hiyur text");
+    });
+
+    it('gives you your routing rules in a list', async() => {
+        deepEqual(
+            get("/", async() => Res())
+                .withRoute(Req("POST", "/tosh", "", {[Headers.CONTENT_TYPE]: HeaderValues.APPLICATION_JSON}),
+                    async() => Res())
+                .withPut("/putsch", async() => Res())
+                .routes(),
+            [
+                {method: "GET", path: "/", headers: {}},
+                {method: "POST", path: "/tosh", headers: {"Content-Type": "application/json"}},
+                {method: "PUT", path: "/putsch", headers: {}},
+            ]
+        );
     });
 
 });

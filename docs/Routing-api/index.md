@@ -154,6 +154,28 @@ return get("/", async () => {
 })
 ```
 
+## List of routes
+
+We give you back the routes you've listed, in case you want to describe your API
+
+```typescript
+get("/", async() => Res())
+    .withRoute(Req("POST", "/tosh", "", {[Headers.CONTENT_TYPE]: HeaderValues.APPLICATION_JSON}),
+        async() => Res())
+    .withPut("/putsch", async() => Res())
+    .routes()
+```
+
+will return you 
+
+```typescript
+[
+    {method: "GET", path: "/", headers: {}},
+    {method: "POST", path: "/tosh", headers: {"Content-Type": "application/json"}},
+    {method: "PUT", path: "/putsch", headers: {}},
+]
+```
+
 The full API is as follows: 
 
 ```typescript

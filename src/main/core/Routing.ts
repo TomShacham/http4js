@@ -7,6 +7,7 @@ import {Http4jsServer} from "../servers/Server";
 import {NativeServer} from "../servers/NativeServer";
 
 export type MountedHttpHandler = {path: string, method: string, headers: KeyValues, handler: HttpHandler}
+export type DescribingHttpHandler = {path: string, method: string, headers: KeyValues}
 
 export class Routing {
 
@@ -107,6 +108,14 @@ export class Routing {
 
     withHead(path: string, handler: HttpHandler): Routing {
       return this.withHandler("HEAD", path, handler);
+    }
+
+    routes(): DescribingHttpHandler[] {
+        return this.handlers.map(handler => ({
+            method: handler.method,
+            path: handler.path,
+            headers: handler.headers
+        }))
     }
 
     private handlersMostPreciseFirst(): MountedHttpHandler[] {
