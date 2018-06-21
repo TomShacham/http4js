@@ -2,6 +2,7 @@ import * as assert from "assert";
 import {equal, notEqual} from "assert";
 import {Request} from "../../main/core/Request";
 import {Headers, HeaderValues} from "../../main/core/Headers";
+import {deepEqual} from "assert";
 
 describe("in mem request", () => {
 
@@ -111,6 +112,15 @@ describe("in mem request", () => {
                 .uri
                 .queryString(),
             "tom=tosh&ben=bosh")
+    });
+
+    it("decodes query string paramaters", () => {
+        deepEqual(
+            new Request("GET", "/tom")
+                .withQuery("tom", "tosh%20eroo")
+                .withQuery("ben", "bosh%2Aeroo")
+                .queries,
+            {tom: "tosh eroo", ben: "bosh*eroo"})
     });
 
     it("sets query string using object of key-values", () => {

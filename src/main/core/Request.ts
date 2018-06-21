@@ -115,7 +115,7 @@ export class Request implements HttpMessage {
 
     withQuery(name: string, value: string): Request {
         const request = Request.clone(this);
-        request.queries[name] = value;
+        request.queries[name] = decodeURIComponent(value);
         request.uri = request.uri.withQuery(name, value);
         return request;
     }
@@ -124,7 +124,7 @@ export class Request implements HttpMessage {
         const request = Request.clone(this);
         for (let name in queries){
             const value = queries[name];
-            request.queries[name] = value;
+            request.queries[name] = decodeURIComponent(value);
             request.uri = request.uri.withQuery(name, value);
         }
         return request;
@@ -139,7 +139,7 @@ export class Request implements HttpMessage {
         const pairs = this.uri.queryString().split("&");
         pairs.map(pair => {
             const split = pair.split("=");
-            this.queries[split[0]] = split[1]
+            this.queries[split[0]] = decodeURIComponent(split[1]);
         });
         return this.queries;
     }
