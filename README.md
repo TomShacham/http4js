@@ -46,21 +46,8 @@ console.log(response);
 console.log(response.bodyString());
 
 
-/*
-//response
-Response {
-    headers:
-    { vary: 'gzip',
-        date: 'Sun, 08 Apr 2018 08:26:20 GMT',
-        connection: 'close',
-        'transfer-encoding': 'chunked' },
-    body: ''<h1>GET to /any/path with req headers host,connection,content-type,x-csrf-token</h1>'',
-    status: 200 }
-    
-//response.bodyString()
-<h1>GET to /any/path with req headers host,connection,x-csrf-token</h1>
+Res
 
- */
 ```
 
 ## Contributing

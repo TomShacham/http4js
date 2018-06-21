@@ -1,8 +1,8 @@
 import {Routing} from "../core/Routing";
-import {Response} from "../core/Response";
-import {Request} from "../core/Request";
+import {Res} from "../core/Res";
 import {Http4jsServer} from "./Server";
 import {KeyValues} from "../core/HttpMessage";
+import {ReqOf} from "../";
 
 export class KoaServer implements Http4jsServer {
     server: any;
@@ -31,10 +31,10 @@ export class KoaServer implements Http4jsServer {
         });
     }
 
-    private createInMemResponse(chunks: Array<any>, method: string, url: string, headers: KeyValues): Promise<Response> {
+    private createInMemResponse(chunks: Array<any>, method: string, url: string, headers: KeyValues): Promise<Res> {
         const inMemRequest = headers['content-type'] == 'application/x-www-form-urlencoded'
-            ? new Request(method, url, JSON.stringify(chunks), headers).withForm(chunks)
-            : new Request(method, url, Buffer.concat(chunks).toString(), headers);
+            ? ReqOf(method, url, JSON.stringify(chunks), headers).withForm(chunks)
+            : ReqOf(method, url, Buffer.concat(chunks).toString(), headers);
         return this.routing.serve(inMemRequest);
     }
 

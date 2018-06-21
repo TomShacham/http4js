@@ -1,7 +1,7 @@
 import * as http from "http";
 import {Routing} from "../core/Routing";
-import {Response} from "../core/Response";
-import {Request} from "../core/Request";
+import {Res} from "../core/Res";
+import {Req} from "../core/Req";
 import {Http4jsServer} from "./Server";
 import {HeaderValues} from "../core/Headers";
 import {KeyValues, Form} from "../core/HttpMessage";
@@ -44,7 +44,7 @@ export class NativeServer implements Http4jsServer {
         this.server.close();
     }
 
-    private createInMemResponse(chunks: Buffer[], method: string, url: string, headers: KeyValues): Promise<Response> {
+    private createInMemResponse(chunks: Buffer[], method: string, url: string, headers: KeyValues): Promise<Res> {
         const body = Buffer.concat(chunks).toString();
         const form: Form = {};
         if (headers['content-type'] == HeaderValues.FORM) {
@@ -61,7 +61,7 @@ export class NativeServer implements Http4jsServer {
                 }
             })
         }
-        const inMemRequest = new Request(method, url, body, headers).withForm(form);
+        const inMemRequest = new Req(method, url, body, headers).withForm(form);
         return this.routing.serve(inMemRequest);
     }
 

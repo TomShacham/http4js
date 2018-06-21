@@ -5,7 +5,7 @@ import {HttpMessage} from "./HttpMessage";
 import {KeyValues} from "./HttpMessage";
 import {Form} from "./HttpMessage";
 
-export class Request implements HttpMessage {
+export class Req implements HttpMessage {
 
     uri: Uri;
     method: string;
@@ -33,19 +33,19 @@ export class Request implements HttpMessage {
         return this;
     }
 
-    withUri(uri: Uri | string): Request {
-        const request = Request.clone(this);
+    withUri(uri: Uri | string): Req {
+        const request = Req.clone(this);
         request.uri = typeof uri == "string" ? Uri.of(uri) : uri;
         return request;
     }
 
     header(name: string): string {
-        const request = Request.clone(this);
+        const request = Req.clone(this);
         return request.headers[name.toLowerCase()];
     }
 
-    withHeader(name: string, value: string): Request {
-        const request = Request.clone(this);
+    withHeader(name: string, value: string): Req {
+        const request = Req.clone(this);
         const caseInsensitiveName = name.toLowerCase();
         if (request.headers[caseInsensitiveName] == null) {
             request.headers[caseInsensitiveName] = value;
@@ -57,26 +57,26 @@ export class Request implements HttpMessage {
         return request;
     }
 
-    replaceHeader(name: string, value: string): Request {
-        const request = Request.clone(this);
+    replaceHeader(name: string, value: string): Req {
+        const request = Req.clone(this);
         request.headers[name] = value;
         return request;
     }
 
-    removeHeader(name: string): Request {
-        const request = Request.clone(this);
+    removeHeader(name: string): Req {
+        const request = Req.clone(this);
         delete(request.headers[name]);
         return request;
     }
 
-    withBody(body: string): Request {
-        const request = Request.clone(this);
+    withBody(body: string): Req {
+        const request = Req.clone(this);
         request.body = body;
         return request;
     }
 
-    withFormField(name: string, value: string | string[]): Request {
-        const request = Request.clone(this);
+    withFormField(name: string, value: string | string[]): Req {
+        const request = Req.clone(this);
         if (!request.header(Headers.CONTENT_TYPE)) request.withHeader(Headers.CONTENT_TYPE, HeaderValues.FORM);
         if (request.form[name]) {
             typeof (request.form[name]) == "string"
@@ -88,8 +88,8 @@ export class Request implements HttpMessage {
         return request;
     }
 
-    withForm(form: {}): Request {
-        const request = Request.clone(this);
+    withForm(form: {}): Req {
+        const request = Req.clone(this);
         if (!request.header(Headers.CONTENT_TYPE)) request.withHeader(Headers.CONTENT_TYPE, HeaderValues.FORM);
         request.form = form;
         return request;
@@ -113,15 +113,15 @@ export class Request implements HttpMessage {
         return reduce.join("&")
     }
 
-    withQuery(name: string, value: string): Request {
-        const request = Request.clone(this);
+    withQuery(name: string, value: string): Req {
+        const request = Req.clone(this);
         request.queries[name] = decodeURIComponent(value);
         request.uri = request.uri.withQuery(name, value);
         return request;
     }
 
-    withQueries(queries: KeyValues): Request {
-        const request = Request.clone(this);
+    withQueries(queries: KeyValues): Req {
+        const request = Req.clone(this);
         for (let name in queries){
             const value = queries[name];
             request.queries[name] = decodeURIComponent(value);
@@ -149,9 +149,9 @@ export class Request implements HttpMessage {
     }
 }
 
-export function Req(method: string,
+export function ReqOf(method: string,
                     uri: Uri | string,
                     body: string = "",
-                    headers = {}): Request {
-    return new Request(method, uri, body, headers);
+                    headers = {}): Req {
+    return new Req(method, uri, body, headers);
 }

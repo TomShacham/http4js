@@ -1,13 +1,12 @@
 import * as assert from "assert";
-import {equal, notEqual} from "assert";
-import {Request} from "../../main/core/Request";
+import {deepEqual, equal, notEqual} from "assert";
 import {Headers, HeaderValues} from "../../main/core/Headers";
-import {deepEqual} from "assert";
+import {ReqOf} from "../../main";
 
 describe("in mem request", () => {
 
     it("is immutable", () => {
-       const request1 = new Request("GET", "/");
+       const request1 = ReqOf("GET", "/");
        const request2 = request1.withHeader("tom", "tosh");
 
         notEqual(request1, request2);
@@ -15,14 +14,14 @@ describe("in mem request", () => {
 
     it("set method is case insensitive", () => {
         equal(
-            new Request("gEt", "/")
+            ReqOf("gEt", "/")
                 .method,
             "GET")
     });
 
     it("set uri", () => {
         equal(
-            new Request("GET", "/")
+            ReqOf("GET", "/")
                 .withUri("/tom")
                 .uri
                 .path(),
@@ -31,7 +30,7 @@ describe("in mem request", () => {
 
     it("set plain body", () => {
         equal(
-            new Request("GET", "/")
+            ReqOf("GET", "/")
                 .withBody("body boy")
                 .bodyString(),
             "body boy")
@@ -39,7 +38,7 @@ describe("in mem request", () => {
 
     it("sets form field body on post", () => {
         equal(
-            new Request("POST", "/")
+            ReqOf("POST", "/")
                 .withFormField("name", "tosh")
                 .bodyString(),
             "name=tosh"
@@ -47,14 +46,14 @@ describe("in mem request", () => {
     });
 
     it("sets many form fields body on post", () => {
-        const formRequest = new Request("POST", "/")
+        const formRequest = ReqOf("POST", "/")
             .withFormField("name", "tosh")
             .withFormField("age", "27");
         equal(formRequest.bodyString(), "name=tosh&age=27");
     });
 
     it("multiple same form fields lists all values", () => {
-        const formRequest = new Request("POST", "/")
+        const formRequest = ReqOf("POST", "/")
             .withFormField("name", "tosh")
             .withFormField("name", "bosh")
             .withFormField("name", "losh");
@@ -62,14 +61,14 @@ describe("in mem request", () => {
     });
 
     it("gives form field as list of strings", () => {
-        const formRequest = new Request("POST", "/")
+        const formRequest = ReqOf("POST", "/")
             .withFormField("name", ["tosh", "bosh"]);
         equal(formRequest.bodyString(), "name=tosh&name=bosh");
     });
 
     it("sets all form on post", () => {
         equal(
-            new Request("POST", "/")
+            ReqOf("POST", "/")
                 .withForm({name: ["tosh", "bosh"], age: 27})
                 .bodyString(),
             "name=tosh&name=bosh&age=27"
@@ -78,7 +77,7 @@ describe("in mem request", () => {
 
     it("sets form encoded header", () => {
         equal(
-            new Request("POST", "/")
+            ReqOf("POST", "/")
                 .withForm({name: ["tosh", "bosh"], age: 27})
                 .withFormField("name", "tosh")
                 .header(Headers.CONTENT_TYPE),
@@ -88,7 +87,7 @@ describe("in mem request", () => {
 
     it("doesnt set form encoded header if content type header already set", () => {
         equal(
-            new Request("POST", "/")
+            ReqOf("POST", "/")
                 .withHeader(Headers.CONTENT_TYPE, HeaderValues.MULTIPART_FORMDATA)
                 .withForm({name: ["tosh", "bosh"], age: 27})
                 .header(Headers.CONTENT_TYPE),
@@ -98,7 +97,7 @@ describe("in mem request", () => {
 
     it("set body string", () => {
         equal(
-            new Request("GET", "/")
+            ReqOf("GET", "/")
                 .withBody("tommy boy")
                 .bodyString(),
             "tommy boy")
@@ -106,7 +105,7 @@ describe("in mem request", () => {
 
     it("sets query string", () => {
         equal(
-            new Request("GET", "/tom")
+            ReqOf("GET", "/tom")
                 .withQuery("tom", "tosh")
                 .withQuery("ben", "bosh")
                 .uri
@@ -116,7 +115,7 @@ describe("in mem request", () => {
 
     it("decodes query string paramaters", () => {
         deepEqual(
-            new Request("GET", "/tom")
+            ReqOf("GET", "/tom")
                 .withQuery("tom", "tosh%20eroo")
                 .withQuery("ben", "bosh%2Aeroo")
                 .queries,
@@ -125,7 +124,7 @@ describe("in mem request", () => {
 
     it("sets query string using object of key-values", () => {
         equal(
-            new Request("GET", "/tom")
+            ReqOf("GET", "/tom")
                 .withQueries({tom: "tosh", ben: "bosh"})
                 .uri
                 .queryString(),
@@ -134,7 +133,7 @@ describe("in mem request", () => {
 
     it("get header is case insensitive", () => {
         equal(
-            new Request("GET", "some/url")
+            ReqOf("GET", "some/url")
                 .withHeader("TOM", "rocks")
                 .header("tom"),
             "rocks");
@@ -142,7 +141,7 @@ describe("in mem request", () => {
 
     it("set header on request", () => {
         equal(
-            new Request("GET", "some/url")
+            ReqOf("GET", "some/url")
                 .withHeader("tom", "smells")
                 .header("tom"),
             "smells");
@@ -150,7 +149,7 @@ describe("in mem request", () => {
 
     it("concat same header on request", () => {
         assert.deepEqual(
-            new Request("GET", "some/url")
+            ReqOf("GET", "some/url")
                 .withHeader("tom", "smells")
                 .withHeader("tom", "smells more")
                 .withHeader("tom", "smells some more")
@@ -160,7 +159,7 @@ describe("in mem request", () => {
 
     it('replace header', () => {
         equal(
-            new Request("GET", "some/url")
+            ReqOf("GET", "some/url")
                 .withHeader("tom", "smells")
                 .replaceHeader("tom", "is nice")
                 .header("tom"),
@@ -169,7 +168,7 @@ describe("in mem request", () => {
 
     it('remove header', () => {
         equal(
-            new Request("GET", "some/url")
+            ReqOf("GET", "some/url")
                 .withHeader("tom", "smells")
                 .removeHeader("tom")
                 .header("tom"),

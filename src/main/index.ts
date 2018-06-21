@@ -1,6 +1,6 @@
 export * from "./core/Routing";
-export * from "./core/Request";
-export * from "./core/Response";
+export * from "./core/Req";
+export * from "./core/Res";
 export * from "./core/Uri";
 export * from "./core/Headers";
 export * from "./core/HttpMessage";
@@ -13,4 +13,3 @@ export * from "./servers/ExpressServer";
 export * from "./servers/KoaServer";
 
 export * from "./client/Client";
-

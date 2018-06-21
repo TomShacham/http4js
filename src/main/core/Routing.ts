@@ -1,6 +1,6 @@
-import {Response} from "./Response";
+import {Res} from "./Res";
 import {HttpHandler, KeyValues} from "./HttpMessage";
-import {Request} from "./Request";
+import {Req} from "./Req";
 import {Uri} from "./Uri";
 import {Filter} from "./Filters";
 import {Http4jsServer} from "../servers/Server";
@@ -30,7 +30,7 @@ export class Routing {
         return this;
     }
 
-    withRoute(request: Request, handler: HttpHandler): Routing {
+    withRoute(request: Req, handler: HttpHandler): Routing {
         const existingPath = this.root != "/" ? this.root : "";
         const nestedPath = existingPath + request.uri.path();
         this.handlers.push({path: nestedPath, method: request.method, handler: handler, headers: request.headers});
@@ -55,7 +55,7 @@ export class Routing {
         return this.server;
     }
 
-    serve(request: Request): Promise<Response> {
+    serve(request: Req): Promise<Res> {
         const matchedHandler = this.match(request);
         if (matchedHandler.path.includes("{"))
             request.pathParams = Uri.of(matchedHandler.path).extract(request.uri.path()).matches;
@@ -65,7 +65,7 @@ export class Routing {
         return filtered(request);
     }
 
-    match(request: Request): MountedHttpHandler {
+    match(request: Req): MountedHttpHandler {
         const handlersMostPreciseFirst = this.handlersMostPreciseFirst();
         const exactMatch = handlersMostPreciseFirst.find(it => {
             return request.uri.exactMatch(it.path) &&
@@ -128,9 +128,9 @@ export class Routing {
         path: ".*",
         method: ".*",
         headers: {},
-        handler: (request: Request) => {
+        handler: (request: Req) => {
             const notFoundBodystring = `${request.method} to ${request.uri.path()} did not match routes`;
-            return Promise.resolve(new Response(404, notFoundBodystring));
+            return Promise.resolve(new Res(404, notFoundBodystring));
         }
     }
 
@@ -140,7 +140,7 @@ export function routes(method: string, path: string, handler: HttpHandler, heade
     return new Routing(method, path, headers, handler);
 }
 
-export function route(request: Request, handler: HttpHandler): Routing {
+export function route(request: Req, handler: HttpHandler): Routing {
     return new Routing(request.method, request.uri.path(), request.headers, handler);
 }
 

@@ -1,10 +1,10 @@
 import {deepEqual, equal, notEqual} from "assert";
-import {Response, Redirect} from "../../main/core/Response";
+import {Res, Redirect} from "../../main/core/Res";
 
 describe("in mem response", () => {
 
     it("is immutable", () => {
-        const response1 = new Response(200, "OK");
+        const response1 = new Res(200, "OK");
         const response2 = response1.withHeader("tom", "tosh");
 
         notEqual(response1, response2);
@@ -12,7 +12,7 @@ describe("in mem response", () => {
 
     it("set body", () => {
         equal(
-            new Response()
+            new Res()
                 .withBody("body boy")
                 .bodyString(),
             "body boy")
@@ -20,7 +20,7 @@ describe("in mem response", () => {
 
     it("set body string", () => {
         equal(
-            new Response()
+            new Res()
                 .withBody("body boy-o")
                 .bodyString(),
             "body boy-o")
@@ -28,7 +28,7 @@ describe("in mem response", () => {
 
     it("set header on response", () => {
         equal(
-            new Response()
+            new Res()
                 .withHeader("tom", "smells")
                 .header("tom"),
             "smells");
@@ -36,7 +36,7 @@ describe("in mem response", () => {
 
     it("concat same header on response", () => {
         deepEqual(
-            new Response()
+            new Res()
                 .withHeader("tom", "smells")
                 .withHeader("tom", "smells more")
                 .withHeader("tom", "smells some more")
@@ -46,7 +46,7 @@ describe("in mem response", () => {
 
     it('replace header', () => {
         equal(
-            new Response()
+            new Res()
                 .withHeader("tom", "smells")
                 .replaceHeader("tom", "is nice")
                 .header("tom"),
@@ -55,7 +55,7 @@ describe("in mem response", () => {
 
     it('remove header', () => {
         equal(
-            new Response()
+            new Res()
                 .withHeader("tom", "smells")
                 .removeHeader("tom")
                 .header("tom"),
@@ -64,12 +64,12 @@ describe("in mem response", () => {
 
     it("can set body with just a string or a Body" , () => {
         equal(
-            new Response(200, "some string made into a Body")
+            new Res(200, "some string made into a Body")
                 .bodyString(),
             "some string made into a Body")
     });
 
-    it("Redirect is sugar for Response withHeader Location", () => {
+    it("Redirect is sugar for Res withHeader Location", () => {
         equal(Redirect(302, "/tosh").header("Location"),
             "/tosh"
         )

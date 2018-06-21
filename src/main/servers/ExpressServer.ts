@@ -1,8 +1,8 @@
 import {Routing} from "../core/Routing";
-import {Response} from "../core/Response";
-import {Req} from "../core/Request";
+import {Res} from "../core/Res";
 import {Http4jsServer} from "./Server";
 import {KeyValues} from "../core/HttpMessage";
+import {ReqOf} from "../";
 
 export class ExpressServer implements Http4jsServer {
     server: any;
@@ -31,10 +31,10 @@ export class ExpressServer implements Http4jsServer {
         });
     }
 
-    private createInMemResponse(chunks: Buffer[] | string, method: string, url: string, headers: KeyValues): Promise<Response> {
+    private createInMemResponse(chunks: Buffer[] | string, method: string, url: string, headers: KeyValues): Promise<Res> {
         const inMemRequest = headers['content-type'] == 'application/x-www-form-urlencoded'
-            ? Req(method, url, JSON.stringify(chunks), headers).withForm(chunks)
-            : Req(method, url, Buffer.concat((chunks) as Buffer[]).toString(), headers);
+            ? ReqOf(method, url, JSON.stringify(chunks), headers).withForm(chunks)
+            : ReqOf(method, url, Buffer.concat((chunks) as Buffer[]).toString(), headers);
         return this.routing.serve(inMemRequest);
     }
 

@@ -1,7 +1,7 @@
 import {HttpMessage} from "./HttpMessage";
 import {Uri} from "./Uri";
 
-export class Response implements HttpMessage {
+export class Res implements HttpMessage {
     uri: Uri;
     headers: {[key:string]: string} = {};
     body: string;
@@ -17,8 +17,8 @@ export class Response implements HttpMessage {
         return this.headers[name.toLowerCase()];
     }
 
-    withHeader(name: string, value: string): Response {
-        const response = Response.clone(this);
+    withHeader(name: string, value: string): Res {
+        const response = Res.clone(this);
         const lowercaseName = name.toLowerCase();
         if (response.headers[lowercaseName] == null) {
             response.headers[lowercaseName] = value;
@@ -30,32 +30,32 @@ export class Response implements HttpMessage {
         return response;
     }
 
-    withHeaders(headers: object): Response {
-        const response = Response.clone(this);
+    withHeaders(headers: object): Res {
+        const response = Res.clone(this);
         response.headers = headers;
         return response;
     }
 
-    replaceAllHeaders(headers: object): Response {
-        const response = Response.clone(this);
+    replaceAllHeaders(headers: object): Res {
+        const response = Res.clone(this);
         response.headers = headers;
         return response;
     }
 
-    replaceHeader(name: string, value: string): Response {
-        const response = Response.clone(this);
+    replaceHeader(name: string, value: string): Res {
+        const response = Res.clone(this);
         response.headers[name] = value;
         return response;
     }
 
-    removeHeader(name: string): Response {
-        const response = Response.clone(this);
+    removeHeader(name: string): Res {
+        const response = Res.clone(this);
         delete response.headers[name];
         return response;
     }
 
-    withBody(body: string): Response {
-        const response = Response.clone(this);
+    withBody(body: string): Res {
+        const response = Res.clone(this);
         response.body = body;
         return response;
     }
@@ -70,11 +70,11 @@ export class Response implements HttpMessage {
 
 }
 
-export function Res(status: number = 200, body: string = "", headers: {} = {}): Response {
-    return new Response(status, body, headers);
+export function ResOf(status: number = 200, body: string = "", headers: {} = {}): Res {
+    return new Res(status, body, headers);
 }
 
-export function Redirect(status: number = 301, path: string, headers: {} = {}): Response {
-    return new Response(status, "", headers).withHeader("Location", path);
+export function Redirect(status: number = 301, path: string, headers: {} = {}): Res {
+    return new Res(status, "", headers).withHeader("Location", path);
 }
 

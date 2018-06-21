@@ -1,8 +1,8 @@
 import * as http from 'http';
-import {Response} from "../core/Response";
-import {Request} from "../core/Request";
+import {Res} from "../core/Res";
+import {Req} from "../core/Req";
 
-export function HttpClient(request: Request): Promise<Response> {
+export function HttpClient(request: Req): Promise<Res> {
     switch (request.method) {
         case "GET":
             return get(request);
@@ -27,7 +27,7 @@ export function HttpClient(request: Request): Promise<Response> {
     }
 }
 
-function get(request: Request): Promise<Response> {
+function get(request: Req): Promise<Res> {
     const options = request.uri.asNativeNodeRequest;
     const requestOptions = {
         ...options,
@@ -41,13 +41,13 @@ function get(request: Request): Promise<Response> {
                 chunks.push(chunk);
             });
             res.on('end', () => {
-                return resolve(new Response(res.statusCode, Buffer.concat(chunks).toString(), res.headers));
+                return resolve(new Res(res.statusCode, Buffer.concat(chunks).toString(), res.headers));
             });
         }).end();
     });
 }
 
-function wire(request: Request): Promise<Response> {
+function wire(request: Req): Promise<Res> {
     const options = request.uri.asNativeNodeRequest;
     const requestOptions = {
         ...options,
@@ -62,7 +62,7 @@ function wire(request: Request): Promise<Response> {
                 chunks.push(chunk);
             });
             res.on('end', () => {
-                return resolve(new Response(res.statusCode, Buffer.concat(chunks).toString(), res.headers));
+                return resolve(new Res(res.statusCode, Buffer.concat(chunks).toString(), res.headers));
             });
         });
         clientRequest.write(request.bodyString());

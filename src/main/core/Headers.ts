@@ -1,9 +1,9 @@
 export enum Headers {
-    //Request headers
+    //Req headers
     ACCEPT = "Accept",
     ACCEPT_ENCODING = "Accept-Encoding",
-    ACCESS_CONTROL_REQUEST_METHOD = "Access-Control-Request-Method",
-    ACCESS_CONTROL_REQUEST_HEADERS = "Access-Control-Request-Headers",
+    ACCESS_CONTROL_REQUEST_METHOD = "Access-Control-Req-Method",
+    ACCESS_CONTROL_REQUEST_HEADERS = "Access-Control-Req-Headers",
     ALLOW = "Allow",
     AUTHORIZATION = "Authorization",
     CACHE_CONTROL = "Cache-Control",
@@ -18,7 +18,7 @@ export enum Headers {
     X_FORWARDED_Host = "X-Forwarded-Host",
     X_CSRF_TOKEN = "X-Csrf-Token",
 
-        //Response headers
+        //Res headers
     ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin",
     ACCESS_CONTROL_ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials",
     ACCESS_CONTROL_EXPOSE_HEADERS = "Access-Control-Expose-Headers",
@@ -38,7 +38,7 @@ export enum Headers {
 
 export enum HeaderValues {
 
-    // Request
+    // Req
     APPLICATION_JSON = "application/json",
     CACHE_CONTROL_MAX_STALE = "max-stale=",
     CACHE_CONTROL_MIN_FRESH = "min-fresh=",
@@ -52,7 +52,7 @@ export enum HeaderValues {
     AUDIO_MPEG = "audio/mpeg",
     VIDEO_MP4 = "video/mp4",
 
-    // Response
+    // Res
     CACHE_CONTROL_OFF = "no-cache, no-store, must-revalidate",
     CACHE_CONTROL_MUST_REVALIDATE = "must-revalidate",
     CACHE_CONTROL_PUBLIC = "public",
@@ -63,7 +63,7 @@ export enum HeaderValues {
     CACHE_CONTROL_STALE_WHILE_REVALIDATE = "stale-while-revalidate=",
     CACHE_CONTROL_STALE_IF_ERROR = "stale-if-error=",
 
-    // Request and Response
+    // Req and Res
     CACHE_CONTROL_NO_CACHE = "no-cache",
     CACHE_CONTROL_NO_STORE = "no-store",
     CACHE_CONTROL_MAX_AGE = "max-age=",

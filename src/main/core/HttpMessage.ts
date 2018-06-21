@@ -1,6 +1,6 @@
 import {Uri} from "./Uri";
-import {Response} from "./Response";
-import {Request} from "./Request";
+import {Res} from "./Res";
+import {Req} from "./Req";
 
 export type KeyValues = {[key:string]: string};
 export type Form = {[key:string]: string|string[]};
@@ -25,4 +25,4 @@ export interface HttpMessage {
 
 }
 
-export type HttpHandler = (request: Request) => Promise<Response>
+export type HttpHandler = (request: Req) => Promise<Res>
