@@ -16,6 +16,18 @@
 
 # Request and Response API
 
+There are two ways to build a `Req` or `Res`:
+  - you can new up the class
+  - you can use the builder function
+  
+```typescript
+new Res(200, 'body'); //or
+ResOf(200, 'body');
+
+new Req("GET", "/"); //or
+ReqOf("GET", "/")
+```
+
 ## Immutability - why?
 
 Both `Request` and `Response` are immutable, so every method on them returns a new object. 
@@ -68,7 +80,7 @@ We also have a dumb redirect helper
 Redirect(302, "/somewhere/else") 
 ```
 
-which is just sugar for `Res(302).withHeader("Location", "/somewhere/else")`
+which is just sugar for `ResOf(302).withHeader("Location", "/somewhere/else")`
 
 The full api is as follows:
 

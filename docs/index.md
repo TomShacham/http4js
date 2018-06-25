@@ -24,7 +24,7 @@ Within this layer we can happily unit test our routing logic and easily spin up 
 We can route a path to a handler and start it as a server:
 
 ```typescript
-routes("GET", "/path", async (req) => Res(200))
+routes("GET", "/path", async (req) => ResOf(200))
     .asServer()
     .start();
 ```

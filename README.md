@@ -1,6 +1,6 @@
 # http4js
 
-A simple http library for typescript
+A lightweight HTTP framework for Typescript / JS, with zero dependencies
 
 ## *** [read the docs](https://tomshacham.github.io/http4js/) ***
 
@@ -25,7 +25,7 @@ An example server and client
 //GET to any path returns `GET to {PATH} with req headers {HEADERS}`
 const routing = routes(Method.GET, ".*", async (req: Request) => {
     const html = `<h1>${req.method} to ${req.uri.path()} with req headers ${Object.keys(req.headers)}</h1>`;
-    return Res(Status.OK, html);
+    return ResOf(Status.OK, html);
 })
 
 //add csrf token header to every request and vary gzip to every response
