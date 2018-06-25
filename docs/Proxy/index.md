@@ -19,8 +19,8 @@
 Writing a proxy might look like this:
 
 ```typescript
-const upstream = routes(".*", ".*", async (req: Request) => {
-    const response = Res(200, req.headers);
+const upstream = routes(".*", ".*", async (req: Req) => {
+    const response = ResOf(200, req.headers);
     console.log("*** UPSTREAM RESPONSE ***");
     console.log(response);
     return response;
@@ -28,7 +28,7 @@ const upstream = routes(".*", ".*", async (req: Request) => {
     .asServer(new NativeServer(3001))
     .start();
 
-const proxy = routes(".*", ".*", (req: Request) => {
+const proxy = routes(".*", ".*", (req: Req) => {
     const rewrittenRequest = req.withUri("http://localhost:3001/")
         .withHeader("x-proxy", "header from proxy");
     console.log("*** REWRITTEN REQUEST ***");
@@ -44,7 +44,7 @@ Now when we make a get request to `http://localhost:3000` we add our x-proxy hea
 
 ```
 *** REWRITTEN REQUEST ***
-Request {
+Req {
   headers:
    { host: 'localhost:3000',
      connection: 'keep-alive',
@@ -87,7 +87,7 @@ Request {
   pathParams: {} }
 
 *** UPSTREAM RESPONSE ***
-Response {
+Res {
   headers: {},
   body:
    { host: 'localhost:3000',

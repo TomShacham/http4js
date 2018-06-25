@@ -22,7 +22,7 @@ to and from node's in-built http layer. But http4js also provides a
 way to hook into Express or Koa, allowing you to use their features.
 
 ```typescript
-get("/path", async () => Res(200, "OK"))
+get("/path", async () => ResOf(200, "OK"))
     .asServer(new NativeServer(3001)) // default value
     .start();
 ```
@@ -44,7 +44,7 @@ expressApp.use((req, res, next) => {
     next();
 });
 
-get("/path", async () => Res(200, "OK"))
+get("/path", async () => ResOf(200, "OK"))
     .asServer(new ExpressServer(expressApp, 3001));
 
 ```
@@ -65,7 +65,7 @@ koaApp.use((ctx, next) => {
     next();
 });
 
-get("/path", async () => Res(200, "OK"))
+get("/path", async () => ResOf(200, "OK"))
     .asServer(new KoaServer(koaApp, 3002))
     .start();
 ```
@@ -101,8 +101,8 @@ Here is the code for the Express backend:
 
     private createInMemResponse(chunks: Array<any>, method: string, url: string, headers: {}): Promise<Response> {
         const inMemRequest = headers['content-type'] == 'application/x-www-form-urlencoded'
-            ? new Request(method, url, JSON.stringify(chunks), headers).withForm(chunks)
-            : new Request(method, url, Buffer.concat(chunks).toString(), headers);
+            ? new Req(method, url, JSON.stringify(chunks), headers).withForm(chunks)
+            : new Req(method, url, Buffer.concat(chunks).toString(), headers);
         return this.routing.serve(inMemRequest);
     }
 ```

@@ -22,7 +22,7 @@ Both `Request` and `Response` are immutable, so every method on them returns a n
 For example we might want to set a header on a `Request` but then replace it:
 
 ```typescript
-const request = Req(Method.GET, "/")
+const request = ReqOf(Method.GET, "/")
                     .withHeader(Headers.EXPIRES, "max-age=60")
                     
 const noMaxAgeRequest = request.replaceHeader(Headers.EXPIRES, "max-age=0");
@@ -33,21 +33,21 @@ state all over our codebase and finding it hard to know where our `Request` or `
 is mutated. For example, it stops the following:
 
 ```typescript
-get("/" , async (req: Request) => {
+get("/" , async (req: Req) => {
     doSomethingOverThere(req)
-    return Res(200, req.bodyString());
+    return ResOf(200, req.bodyString());
 })
 
-function doSomethingOverThere(req: Request): number {
+function doSomethingOverThere(req: Req): number {
     req.withHeader(Headers.CACHE_CONTROL, "no-cache, no-store, must-revalidate")
     return Math.random();
 }
 ```
 
-where our function `doSomethingOverThere` takes a `Request` and tries to set a cache control directive
+where our function `doSomethingOverThere` takes a `Req` and tries to set a cache control directive
 but is actually doing something else - returning a number. Because `doSomethingOverThere` doesn't return
-the `Request` explicitly and because `Request` is immutable, it actually has no effect on the `Request`
-used in `new Response(200, req.body)` because `Request` is immutable.
+the `Req` explicitly and because `Req` is immutable, it actually has no effect on the `Req`
+used in `new Res(200, req.body)` because `Req` is immutable.
 
 ## API
 
@@ -55,11 +55,11 @@ We provide builder functions `Req` and `Res` because `Request` and `Response`
 conflict with other libraries using the same name, so you might write:
 
 ```typescript
-get("/", async (req) => Res(200, "Hello, world!"))
+get("/", async (req) => ResOf(200, "Hello, world!"))
     .asServer()
     .start();
 
-HttpClient(Req("GET", "http://localhost:3000/")).then(res=>console.log(res));
+HttpClient(ReqOf("GET", "http://localhost:3000/")).then(res=>console.log(res));
 ```
 
 We also have a dumb redirect helper 
@@ -75,29 +75,29 @@ The full api is as follows:
 ```typescript
 
 class Request {
-    withUri(uri: Uri | string): Request
+    withUri(uri: Uri | string): Req
     
     header(name: string): string 
     
-    withHeader(name: string, value: string): Request 
+    withHeader(name: string, value: string): Req 
     
-    replaceHeader(name: string, value: string): Request 
+    replaceHeader(name: string, value: string): Req 
     
-    removeHeader(name: string): Request
+    removeHeader(name: string): Req
     
-    withBody(body: string): Request
+    withBody(body: string): Req
     
-    withFormField(name: string, value: string | string[]): Request 
+    withFormField(name: string, value: string | string[]): Req 
     
-    withForm(form: object): Request 
+    withForm(form: object): Req 
     
     bodyString(): string 
     
     formBodystring(): string 
     
-    withQuery(name: string, value: string): Request
+    withQuery(name: string, value: string): Req
     
-    withQueries(queries: {}): Request
+    withQueries(queries: {}): Req
     
     query(name: string): string
 }
@@ -105,17 +105,17 @@ class Request {
 class Response {
     header(name: string): string
 
-    withHeader(name: string, value: string): Response 
+    withHeader(name: string, value: string): Res 
 
-    withHeaders(headers: object): Response 
+    withHeaders(headers: object): Res 
 
-    replaceAllHeaders(headers: object): Response 
+    replaceAllHeaders(headers: object): Res 
 
-    replaceHeader(name: string, value: string): Response 
+    replaceHeader(name: string, value: string): Res 
 
-    removeHeader(name: string): Response 
+    removeHeader(name: string): Res 
 
-    withBody(body: string): Response 
+    withBody(body: string): Res 
 
     bodyString(): string 
 }

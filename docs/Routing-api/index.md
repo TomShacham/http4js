@@ -19,24 +19,24 @@
 Routing is declared from a root. We start with something basic and add to it:
 
 ```typescript
-get("/", async () => Res(200, "Root"))
-    .withHandler(Method.GET, "/about", async () => Res(200, "About us."));
+get("/", async () => ResOf(200, "Root"))
+    .withHandler(Method.GET, "/about", async () => ResOf(200, "About us."));
 ```
 
 If we want to nest our handlers we can combine them at a later time:
 
 ```typescript
 // root stays the same 
-const root = get("/", async () => Res(200, "Root"))
-    .withHandler(Method.GET, "/about", async () => Res(200, "About us."));
+const root = get("/", async () => ResOf(200, "Root"))
+    .withHandler(Method.GET, "/about", async () => ResOf(200, "About us."));
 
 // some other routes whose root is /hotels/{name}
 const nestedRoutes = get("/hotels/{name}", async (req) => {
-    return Res(200, hotels[req.pathParams.name]);
+    return ResOf(200, hotels[req.pathParams.name]);
 }).withHandler(Method.GET, "/properties/{property}", async (req) => {
     // now we have a handler on /hotels/{name}/properties/{property} and can see both path params
     const body = hotels[req.pathParams.name].properties[req.pathParams.property];
-    return Res(200, body); 
+    return ResOf(200, body); 
 })
 
 // combine them
@@ -59,13 +59,13 @@ The most specific handler is matched first:
 
 ```typescript
 return get("/", async () => {
-    return Res(200, "root");
+    return ResOf(200, "root");
 }).withHandler("GET", "/family/{name}", async () => {
-    return Res(200, "least precise");
+    return ResOf(200, "least precise");
 }).withHandler("GET", "/family/{name}/then/more", async () => {
-    return Res(200, "most precise");
+    return ResOf(200, "most precise");
 }).withHandler("POST", "/family/{name}/less", async () => {
-    return Res(200, "medium precise");
+    return ResOf(200, "medium precise");
 })
     .serve(new Request("GET", "/family/shacham/then/more"))
     .then(response => equal(response.bodyString(), "most precise"))
@@ -79,12 +79,12 @@ generic handler at `/family/{name}` it is matched first.
 We can also declare a route using a Req object: 
 
 ```typescript
-const requestAcceptText = Req("GET", "/tom").withHeader(Headers.ACCEPT, HeaderValues.APPLICATION_JSON);
-const requestAcceptJson = Req("GET", "/tom").withHeader(Headers.ACCEPT, HeaderValues.TEXT_HTML);
+const requestAcceptText = ReqOf("GET", "/tom").withHeader(Headers.ACCEPT, HeaderValues.APPLICATION_JSON);
+const requestAcceptJson = ReqOf("GET", "/tom").withHeader(Headers.ACCEPT, HeaderValues.TEXT_HTML);
 
-const response = await route(Req("GET", "/"), async() => Res(200, "Hiyur"))
-    .withRoute(requestAcceptText, async() => Res(200, "Hiyur text")) //will match this route based on header
-    .withRoute(requestAcceptJson, async() => Res(200, "Hiyur json"))
+const response = await route(ReqOf("GET", "/"), async() => ResOf(200, "Hiyur"))
+    .withRoute(requestAcceptText, async() => ResOf(200, "Hiyur text")) //will match this route based on header
+    .withRoute(requestAcceptJson, async() => ResOf(200, "Hiyur json"))
     .serve(requestAcceptText);  //serve with same request used to declare routing
 ```
 
@@ -94,9 +94,9 @@ We've seen above how to specify path params:
 
 ```typescript
 get("/hotels/{name}/property/{property}", async (req) => {
-  return Res(200, req.pathParams)
+  return ResOf(200, req.pathParams)
 }).serve(
-  Req(Method.GET, "http://localhost:3000/hotels/Tom-Hotel/property/Cola-Beach")
+  ReqOf(Method.GET, "http://localhost:3000/hotels/Tom-Hotel/property/Cola-Beach")
 );
 
 //pathParams: { name: 'Tom-Hotel', property: 'Cola-Beach' }
@@ -110,9 +110,9 @@ Query params are available in a similar way.
 get("/hotels", async (req) => {
   const nameQuery = req.queries['name'];
   const filteredHotels = hotels.filter(hotel => hotel.name === nameQuery);
-  return Res(200, filteredHotels);
+  return ResOf(200, filteredHotels);
 }).serve(
-  Req(Method.GET, "http://localhost:3000/hotels").withQuery("name", "Tom Hotel")
+  ReqOf(Method.GET, "http://localhost:3000/hotels").withQuery("name", "Tom Hotel")
 );
 ```
 
@@ -124,9 +124,9 @@ And form params are available in a similar way too
 ```typescript
 post("/hotels", async (req) => {
   const hotelName = req.form['name'];
-  return Res(200, hotelName);
+  return ResOf(200, hotelName);
 }).serve(
-  Req(Method.POST, "http://localhost:3000/hotels").withFormField("name", "Tom Hotel")
+  ReqOf(Method.POST, "http://localhost:3000/hotels").withFormField("name", "Tom Hotel")
 );
 ```
 
@@ -138,9 +138,9 @@ For terseness we can rewrite:
 
 ```typescript
 return get("/", async () => {
-    return Res(200, "root");
+    return ResOf(200, "root");
 }).withHandler("GET", "/family/{name}", async () => { //withHandler
-    return Res(200, "least precise");
+    return ResOf(200, "least precise");
 })
 ```
 
@@ -148,9 +148,9 @@ as the following
 
 ```typescript
 return get("/", async () => {
-    return Res(200, "root");
+    return ResOf(200, "root");
 }).withGet("/family/{name}", async () => { //withGet
-    return Res(200, "least precise");
+    return ResOf(200, "least precise");
 })
 ```
 
@@ -159,10 +159,10 @@ return get("/", async () => {
 We give you back the routes you've listed, in case you want to describe your API
 
 ```typescript
-get("/", async() => Res())
-    .withRoute(Req("POST", "/tosh", "", {[Headers.CONTENT_TYPE]: HeaderValues.APPLICATION_JSON}),
-        async() => Res())
-    .withPut("/putsch", async() => Res())
+get("/", async() => ResOf())
+    .withRoute(ReqOf("POST", "/tosh", "", {[Headers.CONTENT_TYPE]: HeaderValues.APPLICATION_JSON}),
+        async() => ResOf())
+    .withPut("/putsch", async() => ResOf())
     .routes()
 ```
 
@@ -189,7 +189,7 @@ class Routing {
 
     withRoutes(routes: Routing): Routing 
 
-    withRoute(request: Request, handler: HttpHandler): Routing 
+    withRoute(request: Req, handler: HttpHandler): Routing 
 
     withFilter(filter: Filter): Routing 
 
@@ -197,9 +197,9 @@ class Routing {
 
     asServer(server: Http4jsServer = new NativeServer(3000)): Http4jsServer
 
-    serve(request: Request): Promise<Response> 
+    serve(request: Req): Promise<Res> 
 
-    match(request: Request): MountedHttpHandler 
+    match(request: Req): MountedHttpHandler 
 
     withGet(path: string, handler: HttpHandler): Routing 
 
@@ -218,7 +218,7 @@ class Routing {
 
 routes(method: string, path: string, handler: HttpHandler, headers: KeyValues = {}): Routing
 
-route(request: Request, handler: HttpHandler): Routing
+route(request: Req, handler: HttpHandler): Routing
 
 get(path: string, handler: HttpHandler, headers: KeyValues = {}): Routing
 

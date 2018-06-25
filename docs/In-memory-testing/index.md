@@ -19,11 +19,11 @@
 If we don't start the server then we can still use it to serve requests in memory:
 
 ```typescript
-const routing = get("/path", async (req: Request) => Res(200))
+const routing = get("/path", async (req: Request) => ResOf(200))
     //.asServer()
     //.start()    
     
-routing.serve(Req("GET", "/path"))
+routing.serve(ReqOf("GET", "/path"))
      
 // Response { headers: {}, body: '' , status: 200 }
 ```
@@ -35,7 +35,7 @@ Our test might look something like this:
 describe("unknown routes", () => {
 
     it("404 page if no routes match", async () => {
-        const request = new Request("GET", "/unknown-route");
+        const request = new Req("GET", "/unknown-route");
         const testApp = new TestApp();
 
         const response = await testApp.serve(request);
@@ -59,7 +59,7 @@ export class TestApp {
         this.routes = new App(fakeSerice).routes();
     }
 
-    async serve(req: Request): Promise<Response> {
+    async serve(req: Req): Promise<Res> {
         return this.routes.serve(req);
     }
    

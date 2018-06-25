@@ -104,7 +104,7 @@ that comes through our reduction. If no `Routing` path matches then we do the sa
 our final handler that receives `Request` will be the http4js default handler for "not found". 
 
 ```typescript
-serve(request: Request): Promise<Response> {
+serve(request: Req): Promise<Response> {
     const matchedHandler = this.match(request);
     const filtered = this.filters.reduce((prev, next) => {
         return next(prev)
@@ -143,7 +143,7 @@ have to write our filters as being aware of this chain of calls. Hence why a fil
 allows us to change the incoming request _as well as_ the outgoing response: 
 
 ```typescript
- (handler: HttpHandler /*previous handler*/) => async (req: Request) => {
+ (handler: HttpHandler /*previous handler*/) => async (req: Req) => {
     const response = await handler(req.withHeader("incoming", "new-header")/*add header to incoming request*/);
     // log outgoing response
     console.log(`${req.method} to ${req.uri.href} with status ${response.status}`);

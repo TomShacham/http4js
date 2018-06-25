@@ -22,11 +22,11 @@ yarn add http4js
 
 ```javascript
 const http4js = require('http4js');
-const Response = http4js.Response;
+const Res = http4js.Res;
 const Method = http4js.Method;
 const routes = http4js.routes;
 
-routes(Method.GET, "/", (req) => Promise.resolve(new Response(200, "OK")))
+routes(Method.GET, "/", async (req) => new Res(200, "OK"))
     .asServer()
     .start();
 ```

@@ -28,9 +28,9 @@ test that makes sure we can view a friend one at a time.
 ```typescript
     it("shows one friend at a time", async () => {
         let testApp = new TestApp();
-        await testApp.serve(new Request("POST", "/friends").withForm({name: "Tosh"}));
+        await testApp.serve(ReqOf("POST", "/friends").withForm({name: "Tosh"}));
         await testApp.approve("one friend",
-            new Request("GET", "/friends/Tosh"))
+            ReqOf("GET", "/friends/Tosh"))
     });
 ```
 
@@ -43,7 +43,7 @@ and `actual` are different but we want to accept the `actual` result, so we
 give a command to copy the actual over the `approved`.  
 
 ```typescript
-async approve(testFileName: string, req: Request) {
+async approve(testFileName: string, req: Req) {
     const actual1 = await this.routes.match(req);
     const actual = actual1.bodyString();
     const actualfilePath = `./src/test/resources/${testFileName}.actual`;
@@ -71,10 +71,10 @@ So again, looking at our test:
     it("shows one friend at a time", async () => {
         let testApp = new TestApp();
         //setup
-        await testApp.serve(new Request("POST", "/friends").withForm({name: "Tosh"}));
+        await testApp.serve(ReqOf("POST", "/friends").withForm({name: "Tosh"}));
         //approve
         await testApp.approve("one friend",
-            new Request("GET", "/friends/Tosh"))
+            ReqOf("GET", "/friends/Tosh"))
     });
 ```
 
