@@ -124,13 +124,13 @@ class FakeFriendsDB implements FriendsDB {
         return this;
     }
 
-    all(): Promise<Friend[]> {
-        return Promise.resolve(this.friends);
+    public async all(): Promise<Friend[]> {
+        return this.friends;
     }
 
-    add(friend: Friend): Promise<Friend> {
+    public async add(friend: Friend): Promise<Friend> {
         this.friends.push(friend);
-        return Promise.resolve(friend);
+        return friend;
     }
 
     deleteAll(): void {
@@ -139,7 +139,7 @@ class FakeFriendsDB implements FriendsDB {
 }
 
 interface FriendsDB {
-    all(): Promise<Array<Friend>>
+    all(): Promise<Friend[]>
     add(friend: Friend): Promise<Friend>
     deleteAll(): void
 }

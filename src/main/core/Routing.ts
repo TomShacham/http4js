@@ -128,9 +128,9 @@ export class Routing {
         path: ".*",
         method: ".*",
         headers: {},
-        handler: (request: Req) => {
+        handler: async (request: Req) => {
             const notFoundBodystring = `${request.method} to ${request.uri.path()} did not match routes`;
-            return Promise.resolve(new Res(404, notFoundBodystring));
+            return new Res(404, notFoundBodystring);
         }
     }
 

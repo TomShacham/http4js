@@ -23,8 +23,8 @@ describe('routing', async () => {
     });
 
     it("add a filter", async () => {
-        const response = await get("/test", () => {
-            return Promise.resolve(ResOf(200));
+        const response = await get("/test", async () => {
+            return ResOf(200);
         })
             .withFilter(() => {
                 return async () => {
@@ -221,7 +221,7 @@ describe('routing', async () => {
     });
 
     it("matches method by regex", async () => {
-        const response = await routes(".*", "/", () => Promise.resolve(ResOf(200, "matched")))
+        const response = await routes(".*", "/", async () => ResOf(200, "matched"))
             .serve(ReqOf("GET", "/"));
 
         equal(response.bodyString(), "matched");
