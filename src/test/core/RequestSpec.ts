@@ -113,7 +113,7 @@ describe("in mem request", () => {
             "tom=tosh&ben=bosh")
     });
 
-    it("decodes query string paramaters", () => {
+    it("decodes query string parameters", () => {
         deepEqual(
             ReqOf("GET", "/tom")
                 .withQuery("tom", "tosh%20eroo")

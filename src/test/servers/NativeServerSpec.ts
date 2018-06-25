@@ -3,7 +3,7 @@ import {Req} from "../../main/core/Req";
 import {deepEqual, equal} from "assert";
 import {HttpClient} from "../../main/client/Client";
 import {NativeServer} from "../../main/servers/NativeServer";
-import {ResOf} from "../../main";
+import {HeaderValues, ReqOf, ResOf} from "../../main";
 
 describe("native node over the wire", () => {
 
@@ -36,25 +36,25 @@ describe("native node over the wire", () => {
     });
 
     it("sets post body", async() => {
-        const request = new Req("POST", `${baseUrl}/post-body`, "my humps");
+        const request = ReqOf("POST", `${baseUrl}/post-body`, "my humps");
         const response = await HttpClient(request);
         equal(response.bodyString(), "my humps")
     });
 
     it("sets post form body", async() => {
-        const request = new Req("POST", `${baseUrl}/post-form-body`).withForm({name: ["tosh", "bosh", "losh"]});
+        const request = ReqOf("POST", `${baseUrl}/post-form-body`).withForm({name: ["tom%20shacham", "bosh", "losh"]});
         const response = await HttpClient(request);
-        equal(response.bodyString(), JSON.stringify({name: ["tosh", "bosh", "losh"]}))
+        equal(response.bodyString(), JSON.stringify({name: ["tom shacham", "bosh", "losh"]}))
     });
 
     it("sets query params", async() => {
-        const request = new Req("GET", baseUrl).withQuery("tomQuery", "likes to party");
+        const request = ReqOf("GET", baseUrl).withQuery("tomQuery", "likes to party");
         const response = await HttpClient(request);
         equal(response.header("tomquery"), "likes to party")
     });
 
     it("sets multiple headers of same name", async() => {
-        const request = new Req("GET", baseUrl, null, {tom: ["smells", "smells more"]});
+        const request = ReqOf("GET", baseUrl, null, {tom: ["smells", "smells more"]});
         const response = await HttpClient(request);
         deepEqual(response.header("tom"), "smells, smells more")
     });
@@ -62,49 +62,49 @@ describe("native node over the wire", () => {
     describe("supports client verbs", () => {
 
         it("GET", async() => {
-            const request = new Req("GET", `${baseUrl}/get`);
+            const request = ReqOf("GET", `${baseUrl}/get`);
             const response = await HttpClient(request);
             equal(response.bodyString(), "Done a GET request init?");
         });
 
         it("POST", async() => {
-            const request = new Req("POST", `${baseUrl}/post`);
+            const request = ReqOf("POST", `${baseUrl}/post`);
             const response = await HttpClient(request);
             equal(response.bodyString(), "Done a POST request init?");
         });
 
         it("PUT", async() => {
-            const request = new Req("PUT", `${baseUrl}/put`);
+            const request = ReqOf("PUT", `${baseUrl}/put`);
             const response = await HttpClient(request);
             equal(response.bodyString(), "Done a PUT request init?");
         });
 
         it("PATCH", async() => {
-            const request = new Req("PATCH", `${baseUrl}/patch`);
+            const request = ReqOf("PATCH", `${baseUrl}/patch`);
             const response = await HttpClient(request);
             equal(response.bodyString(), "Done a PATCH request init?");
         });
 
         it("DELETE", async() => {
-            const request = new Req("DELETE", `${baseUrl}/delete`);
+            const request = ReqOf("DELETE", `${baseUrl}/delete`);
             const response = await HttpClient(request);
             equal(response.bodyString(), "Done a DELETE request init?");
         });
 
         it("HEAD", async() => {
-            const request = new Req("HEAD", `${baseUrl}/head`);
+            const request = ReqOf("HEAD", `${baseUrl}/head`);
             const response = await HttpClient(request);
             equal(response.status, "200");
         });
 
         it("OPTIONS", async() => {
-            const request = new Req("OPTIONS", `${baseUrl}/options`);
+            const request = ReqOf("OPTIONS", `${baseUrl}/options`);
             const response = await HttpClient(request);
             equal(response.bodyString(), "Done a OPTIONS request init?")
         });
 
         it("TRACE", async() => {
-            const request = new Req("TRACE", `${baseUrl}/trace`);
+            const request = ReqOf("TRACE", `${baseUrl}/trace`);
             const response = await HttpClient(request);
             equal(response.bodyString(), "Done a TRACE request init?");
         });

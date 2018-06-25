@@ -28,6 +28,9 @@ new Req("GET", "/"); //or
 ReqOf("GET", "/")
 ```
 
+They are named `Req` and `Res` in this short-hand manner so that they don't 
+conflict with other objects named Request and Response. 
+
 ## Immutability - why?
 
 Both `Request` and `Response` are immutable, so every method on them returns a new object. 
