@@ -214,14 +214,14 @@ describe('routing', async () => {
         const request = ReqOf("POST", "/family", "p1=1&p2=tom&p3=bosh&p4=losh")
             .withHeader("Content-Type", "application/x-www-form-urlencoded");
         // console.log(request)
-        const response = await post("/family", async(req) => ResOf(200, req.form))
+        const response = await post("/family", async(req) => ResOf(200, JSON.stringify(req.form)))
             .serve(request);
 
-        deepStrictEqual(response.bodyString(), {p1: "1", p2: "tom", p3: "bosh", p4: "losh"});
+        deepStrictEqual(response.bodyString(), JSON.stringify({p1: "1", p2: "tom", p3: "bosh", p4: "losh"}));
     });
 
     it("matches method by regex", async () => {
-        const response = await routes(".*", "/", () => Promise.resolve(new ResOf(200, "matched")))
+        const response = await routes(".*", "/", () => Promise.resolve(ResOf(200, "matched")))
             .serve(ReqOf("GET", "/"));
 
         equal(response.bodyString(), "matched");
