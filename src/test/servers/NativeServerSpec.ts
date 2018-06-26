@@ -2,12 +2,13 @@ import {get} from "../../main/core/Routing";
 import {Req} from "../../main/core/Req";
 import {deepEqual, equal} from "assert";
 import {HttpClient} from "../../main/client/Client";
-import {NativeServer} from "../../main/servers/NativeServer";
+import {NativeHttpServer} from "../../main/servers/NativeServer";
 import {HeaderValues, ReqOf, ResOf} from "../../main";
 
 describe("native node over the wire", () => {
 
-    const baseUrl = "http://localhost:4000";
+    const port = 4000;
+    const baseUrl = "http://localhost:" + port;
 
     const server = get("/", async(req) => {
         const query = req.query("tomQuery");
@@ -15,6 +16,7 @@ describe("native node over the wire", () => {
             .withHeaders(req.headers)
             .withHeader("tomQuery", query || "no tom query");
     })
+        .withGet('/url', async(req: Req) => ResOf(200, req.uri.asUriString()))
         .withHandler("POST", "/post-body", async (req) => ResOf(200, req.bodyString()))
         .withHandler("POST", "/post-form-body", async (req) => ResOf(200, JSON.stringify(req.form)))
         .withHandler("GET", "/get", async () => ResOf(200, "Done a GET request init?"))
@@ -25,7 +27,7 @@ describe("native node over the wire", () => {
         .withHandler("OPTIONS", "/options", async () => ResOf(200, "Done a OPTIONS request init?"))
         .withHandler("HEAD", "/head", async () => ResOf(200, "Done a HEAD request init?"))
         .withHandler("TRACE", "/trace", async () => ResOf(200, "Done a TRACE request init?"))
-        .asServer(new NativeServer(4000));
+        .asServer(new NativeHttpServer(port));
 
     before(() => {
         server.start();
@@ -57,6 +59,12 @@ describe("native node over the wire", () => {
         const request = ReqOf("GET", baseUrl, null, {tom: ["smells", "smells more"]});
         const response = await HttpClient(request);
         deepEqual(response.header("tom"), "smells, smells more")
+    });
+
+    it('sets the incoming req hostname and port', async () => {
+        const request = ReqOf("GET", `${baseUrl}/url`);
+        const response = await HttpClient(request);
+        deepEqual(response.bodyString(), `http://localhost:${port}/url`)
     });
 
     describe("supports client verbs", () => {

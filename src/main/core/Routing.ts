@@ -4,7 +4,7 @@ import {Req} from "./Req";
 import {Uri} from "./Uri";
 import {Filter} from "./Filters";
 import {Http4jsServer} from "../servers/Server";
-import {NativeServer} from "../servers/NativeServer";
+import {NativeHttpServer} from "../servers/NativeServer";
 import {ResOf} from "./Res";
 import {HttpClient} from "../client/Client";
 
@@ -56,7 +56,7 @@ export class Routing {
         return this;
     }
 
-    asServer(server: Http4jsServer = new NativeServer(3000)): Routing {
+    asServer(server: Http4jsServer = new NativeHttpServer(3000)): Routing {
         this.server = server;
         server.registerCatchAllHandler(this);
         return this;

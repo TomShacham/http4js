@@ -4,7 +4,7 @@ import {Req, ReqOf} from '../../main/core/Req';
 import {HttpHandler} from '../../main/core/HttpMessage';
 import {Headers, HeaderValues} from '../../main/core/Headers';
 import {ResOf} from "../../main/core/Res";
-import {NativeServer} from "../../main/servers/NativeServer";
+import {NativeHttpServer} from "../../main/servers/NativeServer";
 
 describe('routing', async () => {
 
@@ -296,7 +296,7 @@ describe('routing', async () => {
     });
 
     it('serves a request e2e is you have a server attached', async () => {
-        const response = await get('/', async() => ResOf()).asServer(new NativeServer(3004))
+        const response = await get('/', async() => ResOf()).asServer(new NativeHttpServer(3004))
             .serveE2E(ReqOf('GET', '/'));
         equal(response.status, 200);
     })

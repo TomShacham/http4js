@@ -6,7 +6,7 @@ import {Http4jsServer} from "./Server";
 import {HeaderValues} from "../core/Headers";
 import {KeyValues, Form} from "../core/HttpMessage";
 
-export class NativeServer implements Http4jsServer {
+export class NativeHttpServer implements Http4jsServer {
     server: any;
     port: number;
     routing: Routing;
@@ -20,14 +20,15 @@ export class NativeServer implements Http4jsServer {
     registerCatchAllHandler(routing: Routing): void {
         this.routing = routing;
         this.server.on("request", (req: any, res: any) => {
-            const { headers, method, url } = req;
+            const {headers, method, url} = req;
+            const hostname = req.headers.host;
             const chunks: Buffer[] = [];
             req.on('error', (err: any) => {
                 console.error(err);
             }).on('data', (chunk: Buffer) => {
                 chunks.push(chunk);
             }).on('end', () => {
-                const response = this.createInMemResponse(chunks, method, url, headers);
+                const response = this.createInMemResponse(chunks, method, `http://${hostname}${url}`, headers);
                 response.then(response => {
                     res.writeHead(response.status, response.headers);
                     res.end(response.bodyString());
