@@ -292,6 +292,6 @@ describe('routing', async () => {
         const response = await get('/tosh', async() => ResOf(200, 'Cool beans.'))
             .serve(ReqOf('GET', '/tosh/'));
         equal(response.bodyString(), 'Cool beans.');
-    })
+    });
 
 });

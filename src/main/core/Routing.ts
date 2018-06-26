@@ -5,6 +5,7 @@ import {Uri} from "./Uri";
 import {Filter} from "./Filters";
 import {Http4jsServer} from "../servers/Server";
 import {NativeServer} from "../servers/NativeServer";
+import {ResOf} from "./Res";
 
 export type MountedHttpHandler = {path: string, method: string, headers: KeyValues, handler: HttpHandler}
 export type DescribingHttpHandler = {path: string, method: string, headers: KeyValues}

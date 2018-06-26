@@ -14,6 +14,7 @@ export class Req implements HttpMessage {
     queries: KeyValues = {};
     pathParams: KeyValues = {};
     form: Form = {};
+    error?: {status: string, message: string};
 
     constructor(method: string,
                 uri: Uri | string,
@@ -144,7 +145,13 @@ export class Req implements HttpMessage {
         const pairs = this.uri.queryString().split("&");
         pairs.map(pair => {
             const split = pair.split("=");
-            this.queries[split[0]] = decodeURIComponent(split[1]);
+            let value;
+            try {
+                value = decodeURIComponent(split[1]);
+            } catch (e) {
+                this.queries[split[0]] = 'Malformed URI component';
+            }
+            this.queries[split[0]] = value as string;
         });
         return this.queries;
     }
