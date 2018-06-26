@@ -21,7 +21,12 @@ export class Routing {
                 headers: KeyValues = {},
                 handler: HttpHandler) {
         this.root = path;
-        this.handlers.push({path: path, method: method, headers: headers, handler: handler});
+        const pathNoTrailingSlash = path.endsWith('/') && path !== "/" ? path.slice(0, -1) : path;
+        this.handlers.push({
+            path: pathNoTrailingSlash,
+            method: method.toUpperCase(),
+            headers: headers,
+            handler: handler});
     }
 
     withRoutes(routes: Routing): Routing {

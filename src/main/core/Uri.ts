@@ -24,7 +24,8 @@ export class Uri {
     }
 
     static of(uri: string): Uri {
-        return new Uri(uri)
+        const uriNoTrailingSlash = uri.endsWith('/') && uri !== "/" ? uri.slice(0, -1) : uri;
+        return new Uri(uriNoTrailingSlash)
     }
 
     asUriString(): string {

@@ -20,7 +20,12 @@ export class Req implements HttpMessage {
                 body: string = "",
                 headers = {}) {
         this.method = method.toUpperCase();
-        this.uri = typeof uri == "string" ? Uri.of(uri) : uri;
+        if (typeof uri == "string") {
+            const uriNoTrailingSlash = uri.endsWith('/') && uri !== "/" ? uri.slice(0, -1) : uri;
+            this.uri = Uri.of(uriNoTrailingSlash);
+        } else {
+            this.uri = uri;
+        }
         this.body = body;
         this.headers = headers ? headers : {};
         this.queries = this.getQueryParams();
