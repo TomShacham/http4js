@@ -298,7 +298,6 @@ describe('routing', async () => {
     it('serves a request e2e is you have a server attached', async () => {
         const response = await get('/', async() => ResOf()).asServer(new NativeServer(3004))
             .serveE2E(ReqOf('GET', '/'));
-        console.log(response)
         equal(response.status, 200);
     })
 
