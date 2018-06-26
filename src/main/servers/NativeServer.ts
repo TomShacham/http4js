@@ -36,11 +36,11 @@ export class NativeServer implements Http4jsServer {
         });
     }
 
-    start(): void {
+    async start(): Promise<void> {
         this.server.listen(this.port);
     }
 
-    stop(): void {
+    async stop(): Promise<void> {
         this.server.close();
     }
 

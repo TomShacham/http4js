@@ -6,6 +6,7 @@ import {Filter} from "./Filters";
 import {Http4jsServer} from "../servers/Server";
 import {NativeServer} from "../servers/NativeServer";
 import {ResOf} from "./Res";
+import {HttpClient} from "../client/Client";
 
 export type MountedHttpHandler = {path: string, method: string, headers: KeyValues, handler: HttpHandler}
 export type DescribingHttpHandler = {path: string, method: string, headers: KeyValues}
@@ -55,10 +56,25 @@ export class Routing {
         return this;
     }
 
-    asServer(server: Http4jsServer = new NativeServer(3000)): Http4jsServer {
+    asServer(server: Http4jsServer = new NativeServer(3000)): Routing {
         this.server = server;
         server.registerCatchAllHandler(this);
-        return this.server;
+        return this;
+    }
+
+    start(): void {
+        this.server.start();
+    }
+
+    stop(): void {
+        this.server.stop();
+    }
+
+    async serveE2E (request: Req): Promise<Res> {
+        await this.start();
+        const response = await HttpClient(request.withUri(`http://localhost:${this.server.port}${request.uri.path()}`))
+        await this.stop();
+        return response;
     }
 
     serve(request: Req): Promise<Res> {

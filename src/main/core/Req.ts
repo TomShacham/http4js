@@ -145,13 +145,13 @@ export class Req implements HttpMessage {
         const pairs = this.uri.queryString().split("&");
         pairs.map(pair => {
             const split = pair.split("=");
-            let value;
+            let value = 'Malformed URI component';
             try {
                 value = decodeURIComponent(split[1]);
             } catch (e) {
-                this.queries[split[0]] = 'Malformed URI component';
+                this.queries[split[0]] = value;
             }
-            this.queries[split[0]] = value as string;
+            this.queries[split[0]] = value;
         });
         return this.queries;
     }

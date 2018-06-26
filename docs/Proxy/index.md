@@ -8,6 +8,7 @@
 - [URI API](/http4js/Uri-api/#uri-api)
 - [Routing API](/http4js/Routing-api/#routing-api)
 - [In Memory Testing](/http4js/In-memory-testing/#in-memory-testing)
+- [End to End Testing](/http4js/End-to-end-testing/#end-to-end-testing)
 - [Approval testing with fakes](/http4js/Approval-testing-with-fakes/#approval-testing-with-fakes)
 - [Express or Koa Backend](/http4js/Express-or-koa-backend/#express-or-koa-backend)
 - [Proxy](/http4js/Proxy/#proxy)

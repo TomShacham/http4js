@@ -7,7 +7,7 @@ import {HeaderValues, ReqOf, ResOf} from "../../main";
 
 describe("native node over the wire", () => {
 
-    const baseUrl = "http://localhost:3000";
+    const baseUrl = "http://localhost:4000";
 
     const server = get("/", async(req) => {
         const query = req.query("tomQuery");
@@ -25,7 +25,7 @@ describe("native node over the wire", () => {
         .withHandler("OPTIONS", "/options", async () => ResOf(200, "Done a OPTIONS request init?"))
         .withHandler("HEAD", "/head", async () => ResOf(200, "Done a HEAD request init?"))
         .withHandler("TRACE", "/trace", async () => ResOf(200, "Done a TRACE request init?"))
-        .asServer(new NativeServer(3000));
+        .asServer(new NativeServer(4000));
 
     before(() => {
         server.start();

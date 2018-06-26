@@ -15,23 +15,32 @@
 - [Use in Javascript](/http4js/Use-in-javascript/#how-to-require-and-use-http4js-in-js)
 - [Example App](https://github.com/TomShacham/http4js-eg)
 
-# How to require and use http4js in js
+# End to End Testing
 
-```text
-yarn add http4js
-```
+If we have called `asServer()` then our `Routing` knows about a server.
 
-```javascript
-const http4js = require('http4js');
-const Res = http4js.Res;
-const Method = http4js.Method;
-const routes = http4js.routes;
+We can then call `serveE2E(req)` with a `Req` and it will start the server,
+pass the `Req` to our `HttpClient` which will make the `Req` over the wire.
+We then call `stop()` on the server... and we have served a `Req` end to end!
 
-routes(Method.GET, "/", async (req) => new Res(200, "OK"))
+```typescript
+const routing = get("/path", async (req: Req) => ResOf(200))
     .asServer()
-    .start();
+    
+routing.serveE2E(ReqOf("GET", "/path"))
+     
+/*
+Res {
+  headers: 
+   { date: 'Tue, 26 Jun 2018 08:04:21 GMT',
+     connection: 'close',
+     'transfer-encoding': 'chunked' },
+  status: 200,
+  body: '' }
+ */
 ```
+This is a quick way to write end to end tests.
 
-Prev: [Proxy](/http4js/Proxy/#proxy)
+Prev: [In Memory Testing](/http4js/In-memory-testing/#in-memory-testing)
 
-Next: [Example App](https://github.com/TomShacham/http4js-eg)
+Next: [Approval testing with fakes](/http4js/Approval-testing-with-fakes/#approval-testing-with-fakes)
