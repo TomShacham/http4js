@@ -9,7 +9,6 @@ export type Form = {[key:string]: string|string[]};
 export interface HttpMessage {
     headers: object;
     body: string;
-    uri: Uri;
 
     header(name: string): string;
 

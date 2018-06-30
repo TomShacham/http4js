@@ -1,22 +1,27 @@
 import {routes} from "../../main/core/Routing";
-import {Req} from "../../main/core/Req";
 import {debugFilter, Filters} from "../../main/core/Filters";
 import {equal} from "assert";
 import {ResOf} from "../../main";
+import {ReqOf} from "../../main/core/Req";
+import {get} from "../../main/core/Routing";
+import {Req} from "../../main/core/Req";
+import {NativeHttpServer} from "../../main/servers/NativeHttpServer";
+import {HttpClient} from "../../main/client/HttpClient";
 
 describe("Built in filters", () => {
 
     it("upgrade to https", async() => {
-        const response = await routes("GET", "/", async (req) => ResOf(200, req.uri.protocol()))
+        const server = get('/', async(req: Req) => ResOf(200, 'OK'))
             .withFilter(Filters.UPGRADE_TO_HTTPS)
-            .serve(new Req("GET", "http:///"));
-        equal(response.bodyString(), "https");
+            .asServer(new NativeHttpServer(3030))
+        const response = await server.serveE2E(ReqOf('GET', '/'));
+        equal(response.header('Location'), "https://localhost:3030/");
     });
 
     it("timing filter", async() => {
         const response = await routes("GET", "/", async () => ResOf(200, "OK"))
             .withFilter(Filters.TIMING)
-            .serve(new Req("GET", "/"));
+            .serve(ReqOf("GET", "/"));
 
         const requestTook10ms = parseInt(response.header("Total-Time")) < 10;
         equal(requestTook10ms, true);
@@ -34,7 +39,7 @@ describe("Built in filters", () => {
 
         const response = await routes("GET", "/", async () => ResOf(200, "OK"))
             .withFilter(debugFilter(logger))
-            .serve(new Req("GET", "/"));
+            .serve(ReqOf("GET", "/"));
 
         equal(logger.messages[0], 'GET to / with response 200');
     });

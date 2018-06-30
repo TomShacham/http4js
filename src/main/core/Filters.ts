@@ -1,19 +1,23 @@
 import {Req} from "./Req";
 import {HttpHandler} from "./HttpMessage";
+import {Redirect} from "./Res";
 
 export type Filter = (HttpHandler: HttpHandler) => HttpHandler
 
 export class Filters {
-    static UPGRADE_TO_HTTPS: Filter = (handler: HttpHandler) => (req: Req) => {
-        return handler(req.withUri(req.uri.withProtocol("https")));
+    static UPGRADE_TO_HTTPS: Filter = (handler: HttpHandler) => async (req: Req) => {
+        if (req.header('x-forwarded-proto') !== 'https') {
+            return Redirect(301, `https://${req.uri.hostname()}:${req.uri.port()}${req.uri.path()}`)
+        } else {
+            return handler(req);
+        }
     };
 
-    static TIMING: Filter = (handler: HttpHandler) => (req: Req) => {
+    static TIMING: Filter = (handler: HttpHandler) => async (req: Req) => {
         const start = Date.now();
-        return handler(req).then(response => {
-            const total = Date.now() - start;
-            return response.withHeader("Total-Time", total.toString())
-        });
+        const response = await handler(req);
+        const total = Date.now() - start;
+        return response.withHeader("Total-Time", total.toString());
     };
 
     static DEBUG: Filter = debugFilter(console);

@@ -29,6 +29,6 @@
     "koa-bodyparser": "4.2.0",
     "mocha": "5.0.0",
     "ts-node": "4.1.0",
-    "typescript": "2.4.0"
+    "typescript": "2.9.2"
   }
 }

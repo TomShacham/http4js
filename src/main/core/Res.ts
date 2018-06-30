@@ -1,8 +1,6 @@
 import {HttpMessage} from "./HttpMessage";
-import {Uri} from "./Uri";
 
 export class Res implements HttpMessage {
-    uri: Uri;
     headers: {[key:string]: string} = {};
     body: string;
     status: number;
