@@ -1,7 +1,7 @@
 import * as express from "express";
 import {get} from "../../main/core/Routing";
 import {ExpressServer} from "../../main/servers/ExpressServer";
-import {HttpClient} from "../../main/client/Client";
+import {HttpClient} from "../../main/client/HttpClient";
 import {Req} from "../../main/core/Req";
 import {deepEqual, equal} from "assert";
 import {ResOf} from "../../main";

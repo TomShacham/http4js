@@ -10,6 +10,7 @@ export class NativeHttpServer implements Http4jsServer {
     server: any;
     port: number;
     routing: Routing;
+    validHostnameRegex: RegExp = new RegExp('^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*$')
 
     constructor(port: number) {
         this.port = port;
@@ -21,14 +22,18 @@ export class NativeHttpServer implements Http4jsServer {
         this.routing = routing;
         this.server.on("request", (req: any, res: any) => {
             const {headers, method, url} = req;
-            const hostname = req.headers.host;
+            const hostHeader = req.headers.host;
+            const isLocalhost = req.socket.localAddress === '::ffff:127.0.0.1';
+            const hostname = this.validHostnameRegex.test(hostHeader)
+                ? `http://${hostHeader}`
+                : (isLocalhost ? `http://localhost:${req.socket.localPort}` : '');
             const chunks: Buffer[] = [];
             req.on('error', (err: any) => {
                 console.error(err);
             }).on('data', (chunk: Buffer) => {
                 chunks.push(chunk);
             }).on('end', () => {
-                const response = this.createInMemResponse(chunks, method, `http://${hostname}${url}`, headers);
+                const response = this.createInMemResponse(chunks, method, `${hostname}${url}`, headers);
                 response.then(response => {
                     res.writeHead(response.status, response.headers);
                     res.end(response.bodyString());

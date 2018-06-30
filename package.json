@@ -1,10 +1,11 @@
 {
   "name": "http4js",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "A lightweight HTTP toolkit",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
+    "start": "ts-node src/main/index.ts",
     "test": "mocha --require ts-node/register --watch-extensions ts,tsx 'src/test/**/*.{ts,tsx}'",
     "build": "tsc",
     "app": "tsc; node index.js"

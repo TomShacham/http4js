@@ -12,4 +12,4 @@ export * from "./servers/Server";
 export * from "./servers/ExpressServer";
 export * from "./servers/KoaServer";
 
-export * from "./client/Client";
+export * from "./client/HttpClient";

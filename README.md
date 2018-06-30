@@ -21,32 +21,58 @@ An example server and client
 
 ```typescript
 
-//define our server routes and start on port 3000
-//GET to any path returns `GET to {PATH} with req headers {HEADERS}`
-const routing = routes(Method.GET, ".*", async (req: Request) => {
-    const html = `<h1>${req.method} to ${req.uri.path()} with req headers ${Object.keys(req.headers)}</h1>`;
-    return ResOf(Status.OK, html);
+//define our routes
+const routing = routes('GET', ".*", async (req: Req) => {
+    console.log(req);
+    return ResOf(Status.OK, 'OK');
 })
 
 //add csrf token header to every request and vary gzip to every response
 const headerFilter = (handler: HttpHandler) => {
-    return async (req: Request) => {
+    return async (req: Req) => {
         const response = await handler(req.withHeader(Headers.X_CSRF_TOKEN, Math.random()))
         return response.withHeader(Headers.VARY, "gzip");
     }
 };
 
-routing.withFilter(headerFilter)
-    .asServer()
+routing
+    .withFilter(headerFilter)
+    .asServer() // starts on port 3000 by default
     .start();
 
 //make an http request to our server and log the response
-const response = await HttpClient(Req(Method.GET, "http://localhost:3000/any/path"))
-console.log(response);
-console.log(response.bodyString());
+HttpClient(ReqOf(Method.GET, "http://localhost:3000/any/path"))
 
+// output
+Req {
+  headers: 
+   { host: 'localhost:3000',
+     connection: 'close',
+     'content-type': 'application/x-www-form-urlencoded',
+     'x-csrf-token': 0.8369821184747923 },
+  queries: {},
+  pathParams: {},
+  form: {},
+  method: 'GET',
+  uri: 
+   Uri {
+     matches: {},
+     asNativeNodeRequest: 
+      Url {
+        protocol: 'http:',
+        slashes: true,
+        auth: null,
+        host: 'localhost:3000',
+        port: '3000',
+        hostname: 'localhost',
+        hash: null,
+        search: null,
+        query: null,
+        pathname: '/any/path',
+        path: '/any/path',
+        href: 'http://localhost:3000/any/path' } },
+  body: '' }
 
-Res
 
 ```
 
@@ -71,3 +97,10 @@ http4js is a port of [http4k](https://github.com/http4k/http4k).
 The concept is called Server as a Function (SaaF).
 
 Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utterly Idle](https://github.com/bodar/utterlyidle)
+
+## To dos
+
+- streaming
+- apply filters to some routes and not all
+- native https server
+- 

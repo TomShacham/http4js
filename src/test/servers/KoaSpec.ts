@@ -1,5 +1,5 @@
 import {get} from "../../main/core/Routing";
-import {HttpClient} from "../../main/client/Client";
+import {HttpClient} from "../../main/client/HttpClient";
 import {Req} from "../../main/core/Req";
 import {deepEqual, equal} from "assert";
 import {KoaServer} from "../../main/servers/KoaServer";

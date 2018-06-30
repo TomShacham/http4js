@@ -1,8 +1,8 @@
 import {get} from "../../main/core/Routing";
 import {Req} from "../../main/core/Req";
 import {deepEqual, equal} from "assert";
-import {HttpClient} from "../../main/client/Client";
-import {NativeHttpServer} from "../../main/servers/NativeServer";
+import {HttpClient} from "../../main/client/HttpClient";
+import {NativeHttpServer} from "../../main/servers/NativeHttpServer";
 import {HeaderValues, ReqOf, ResOf} from "../../main";
 
 describe("native node over the wire", () => {
@@ -63,6 +63,14 @@ describe("native node over the wire", () => {
 
     it('sets the incoming req hostname and port', async () => {
         const request = ReqOf("GET", `${baseUrl}/url`);
+        const response = await HttpClient(request);
+        deepEqual(response.bodyString(), `http://localhost:${port}/url`)
+    });
+
+    it('ignores invalid hostname in host header', async () => {
+        const invalidCharacters = '$£ * (';
+        const request = ReqOf("GET", `${baseUrl}/url`)
+            .withHeader('Host', `${invalidCharacters}`);
         const response = await HttpClient(request);
         deepEqual(response.bodyString(), `http://localhost:${port}/url`)
     });

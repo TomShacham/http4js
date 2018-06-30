@@ -4,7 +4,7 @@ import {Req, ReqOf} from '../../main/core/Req';
 import {HttpHandler} from '../../main/core/HttpMessage';
 import {Headers, HeaderValues} from '../../main/core/Headers';
 import {ResOf} from "../../main/core/Res";
-import {NativeHttpServer} from "../../main/servers/NativeServer";
+import {NativeHttpServer} from "../../main/servers/NativeHttpServer";
 
 describe('routing', async () => {
 
