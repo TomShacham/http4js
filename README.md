@@ -100,7 +100,7 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 
 ## To dos
 
+- zipkin tracing
 - streaming
 - apply filters to some routes and not all
 - native https server
-- 
