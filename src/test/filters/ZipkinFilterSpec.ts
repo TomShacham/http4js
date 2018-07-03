@@ -7,6 +7,9 @@ import {NativeHttpServer} from "../../main/servers/NativeHttpServer";
 import {HttpClient} from "../../main/client/HttpClient";
 import {Client} from "../../main/client/Client";
 import {ZipkinHeaders, DeterministicIdGenerator} from "../../main/zipkin/Zipkin";
+import {Filters} from "../../main/core/Filters";
+import {notEqual} from "assert";
+import {isNullOrUndefined} from "util";
 
 const upstream1BaseUrl = 'http://localhost:3032';
 const upstream2BaseUrl = 'http://localhost:3033';
@@ -88,5 +91,16 @@ describe("Zipkin", () => {
         equal(responseHeaders.upstream2['x-b3-traceid'], '2');
         equal(responseHeaders.moreUpstream['x-b3-traceid'], '2');
     });
+
+    it('timed zipkin filter', async() => {
+        const response = await get('/', async() => ResOf())
+            .withFilter(deterministicZipkinFilter)
+            .withFilter(Filters.TIMING)
+            .serve(ReqOf('GET', '/'));
+        equal(response.header('x-b3-spanid'), 1);
+        equal(response.header('x-b3-traceid'), 2);
+        equal(isNullOrUndefined(response.header('start-time')), false);
+        equal(isNullOrUndefined(response.header('end-time')), false);
+    })
 
 });

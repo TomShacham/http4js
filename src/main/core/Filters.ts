@@ -27,8 +27,19 @@ export class Filters {
 
     static DEBUG: Filter = debugFilterBuilder(console);
 
-    static ZIPKIN: Filter = zipkinFilterBuilder(new ZipkinIdGenerator())
+    static ZIPKIN: Filter = zipkinFilterBuilder(new ZipkinIdGenerator());
 
+    static TIMED_ZIPKIN: Filter = timedZipkinFilterBuilder();
+
+}
+
+const timing = Filters.TIMING;
+
+export function timedZipkinFilterBuilder(timingFilter: Filter = timing): Filter {
+    return (httpHandler: HttpHandler) => {
+        return timingFilter(zipkinFilterBuilder(new ZipkinIdGenerator())(httpHandler))
+
+    }
 }
 
 export function zipkinFilterBuilder(generator: IdGenerator): Filter {
