@@ -1,7 +1,7 @@
 import {Uri} from "./Uri";
 import {isNullOrUndefined} from "util";
 import {Headers, HeaderValues} from "./Headers";
-import {HttpMessage} from "./HttpMessage";
+import {HttpMessage, HeadersType} from "./HttpMessage";
 import {KeyValues} from "./HttpMessage";
 import {Form} from "./HttpMessage";
 
@@ -9,7 +9,7 @@ export class Req implements HttpMessage {
 
     uri: Uri;
     method: string;
-    headers: KeyValues = {};
+    headers: HeadersType = {};
     body: string;
     queries: KeyValues = {};
     pathParams: KeyValues = {};

@@ -34,8 +34,8 @@ conflict with other objects named Request and Response.
 
 ## Immutability - why?
 
-Both `Request` and `Response` are immutable, so every method on them returns a new object. 
-For example we might want to set a header on a `Request` but then replace it:
+Both `Req` and `Res` are immutable, so every method on them returns a new object. 
+For example we might want to set a header on a `Req` but then replace it:
 
 ```typescript
 const request = ReqOf(Method.GET, "/")
@@ -45,7 +45,7 @@ const noMaxAgeRequest = request.replaceHeader(Headers.EXPIRES, "max-age=0");
 ```
 
 `request` and `noMaxAgeRequest` are different objects. This stops us from passing around
-state all over our codebase and finding it hard to know where our `Request` or `Response`
+state all over our codebase and finding it hard to know where our `Req` or `Res`
 is mutated. For example, it stops the following:
 
 ```typescript
@@ -67,7 +67,7 @@ used in `new Res(200, req.body)` because `Req` is immutable.
 
 ## API
 
-We provide builder functions `Req` and `Res` because `Request` and `Response` 
+We provide builder functions `Req` and `Res` because `Req` and `Res` 
 conflict with other libraries using the same name, so you might write:
 
 ```typescript
@@ -123,9 +123,9 @@ class Response {
 
     withHeader(name: string, value: string): Res 
 
-    withHeaders(headers: object): Res 
+    withHeaders(headers: HeadersType): Res 
 
-    replaceAllHeaders(headers: object): Res 
+    replaceAllHeaders(headers: HeadersType): Res 
 
     replaceHeader(name: string, value: string): Res 
 

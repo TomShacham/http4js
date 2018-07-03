@@ -1,5 +1,5 @@
 import {Res} from "./Res";
-import {HttpHandler, KeyValues} from "./HttpMessage";
+import {HttpHandler, KeyValues, HeadersType} from "./HttpMessage";
 import {Req} from "./Req";
 import {Uri} from "./Uri";
 import {Filter} from "./Filters";
@@ -8,19 +8,20 @@ import {NativeHttpServer} from "../servers/NativeHttpServer";
 import {ResOf} from "./Res";
 import {HttpClient} from "../client/HttpClient";
 
-export type MountedHttpHandler = {path: string, method: string, headers: KeyValues, handler: HttpHandler}
-export type DescribingHttpHandler = {path: string, method: string, headers: KeyValues}
+export type MountedHttpHandler = {path: string, method: string, headers: HeadersType, handler: HttpHandler}
+export type DescribingHttpHandler = {path: string, method: string, headers: HeadersType}
 
 export class Routing {
 
     server: Http4jsServer;
     private root: string;
+    private baseUrl: string;
     private handlers: MountedHttpHandler[] = [];
     private filters: Array<(httpHandler: HttpHandler) => HttpHandler> = [];
 
     constructor(method: string,
                 path: string,
-                headers: KeyValues = {},
+                headers: HeadersType = {},
                 handler: HttpHandler) {
         this.root = path;
         const pathNoTrailingSlash = path.endsWith('/') && path !== "/" ? path.slice(0, -1) : path;
@@ -49,7 +50,7 @@ export class Routing {
         return this;
     }
 
-    withHandler(method: string, path: string, handler: HttpHandler, headers: KeyValues = {}): Routing {
+    withHandler(method: string, path: string, handler: HttpHandler, headers: HeadersType = {}): Routing {
         const existingPath = this.root != "/" ? this.root : "";
         const nestedPath = existingPath + path;
         this.handlers.push({path: nestedPath, method, headers, handler});
@@ -159,7 +160,7 @@ export class Routing {
 
 }
 
-export function routes(method: string, path: string, handler: HttpHandler, headers: KeyValues = {}): Routing {
+export function routes(method: string, path: string, handler: HttpHandler, headers: HeadersType = {}): Routing {
     return new Routing(method, path, headers, handler);
 }
 
@@ -167,26 +168,26 @@ export function route(request: Req, handler: HttpHandler): Routing {
     return new Routing(request.method, request.uri.path(), request.headers, handler);
 }
 
-export function get(path: string, handler: HttpHandler, headers: KeyValues = {}): Routing {
+export function get(path: string, handler: HttpHandler, headers: HeadersType = {}): Routing {
     return new Routing("GET", path, headers, handler);
 }
 
-export function post(path: string, handler: HttpHandler, headers: KeyValues = {}): Routing {
+export function post(path: string, handler: HttpHandler, headers: HeadersType = {}): Routing {
     return new Routing("POST", path, headers, handler);
 }
 
-export function put(path: string, handler: HttpHandler, headers: KeyValues = {}): Routing {
+export function put(path: string, handler: HttpHandler, headers: HeadersType = {}): Routing {
     return new Routing("PUT", path, headers, handler);
 }
 
-export function patch(path: string, handler: HttpHandler, headers: KeyValues = {}): Routing {
+export function patch(path: string, handler: HttpHandler, headers: HeadersType = {}): Routing {
     return new Routing("PATCH", path, headers, handler);
 }
 
-export function options(path: string, handler: HttpHandler, headers: KeyValues = {}): Routing {
+export function options(path: string, handler: HttpHandler, headers: HeadersType = {}): Routing {
     return new Routing("OPTIONS", path, headers, handler);
 }
 
-export function head(path: string, handler: HttpHandler, headers: KeyValues = {}): Routing {
+export function head(path: string, handler: HttpHandler, headers: HeadersType = {}): Routing {
     return new Routing("HEAD", path, headers, handler);
 }

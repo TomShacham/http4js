@@ -101,6 +101,8 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 ## To dos
 
 - zipkin tracing
+- possibly have a Headers class for dicing with headers, not just an object
+- get rid of pivoted routing
 - streaming
 - apply filters to some routes and not all
 - native https server

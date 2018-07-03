@@ -1,6 +1,7 @@
 import * as http from 'http';
 import {Res} from "../core/Res";
 import {Req} from "../core/Req";
+import {HeadersType} from "../core/HttpMessage";
 
 export function HttpClient(request: Req): Promise<Res> {
     switch (request.method) {

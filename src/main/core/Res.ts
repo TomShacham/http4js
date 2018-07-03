@@ -1,7 +1,7 @@
-import {HttpMessage} from "./HttpMessage";
+import {HttpMessage, HeadersType} from "./HttpMessage";
 
 export class Res implements HttpMessage {
-    headers: {[key:string]: string} = {};
+    headers: HeadersType = {};
     body: string;
     status: number;
 
@@ -28,13 +28,13 @@ export class Res implements HttpMessage {
         return response;
     }
 
-    withHeaders(headers: object): Res {
+    withHeaders(headers: HeadersType): Res {
         const response = Res.clone(this);
         response.headers = headers;
         return response;
     }
 
-    replaceAllHeaders(headers: object): Res {
+    replaceAllHeaders(headers: HeadersType): Res {
         const response = Res.clone(this);
         response.headers = headers;
         return response;
@@ -68,11 +68,11 @@ export class Res implements HttpMessage {
 
 }
 
-export function ResOf(status: number = 200, body: string = "", headers: {} = {}): Res {
+export function ResOf(status: number = 200, body: string = "", headers: HeadersType = {}): Res {
     return new Res(status, body, headers);
 }
 
-export function Redirect(status: number = 301, path: string, headers: {} = {}): Res {
+export function Redirect(status: number = 301, path: string, headers: HeadersType = {}): Res {
     return new Res(status, "", headers).withHeader("Location", path);
 }
 

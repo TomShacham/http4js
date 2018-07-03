@@ -1,13 +1,13 @@
-import {Uri} from "./Uri";
 import {Res} from "./Res";
 import {Req} from "./Req";
 
 export type KeyValues = {[key:string]: string};
 export type Form = {[key:string]: string|string[]};
+export type HeadersType = {[key:string]: string};
 
 
 export interface HttpMessage {
-    headers: object;
+    headers: HeadersType;
     body: string;
 
     header(name: string): string;

@@ -1,10 +1,10 @@
 import * as http from "http";
-import {Routing} from "../core/Routing";
+import {Routing, head} from "../core/Routing";
 import {Res} from "../core/Res";
 import {Req} from "../core/Req";
 import {Http4jsServer} from "./Server";
 import {HeaderValues} from "../core/Headers";
-import {KeyValues, Form} from "../core/HttpMessage";
+import {KeyValues, Form, HeadersType} from "../core/HttpMessage";
 
 export class NativeHttpServer implements Http4jsServer {
     server: any;
@@ -50,7 +50,7 @@ export class NativeHttpServer implements Http4jsServer {
         this.server.close();
     }
 
-    private createInMemResponse(chunks: Buffer[], method: string, url: string, headers: KeyValues): Promise<Res> {
+    private createInMemResponse(chunks: Buffer[], method: string, url: string, headers: HeadersType): Promise<Res> {
         const body = Buffer.concat(chunks).toString();
         const form: Form = {};
         if (headers['content-type'] == HeaderValues.FORM) {

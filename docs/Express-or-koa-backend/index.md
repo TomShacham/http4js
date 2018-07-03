@@ -78,8 +78,8 @@ and all the good stuff about http4js.
 
 In order to be a backend for http4js, you just need to implement one 
 function: `registerCatchAllHandler`. This function is responsible for 
-listening for all requests and translating them into an http4js `Request`.
-Once we have a `Request` we pass it to our `Routing` and get our 
+listening for all requests and translating them into an http4js `Req`.
+Once we have a `Req` we pass it to our `Routing` and get our 
 `Promise<Response>`. 
 
 Here is the code for the Express backend:
@@ -100,7 +100,7 @@ Here is the code for the Express backend:
         });
     }
 
-    private createInMemResponse(chunks: Array<any>, method: string, url: string, headers: {}): Promise<Response> {
+    private createInMemResponse(chunks: Array<any>, method: string, url: string, headers: HeadersType): Promise<Response> {
         const inMemRequest = headers['content-type'] == 'application/x-www-form-urlencoded'
             ? new Req(method, url, JSON.stringify(chunks), headers).withForm(chunks)
             : new Req(method, url, Buffer.concat(chunks).toString(), headers);

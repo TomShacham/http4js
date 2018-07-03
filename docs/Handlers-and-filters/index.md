@@ -24,7 +24,7 @@ A handler is simply a function `(Request) => Promise<Response>`.
 get("/", async (req: Request) => ResOf(200, "OK")); //handler
 ```
 
-If we want to write a function that sees every incoming `Request` then we write a filter.
+If we want to write a function that sees every incoming `Req` then we write a filter.
 A filter is simply a function from `(HttpHandler) => HttpHandler` and an
 `HttpHandler` is simply our function `(Request) => Promise<Response>`.
 
@@ -52,7 +52,7 @@ get("/", async (req: Request) => ResOf(200, "OK")) //handler
     })
 ```
 
-which sets a header on every incoming `Request`.
+which sets a header on every incoming `Req`.
 
 # In built filters
 
@@ -99,10 +99,10 @@ And we can quickly uncover where there is an unexpected flow through our routes.
 # Under the covers
 
 The way that this hangs together behind the scenes is actually pretty simple.
-If an incoming `Request` path matches a path in our `Routing` then we apply 
-all of our filters to the `Request` with the `matchedHandler` taking the final `Request`
+If an incoming `Req` path matches a path in our `Routing` then we apply 
+all of our filters to the `Req` with the `matchedHandler` taking the final `Req`
 that comes through our reduction. If no `Routing` path matches then we do the same but
-our final handler that receives `Request` will be the http4js default handler for "not found". 
+our final handler that receives `Req` will be the http4js default handler for "not found". 
 
 ```typescript
 serve(request: Req): Promise<Response> {
@@ -128,7 +128,7 @@ The first filter received the matchedHandler, producing an `HttpHander`:
 ((HttpHandler) => HttpHandler)(HttpHandler) ==> HttpHandler
 ```
 
-and finally we give this `HttpHandler` a `Request`
+and finally we give this `HttpHandler` a `Req`
 
 ```typescript
 return filtered(request);

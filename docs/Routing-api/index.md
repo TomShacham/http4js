@@ -185,7 +185,7 @@ class Routing {
     
     constructor(method: string,
                     path: string,
-                    headers: KeyValues = {},
+                    headers: HeadersType = {},
                     handler: HttpHandler)
 
     withRoutes(routes: Routing): Routing 
@@ -194,7 +194,7 @@ class Routing {
 
     withFilter(filter: Filter): Routing 
 
-    withHandler(method: string, path: string, handler: HttpHandler, headers: KeyValues = {}): Routing
+    withHandler(method: string, path: string, handler: HttpHandler, headers: HeadersType = {}): Routing
 
     asServer(server: Http4jsServer = new NativeServer(3000)): Http4jsServer
 
@@ -217,21 +217,21 @@ class Routing {
     withHead(path: string, handler: HttpHandler): Routing
 }
 
-routes(method: string, path: string, handler: HttpHandler, headers: KeyValues = {}): Routing
+routes(method: string, path: string, handler: HttpHandler, headers: HeadersType = {}): Routing
 
 route(request: Req, handler: HttpHandler): Routing
 
-get(path: string, handler: HttpHandler, headers: KeyValues = {}): Routing
+get(path: string, handler: HttpHandler, headers: HeadersType = {}): Routing
 
-post(path: string, handler: HttpHandler, headers: KeyValues = {}): Routing
+post(path: string, handler: HttpHandler, headers: HeadersType = {}): Routing
 
-put(path: string, handler: HttpHandler, headers: KeyValues = {}): Routing
+put(path: string, handler: HttpHandler, headers: HeadersType = {}): Routing
 
-patch(path: string, handler: HttpHandler, headers: KeyValues = {}): Routing
+patch(path: string, handler: HttpHandler, headers: HeadersType = {}): Routing
 
-options(path: string, handler: HttpHandler, headers: KeyValues = {}): Routing
+options(path: string, handler: HttpHandler, headers: HeadersType = {}): Routing
 
-head(path: string, handler: HttpHandler, headers: KeyValues = {}): Routing
+head(path: string, handler: HttpHandler, headers: HeadersType = {}): Routing
 ```
 
 Prev: [URI API](/http4js/Uri-api/#uri-api)

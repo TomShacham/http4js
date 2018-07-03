@@ -53,7 +53,7 @@ Response {
   
 - The only added benefit of end to end tests now is to test the interaction with the http layer. Testing the http layer is very useful for certain situations, like making sure that certain headers are respected by node's http layer, or knowing that a certain query string is valid at the http layer, but to test our app and its logic, we no longer need to have slow and painful end to end tests. 
 
-- `Request` and `Response` are immutable, so you cannot pass a mutable "context" around your code base and mutate it here and there. If you want to jimmy around with the incoming `Request` then you build a new one, luckily every method on `Request` returns a new `Request`, but if you want functions to change your `Request` it obviously has to explicitly return it as `Request` is immutable. The same goes for `Response`.
+- `Req` and `Res` are immutable, so you cannot pass a mutable "context" around your code base and mutate it here and there. If you want to jimmy around with the incoming `Req` then you build a new one, luckily every method on `Req` returns a new `Req`, but if you want functions to change your `Req` it obviously has to explicitly return it as `Req` is immutable. The same goes for `Res`.
 
 
 Next: [Handlers and Filters](/http4js/Handlers-and-filters/#handlers-and-filters)
