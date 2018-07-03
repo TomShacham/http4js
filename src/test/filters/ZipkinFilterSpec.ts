@@ -15,9 +15,7 @@ const moreUpstreamBaseUrl = 'http://localhost:3034';
 const deterministicZipkinFilter = zipkinFilterBuilder(new DeterministicIdGenerator());
 
 const parent = get('/', async(req: Req) => {
-    const traceId = req.header(ZipkinHeaders.TRACE_ID);
-    const spanId = req.header(ZipkinHeaders.SPAN_ID);
-    const parentZipkinClient = Client.withZipkinHeaders(traceId, spanId);
+    const parentZipkinClient = Client.zipkinClientFrom(req);
     const upstreamResponse1 = await parentZipkinClient(ReqOf('GET', `${upstream1BaseUrl}/`));
     const upstreamResponse2 = await parentZipkinClient(ReqOf('GET', `${upstream2BaseUrl}/`));
     const moreUpstreamResponse = JSON.parse(upstreamResponse2.bodyString());
@@ -35,9 +33,7 @@ const upstream1 = get('/', async() => ResOf())
     .asServer(new NativeHttpServer(3032));
 
 const upstream2 = get('/', async(req: Req) => {
-    const traceId = req.header(ZipkinHeaders.TRACE_ID);
-    const spanId = req.header(ZipkinHeaders.SPAN_ID);
-    const upstreamZipkinClient = Client.withZipkinHeaders(traceId, spanId);
+    const upstreamZipkinClient = Client.zipkinClientFrom(req);
     const moreUpstreamResponse = await upstreamZipkinClient(ReqOf('GET', `${moreUpstreamBaseUrl}/`));
     return ResOf(200, JSON.stringify(moreUpstreamResponse.headers));
 })
