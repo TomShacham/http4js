@@ -16,9 +16,13 @@ export class Filters {
 
     static TIMING: Filter = (handler: HttpHandler) => async (req: Req) => {
         const start = Date.now();
-        const response = await handler(req);
-        const total = Date.now() - start;
-        return response.withHeader("Total-Time", total.toString());
+        const response = await handler(req.withHeader('Start-Time', start.toString()));
+        const end = Date.now();
+        const total = end - start;
+        return response
+            .withHeader("Total-Time", total.toString())
+            .withHeader("Start-Time", start.toString())
+            .withHeader("End-Time", end.toString());
     };
 
     static DEBUG: Filter = debugFilterBuilder(console);

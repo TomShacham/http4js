@@ -21,8 +21,16 @@ describe("Built in filters", () => {
             .withFilter(Filters.TIMING)
             .serve(ReqOf("GET", "/"));
 
+        const startTimeAfter = parseInt(response.header("Start-Time")) > (new Date).getTime() - 10;
+        const startTimeBefore = parseInt(response.header("Start-Time")) < (new Date).getTime() + 10;
+        const endTimeAfter = parseInt(response.header("End-Time")) > (new Date).getTime() - 10;
+        const endTimeBefore = parseInt(response.header("End-Time")) < (new Date).getTime() + 10;
         const requestTook10ms = parseInt(response.header("Total-Time")) < 10;
 
+        equal(startTimeAfter, true);
+        equal(startTimeBefore, true);
+        equal(endTimeAfter, true);
+        equal(endTimeBefore, true);
         equal(requestTook10ms, true);
     });
 
