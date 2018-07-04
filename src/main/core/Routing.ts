@@ -51,9 +51,7 @@ export class Routing {
     }
 
     withHandler(method: string, path: string, handler: HttpHandler, headers: HeadersType = {}): Routing {
-        const existingPath = this.root != "/" ? this.root : "";
-        const nestedPath = existingPath + path;
-        this.handlers.push({path: nestedPath, method, headers, handler});
+        this.handlers.push({path, method, headers, handler});
         return this;
     }
 

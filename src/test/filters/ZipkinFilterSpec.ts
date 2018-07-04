@@ -97,8 +97,8 @@ describe("Zipkin", () => {
             .withFilter(deterministicZipkinFilter)
             .withFilter(Filters.TIMING)
             .serve(ReqOf('GET', '/'));
-        equal(response.header('x-b3-spanid'), 1);
-        equal(response.header('x-b3-traceid'), 2);
+        equal(response.header('x-b3-spanid'), 7);
+        equal(response.header('x-b3-traceid'), 8);
         equal(isNullOrUndefined(response.header('start-time')), false);
         equal(isNullOrUndefined(response.header('end-time')), false);
     })

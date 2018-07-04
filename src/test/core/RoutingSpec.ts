@@ -15,12 +15,15 @@ describe('routing', async () => {
         equal(response.bodyString(), 'Got it.');
     });
 
-    it('nests handlers', async () => {
-        const response = await get('/test', async() => ResOf(200))
-            .withHandler('GET', '/nest', async() => ResOf(200, 'nested'))
-            .serve(ReqOf('GET', '/test/nest'));
+    it('does not nest handlers', async () => {
+        const routing = get('/test', async() => ResOf(200))
+            .withHandler('GET', '/nest', async() => ResOf(200, 'fullPath'));
+        const nested = await routing.serve(ReqOf('GET', '/test/nest'));
+        const fullPath = await routing.serve(ReqOf('GET', '/nest'));
 
-        equal(response.bodyString(), 'nested');
+        equal(nested.status, 404);
+        equal(fullPath.bodyString(), 'fullPath');
+        equal(fullPath.bodyString(), 'fullPath');
     });
 
     it('add a filter', async () => {
@@ -68,7 +71,7 @@ describe('routing', async () => {
                     return handler(req).then(response => response.withHeader('another', 'filter2'));
                 }
             })
-            .serve(ReqOf('GET', '/test/nest'));
+            .serve(ReqOf('GET', '/nest'));
 
         equal(response.bodyString(), 'nested');
         equal(response.header('a'), 'filter1');

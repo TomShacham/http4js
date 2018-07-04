@@ -101,6 +101,10 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 ## To dos
 
 - zipkin tracing
+  - build collector
+  - generate bytes not a math random string
+  - support sampled and debug
+  - docs
 - possibly have a Headers class for dicing with headers, not just an object
 - get rid of pivoted routing
 - streaming
