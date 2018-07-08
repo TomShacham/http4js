@@ -17,31 +17,30 @@
 
 # Routing API
 
-Routing is declared from a root. We start with something basic and add to it:
+A basic bit of routing might look like this:
 
 ```typescript
-get("/", async () => ResOf(200, "Root"))
-    .withHandler(Method.GET, "/about", async () => ResOf(200, "About us."));
+get("/", async () => ResOf(200, "Home page"))
+    .withGet("/about", async () => ResOf(200, "About us."));
 ```
 
-If we want to nest our handlers we can combine them at a later time:
+We can declare routing separately and combine at a later stage:
 
 ```typescript
 // root stays the same 
-const root = get("/", async () => ResOf(200, "Root"))
-    .withHandler(Method.GET, "/about", async () => ResOf(200, "About us."));
+const houseKeeping = get("/", async () => ResOf(200, "Root"))
+    .withGet("/about", async () => ResOf(200, "About us."));
 
 // some other routes whose root is /hotels/{name}
-const nestedRoutes = get("/hotels/{name}", async (req) => {
+const hotelRoutes = get("/hotels/{name}", async (req) => {
     return ResOf(200, hotels[req.pathParams.name]);
-}).withHandler(Method.GET, "/properties/{property}", async (req) => {
-    // now we have a handler on /hotels/{name}/properties/{property} and can see both path params
+}).withGet("/hotels/{name}/properties/{property}", async (req) => {
     const body = hotels[req.pathParams.name].properties[req.pathParams.property];
     return ResOf(200, body); 
 })
 
 // combine them
-root.withRoutes(nestedRoutes)
+houseKeeping.withRoutes(hotelRoutes)
     .asServer()
     .start();
 
@@ -56,24 +55,36 @@ const hotels = {
 }
 ```
 
+## Matching handler path
+
 The most specific handler is matched first:
 
 ```typescript
-return get("/", async () => {
-    return ResOf(200, "root");
-}).withHandler("GET", "/family/{name}", async () => {
+return get("/family/{name}", async () => {
     return ResOf(200, "least precise");
-}).withHandler("GET", "/family/{name}/then/more", async () => {
+}).withGet("/family/{name}/then/more", async () => {
     return ResOf(200, "most precise");
-}).withHandler("POST", "/family/{name}/less", async () => {
+}).withPost("/family/{name}/less", async () => {
     return ResOf(200, "medium precise");
 })
-    .serve(new Request("GET", "/family/shacham/then/more"))
+    .serve(ReqOf("GET", "/family/shacham/then/more"))
     .then(response => equal(response.bodyString(), "most precise"))
 ```
 
 so despite the handler at `/family/{name}/then/more` being declared after the more
 generic handler at `/family/{name}` it is matched first.
+
+## Matching on a header
+
+We can pass a header to a route and it will only match `Req`s made with that header.
+
+```typescript
+const requestAcceptText = ReqOf("GET", "/tom").withHeader(Headers.ACCEPT, HeaderValues.APPLICATION_JSON);
+
+await route(requestAcceptText, async() => ResOf(200, "Accepted text"))
+    .serve(requestAcceptText)
+
+```
 
 ## Symmetry of routing and serving
 
