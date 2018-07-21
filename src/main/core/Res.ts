@@ -5,7 +5,7 @@ export class Res implements HttpMessage {
     body: string;
     status: number;
 
-    constructor(status: number = 200, body: string = "", headers: {} = {}) {
+    constructor(status: number = 200, body: string = "", headers: HeadersType = {}) {
         this.status = status;
         this.body = body;
         this.headers = headers;

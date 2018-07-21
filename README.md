@@ -100,13 +100,14 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 
 ## To dos
 
+- native https server
+  - replace calls to httpbin with calls to an h4js https server 
 - zipkin tracing
   - build collector
   - generate bytes not a math random string
   - support sampled and debug
   - docs
 - possibly have a Headers class for dicing with headers, not just an object
-- get rid of pivoted routing
-- streaming
+- provide pivoted routing (?)
 - apply filters to some routes and not all
-- native https server
+- streaming

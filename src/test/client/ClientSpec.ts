@@ -1,11 +1,9 @@
-import {ResOf} from "../../main/core/Res";
-import {get} from "../../main/core/Routing";
-import {NativeHttpServer} from "../../main/servers/NativeHttpServer";
-import {Client} from "../../main/client/Client";
-import {ReqOf} from "../../main/core/Req";
-import {Req} from "../../main/core/Req";
-import {deepEqual} from "assert";
-import {equal} from "assert";
+import {ResOf} from '../../main';
+import {get} from '../../main';
+import {NativeHttpServer} from '../../main/servers/NativeHttpServer';
+import {Client} from '../../main/client/Client';
+import {Req, ReqOf} from '../../main';
+import {equal} from 'assert';
 
 describe('client', () => {
     const server = get('/', async(req: Req) => ResOf(200, JSON.stringify(req.headers)))
@@ -18,6 +16,7 @@ describe('client', () => {
     after(() => {
         server.stop()
     });
+
     it('configure to add headers to every request it makes', async() => {
         const zipkinHeaders = {
             'x-b3-parentspanid': 'parentSpanId',
