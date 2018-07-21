@@ -8,7 +8,7 @@ export async function HttpsClient(req: Req): Promise<Res> {
         ...options,
         headers: req.headers,
         method: req.method,
-        ca: fs.readFileSync('src/ssl/my-root-ca.cert.pem'),
+        // ca: fs.readFileSync('src/ssl/my-root-ca.cert.pem'),
     };
 
     // type system needs a hand
