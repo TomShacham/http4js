@@ -9,7 +9,7 @@ import {Req} from "../core/Req";
 import {HeaderValues} from "../core/Headers";
 require('ssl-root-cas')
     .inject()
-    .addFile('src/test/ssl/my-root-ca.cert.pem');
+    .addFile('src/ssl/my-root-ca.cert.pem');
 
 type Certs = { key: Buffer; cert: Buffer; ca: Buffer };
 
@@ -22,9 +22,9 @@ export class NativeHttpsServer implements Http4jsServer {
 
     constructor(port: number, options: Certs | undefined = undefined) {
         this.options = options || {
-            key: fs.readFileSync('src/test/ssl/key.pem'),
-            cert: fs.readFileSync('src/test/ssl/fullchain.pem'),
-            ca: fs.readFileSync('src/test/ssl/my-root-ca.cert.pem'),
+            key: fs.readFileSync('src/ssl/key.pem'),
+            cert: fs.readFileSync('src/ssl/fullchain.pem'),
+            ca: fs.readFileSync('src/ssl/my-root-ca.cert.pem'),
         };
         this.port = port;
         this.server = https.createServer(this.options);

@@ -7,6 +7,7 @@
   "scripts": {
     "start": "ts-node src/main/index.ts",
     "test": "mocha --require ts-node/register --watch-extensions ts,tsx 'src/test/**/*.{ts,tsx}'",
+    "test-ssl": "mocha --require ts-node/register --watch-extensions ts,tsx 'src/ssl/**/*.{ts,tsx}'",
     "build": "tsc",
     "app": "tsc; node index.js"
   },

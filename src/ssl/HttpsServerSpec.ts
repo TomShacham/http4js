@@ -1,7 +1,7 @@
-import {HttpsClient} from "../../main/client/HttpsClient";
-import {get, ReqOf, ResOf} from "../../main";
+import {HttpsClient} from "../main/client/HttpsClient";
+import {get, ReqOf, ResOf} from "../main/index";
 import {equal} from "assert";
-import {NativeHttpsServer} from "../../main/servers/NativeHttpsServer";
+import {NativeHttpsServer} from "../main/servers/NativeHttpsServer";
 
 describe('https server', () => {
 
