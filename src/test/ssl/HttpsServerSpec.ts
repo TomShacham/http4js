@@ -1,30 +1,32 @@
 import {HttpsClient} from "../../main/client/HttpsClient";
-import {ReqOf} from "../../main";
+import {get, ReqOf, ResOf} from "../../main";
 import {equal} from "assert";
-
-const https = require('https');
-const fs = require('fs');
-require('ssl-root-cas')
-    .inject()
-    .addFile('src/test/ssl/my-root-ca.cert.pem');
-
-const options = {
-    key: fs.readFileSync('src/test/ssl/key.pem'),
-    cert: fs.readFileSync('src/test/ssl/fullchain.pem'),
-    ca: fs.readFileSync('src/test/ssl/my-root-ca.cert.pem'),
-};
-
-https.createServer(options, (req, res) => {
-    res.writeHead(200);
-    res.end('hello world!');
-}).listen(8006);
+import {NativeHttpsServer} from "../../main/servers/NativeHttpsServer";
 
 describe('https server', () => {
 
-    it('serves a request', async () => {
-        const response = await HttpsClient(ReqOf('GET', 'https://localhost:8006/'));
+    const httpsServer = get('/', async () => ResOf(200, 'hello, world!'))
+        .withPost('/', async() => ResOf(200, 'hello, world!'))
+        .asServer(new NativeHttpsServer(8000));
+
+    before(() => {
+        httpsServer.start();
+    });
+
+    after(() => {
+        httpsServer.stop();
+    });
+
+    it('serves a get request', async () => {
+        const response = await HttpsClient(ReqOf('GET', 'https://localhost:8000/'));
         equal(response.status, 200);
-        equal(response.bodyString(), 'hello world!');
+        equal(response.bodyString(), 'hello, world!');
+    });
+
+    it('serves a post request', async () => {
+        const response = await HttpsClient(ReqOf('POST', 'https://localhost:8000/'));
+        equal(response.status, 200);
+        equal(response.bodyString(), 'hello, world!');
     });
 
 });

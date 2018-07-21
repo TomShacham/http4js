@@ -1,20 +1,33 @@
-import * as http from "http";
-import {Routing} from "../core/Routing";
 import {Res} from "../core/Res";
-import {Req} from "../core/Req";
-import {Http4jsServer} from "./Server";
-import {HeaderValues} from "../core/Headers";
-import {Form, HeadersType} from "../core/HttpMessage";
 
-export class NativeHttpServer implements Http4jsServer {
+const fs = require('fs');
+const https = require('https');
+import {Http4jsServer} from "./Server";
+import {Routing} from "../";
+import {Form, HeadersType} from "../core/HttpMessage";
+import {Req} from "../core/Req";
+import {HeaderValues} from "../core/Headers";
+require('ssl-root-cas')
+    .inject()
+    .addFile('src/test/ssl/my-root-ca.cert.pem');
+
+type Certs = { key: Buffer; cert: Buffer; ca: Buffer };
+
+export class NativeHttpsServer implements Http4jsServer {
     server: any;
     port: number;
+    options: Certs;
     routing: Routing;
     validHostnameRegex: RegExp = new RegExp('^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*$')
 
-    constructor(port: number) {
+    constructor(port: number, options: Certs | undefined = undefined) {
+        this.options = options || {
+            key: fs.readFileSync('src/test/ssl/key.pem'),
+            cert: fs.readFileSync('src/test/ssl/fullchain.pem'),
+            ca: fs.readFileSync('src/test/ssl/my-root-ca.cert.pem'),
+        };
         this.port = port;
-        this.server = http.createServer();
+        this.server = https.createServer(this.options);
     }
 
     registerCatchAllHandler(routing: Routing): void {
