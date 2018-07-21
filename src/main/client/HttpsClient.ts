@@ -1,5 +1,6 @@
 import * as https from "https";
 import {HeadersType, Req, Res, ResOf} from "../";
+import * as fs from "fs";
 
 export async function HttpsClient(req: Req): Promise<Res> {
     const options = req.uri.asNativeNodeRequest;
@@ -7,6 +8,7 @@ export async function HttpsClient(req: Req): Promise<Res> {
         ...options,
         headers: req.headers,
         method: req.method,
+        ca: fs.readFileSync('src/test/ssl/my-root-ca.cert.pem'),
     };
 
     // type system needs a hand
