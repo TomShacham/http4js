@@ -21,11 +21,12 @@ export class NativeHttpsServer implements Http4jsServer {
     validHostnameRegex: RegExp = new RegExp('^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*$')
 
     constructor(port: number, options: Certs | undefined = undefined) {
-        this.options = options || {
+        const certs = {
             key: fs.readFileSync('src/ssl/key.pem'),
             cert: fs.readFileSync('src/ssl/fullchain.pem'),
             ca: fs.readFileSync('src/ssl/my-root-ca.cert.pem'),
         };
+        this.options = options || certs;
         this.port = port;
         this.server = https.createServer(this.options);
     }

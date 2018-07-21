@@ -11,7 +11,8 @@
 - [End to End Testing](/http4js/End-to-end-testing/#end-to-end-testing)
 - [Approval testing with fakes](/http4js/Approval-testing-with-fakes/#approval-testing-with-fakes)
 - [Express or Koa Backend](/http4js/Express-or-koa-backend/#express-or-koa-backend)
-- [Writing a Proxy](/http4js/Proxy/#proxy)
+- [Https Server](/http4js/Https-server/#https-server)
+- [Proxy](/http4js/Proxy/#proxy)
 - [Use in Javascript](/http4js/Use-in-javascript/#how-to-require-and-use-http4js-in-js)
 - [Example App](https://github.com/TomShacham/http4js-eg)
 
@@ -24,7 +25,7 @@ way to hook into Express or Koa, allowing you to use their features.
 
 ```typescript
 get("/path", async () => ResOf(200, "OK"))
-    .asServer(new NativeServer(3001)) // default value
+    .asServer(new NativeHttpServer(3001)) // default value
     .start();
 ```
 
@@ -110,4 +111,4 @@ Here is the code for the Express backend:
 
 Prev: [Approval testing with fakes](/http4js/Approval-testing-with-fakes/#approval-testing-with-fakes)
 
-Next: [Writing a Proxy](/http4js/Proxy/#proxy)
+Next: [Https Server](/http4js/Https-server/#https-server)

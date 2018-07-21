@@ -12,27 +12,33 @@
 - [Approval testing with fakes](/http4js/Approval-testing-with-fakes/#approval-testing-with-fakes)
 - [Express or Koa Backend](/http4js/Express-or-koa-backend/#express-or-koa-backend)
 - [Https Server](/http4js/Https-server/#https-server)
-- [Proxy](/http4js/Proxy/#proxy)
+- [Writing a Proxy](/http4js/Proxy/#proxy)
 - [Use in Javascript](/http4js/Use-in-javascript/#how-to-require-and-use-http4js-in-js)
 - [Example App](https://github.com/TomShacham/http4js-eg)
 
-# How to require and use http4js in js
+# Https server
 
-```text
-yarn add http4js
-```
+In order to serve an HTTPS server, you simply pass in a NativeHttpsServer
+on the port you like, and provide it your `cert`, `ca cert` and `private key`.
 
-```javascript
-const http4js = require('http4js');
-const Res = http4js.Res;
-const Method = http4js.Method;
-const routes = http4js.routes;
 
-routes(Method.GET, "/", async (req) => new Res(200, "OK"))
-    .asServer()
+```typescript
+const certs = {
+    key: fs.readFileSync('src/ssl/key.pem'),
+    cert: fs.readFileSync('src/ssl/fullchain.pem'),
+    ca: fs.readFileSync('src/ssl/my-root-ca.cert.pem'),
+};
+
+get("/path", async () => ResOf(200, "OK"))
+    .asServer(new NativeHttpsServer(8000, certs)) // default value
     .start();
 ```
 
-Prev: [Proxy](/http4js/Proxy/#proxy)
+# How to generate certs locally
 
-Next: [Example App](https://github.com/TomShacham/http4js-eg)
+I have left notes in the [README](https://github.com/TomShacham/http4js/blob/master/README.md#running-https-server-tests)
+
+
+Prev: [Approval testing with fakes](/http4js/Approval-testing-with-fakes/#approval-testing-with-fakes)
+
+Next: [Writing a Proxy](/http4js/Proxy/#proxy)

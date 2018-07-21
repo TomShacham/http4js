@@ -115,10 +115,17 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 - streaming
 
 
-# Running HTTPS Server tests
+## Running HTTPS Server tests
 
 Follow these [Instructions](https://stackoverflow.com/questions/19665863/how-do-i-use-a-self-signed-certificate-for-a-https-node-js-server)
 to create your own certificates in order to run an HTTPS server locally.
+
+Then run 
+
+```bash
+yarn test-ssl
+```
+
 
 [Commands](https://github.com/Daplie/nodejs-self-signed-certificate-example/blob/master/make-root-ca-and-certificates.sh)
 

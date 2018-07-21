@@ -11,6 +11,7 @@
 - [End to End Testing](/http4js/End-to-end-testing/#end-to-end-testing)
 - [Approval testing with fakes](/http4js/Approval-testing-with-fakes/#approval-testing-with-fakes)
 - [Express or Koa Backend](/http4js/Express-or-koa-backend/#express-or-koa-backend)
+- [Https Server](/http4js/Https-server/#https-server)
 - [Proxy](/http4js/Proxy/#proxy)
 - [Use in Javascript](/http4js/Use-in-javascript/#how-to-require-and-use-http4js-in-js)
 - [Example App](https://github.com/TomShacham/http4js-eg)
@@ -26,7 +27,7 @@ const upstream = routes(".*", ".*", async (req: Req) => {
     console.log(response);
     return response;
 })
-    .asServer(new NativeServer(3001))
+    .asServer(new NativeHttpServer(3001))
     .start();
 
 const proxy = routes(".*", ".*", (req: Req) => {
@@ -36,7 +37,7 @@ const proxy = routes(".*", ".*", (req: Req) => {
     console.log(rewrittenRequest);
     return HttpClient(rewrittenRequest);
 })
-    .asServer(new NativeServer(3000))
+    .asServer(new NativeHttpServer(3000))
     .start();
 
 ```
@@ -104,6 +105,6 @@ Res {
 
 ```
 
-Prev: [Express or Koa Backend](/http4js/Express-or-koa-backend/#express-or-koa-backend)
+Prev: [Https Server](/http4js/Https-server/#https-server)
       
 Next: [Use in Javascript](/http4js/Use-in-javascript/#how-to-require-and-use-http4js-in-js)

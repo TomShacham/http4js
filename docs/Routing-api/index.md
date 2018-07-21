@@ -11,6 +11,7 @@
 - [End to End Testing](/http4js/End-to-end-testing/#end-to-end-testing)
 - [Approval testing with fakes](/http4js/Approval-testing-with-fakes/#approval-testing-with-fakes)
 - [Express or Koa Backend](/http4js/Express-or-koa-backend/#express-or-koa-backend)
+- [Https Server](/http4js/Https-server/#https-server)
 - [Proxy](/http4js/Proxy/#proxy)
 - [Use in Javascript](/http4js/Use-in-javascript/#how-to-require-and-use-http4js-in-js)
 - [Example App](https://github.com/TomShacham/http4js-eg)
@@ -207,7 +208,7 @@ class Routing {
 
     withHandler(method: string, path: string, handler: HttpHandler, headers: HeadersType = {}): Routing
 
-    asServer(server: Http4jsServer = new NativeServer(3000)): Http4jsServer
+    asServer(server: Http4jsServer = new NativeHttpServer(3000)): Http4jsServer
 
     serve(request: Req): Promise<Res> 
 
