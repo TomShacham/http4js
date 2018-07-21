@@ -1,28 +1,15 @@
 import * as http from "http";
 import {Res} from "../core/Res";
 import {Req} from "../core/Req";
+import {HeadersType, ResOf} from "../";
 
 export function HttpClient(request: Req): Promise<Res> {
     switch (request.method) {
         case "GET":
             return get(request);
-        case "POST":
-            return wire(request);
-        case "PUT":
-            return wire(request);
-        case "PATCH":
-            return wire(request);
-        case "DELETE":
-            return wire(request);
-        case "HEAD":
-            return wire(request);
-        case "OPTIONS":
-            return wire(request);
-        case "TRACE":
-            return wire(request);
 
         default:
-            return get(request)
+            return wire(request)
 
     }
 }
@@ -41,7 +28,7 @@ function get(request: Req): Promise<Res> {
                 chunks.push(chunk);
             });
             res.on('end', () => {
-                return resolve(new Res(res.statusCode, Buffer.concat(chunks).toString(), res.headers));
+                return resolve(ResOf(res.statusCode, Buffer.concat(chunks).toString(), res.headers as HeadersType));
             });
         }).end();
     });
@@ -62,7 +49,7 @@ function wire(request: Req): Promise<Res> {
                 chunks.push(chunk);
             });
             res.on('end', () => {
-                return resolve(new Res(res.statusCode, Buffer.concat(chunks).toString(), res.headers));
+                return resolve(new Res(res.statusCode, Buffer.concat(chunks).toString(), res.headers as HeadersType));
             });
         });
         clientRequest.write(request.bodyString());
