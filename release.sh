@@ -6,7 +6,7 @@ yarn build && \
 yarn test && \
 rm -rf dist && \
 cp -r src/main dist && \
-cp package.json tsconfig.json dist && \
+cp package.json tsconfig.json README.md dist && \
 pushd dist && \
 npm publish && \
 popd && \
