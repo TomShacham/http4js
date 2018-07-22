@@ -11,4 +11,5 @@ pushd dist && \
 npm publish && \
 popd && \
 rm -r dist && \
-./clean.sh
+./clean.sh &&
+echo * add release notes *

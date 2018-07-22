@@ -2,15 +2,28 @@
 
 A lightweight HTTP framework for Typescript / JS, with zero dependencies
 
-## *** [read the docs](https://tomshacham.github.io/http4js/) ***
+### Latest release notes
 
-## Using in your project
+For full notes, [read the docs](https://tomshacham.github.io/http4js/)
+
+- 3.2.0: Filters only apply per routing - combining routes using `withRoutes` no longer combines filters from each routing. 
+- 3.1.0: New backend server: NativeHttpsServer. See [here](https://tomshacham.github.io/http4js/Https-server/#https-server) for more info
+- 3.0.2: New client: HttpsClient.
+- 3.0.0: *Breaking change*: routing paths are declared absolute, not relative. 
+
+### *** [read the docs](https://tomshacham.github.io/http4js/) ***
+
+## Use http4js in your project
 
 ### To install:
 
 ```
 npm install --save http4js
-#or
+```
+
+or
+
+```
 yarn add http4js
 ```
 
@@ -101,7 +114,6 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 
 ## To dos
 
-- apply filters to some routes and not all
 - provide pivoted routing (?)
 - reversible routing
 - zipkin tracing

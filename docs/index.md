@@ -1,5 +1,9 @@
 # http4js
 
+### Release notes
+
+View [full release notes](/http4js/Release-notes/#release-notes)
+
 ### Table of Contents
 
 - [Overview](/http4js/#intro)
