@@ -2,7 +2,7 @@
 
 A lightweight HTTP framework for Typescript / JS, with zero dependencies
 
-### Latest release notes
+## Latest release notes
 
 [Full notes here](https://tomshacham.github.io/http4js/Release-notes/#release-notes)
 
@@ -80,15 +80,10 @@ Req {
      matches: {},
      asNativeNodeRequest: 
       Url {
+        ...,
         protocol: 'http:',
-        slashes: true,
-        auth: null,
         host: 'localhost:3000',
         port: '3000',
-        hostname: 'localhost',
-        hash: null,
-        search: null,
-        query: null,
         pathname: '/any/path',
         path: '/any/path',
         href: 'http://localhost:3000/any/path' } },
@@ -132,6 +127,7 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
   - docs
   - pull out into a module
 - streaming
+- generalise routing to an interface, use totallylazy to implement new types of routing
 
 ## Running HTTPS Server tests
 
