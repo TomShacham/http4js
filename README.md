@@ -16,7 +16,7 @@ See [here](https://tomshacham.github.io/http4js/Https-server/#https-server) for 
 
 ### 3.0.2: New client: HttpsClient.
 
-### 3.0.0: *Breaking change*: routing paths are declared absolute, not relative. 
+### 3.0.0: **Breaking change**: routing paths are declared absolute, not relative. 
 
 
 ### *** [read the docs](https://tomshacham.github.io/http4js/) ***
@@ -123,6 +123,8 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 ## To dos
 
 - reversible routing
+  - what happens if names conflict?
+  - what if multiple handlers match by path
 - zipkin tracing
   - build collector
   - generate bytes not a math random string

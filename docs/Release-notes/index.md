@@ -16,7 +16,7 @@ See [here](https://tomshacham.github.io/http4js/Https-server/#https-server) for 
 
 ### 3.0.2: New client: HttpsClient.
 
-### 3.0.0: *Breaking change*: routing paths are declared absolute, not relative. 
+### 3.0.0: **Breaking change**: routing paths are declared absolute, not relative. 
 
 
 ### Back to overview
