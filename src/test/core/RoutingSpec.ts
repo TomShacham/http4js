@@ -311,9 +311,9 @@ describe('routing', async () => {
                 .withPut('/putsch', async() => ResOf())
                 .routes(),
             [
-                {method: 'GET', path: '/', headers: {}},
-                {method: 'POST', path: '/tosh', headers: {'Content-Type': 'application/json'}},
-                {method: 'PUT', path: '/putsch', headers: {}},
+                {method: 'GET', path: '/', headers: {}, name: 'unnamed'},
+                {method: 'POST', path: '/tosh', headers: {'Content-Type': 'application/json'}, name: 'unnamed'},
+                {method: 'PUT', path: '/putsch', headers: {}, name: 'unnamed'},
             ]
         );
     });
@@ -328,6 +328,23 @@ describe('routing', async () => {
         const response = await get('/', async() => ResOf()).asServer(new NativeHttpServer(3004))
             .serveE2E(ReqOf('GET', '/'));
         equal(response.status, 200);
-    })
+    });
+
+    it('reverses routing: get handler by name', async() => {
+        const handler = get('/path', async() => ResOf(200, 'OK path'), {'Cache-control': 'private'}, 'root')
+            .handlerByName('root');
+        equal(handler.path, '/path');
+        equal(handler.method, 'GET');
+        deepEqual(handler.headers, {'Cache-control': 'private'});
+        equal(handler.name, 'root');
+    });
+
+    it('reverses routing: get handler by path', async() => {
+        const handler = get('/path', async() => ResOf(200, 'OK path'), {'Cache-control': 'private'})
+            .handlerByPath('/path');
+        equal(handler.path, '/path');
+        equal(handler.method, 'GET');
+        deepEqual(handler.headers, {'Cache-control': 'private'});
+    });
 
 });

@@ -8,8 +8,8 @@ import {NativeHttpServer} from "../servers/NativeHttpServer";
 import {ResOf} from "./Res";
 import {HttpClient} from "../client/HttpClient";
 
-export type MountedHttpHandler = { path: string, method: string, headers: HeadersType, handler: HttpHandler }
-export type DescribingHttpHandler = { path: string, method: string, headers: HeadersType }
+export type MountedHttpHandler = { path: string, method: string, headers: HeadersType, handler: HttpHandler, name: string }
+export type DescribingHttpHandler = { path: string, method: string, headers: HeadersType, name: string }
 
 export class Routing {
 
@@ -21,9 +21,15 @@ export class Routing {
     constructor(method: string,
                 path: string,
                 headers: HeadersType = {},
-                handler: HttpHandler) {
+                handler: HttpHandler,
+                name: string = 'unnamed route') {
         const pathNoTrailingSlash = path.endsWith('/') && path !== "/" ? path.slice(0, -1) : path;
-        this.handlers.push({path: pathNoTrailingSlash, method: method.toUpperCase(), headers, handler});
+        this.handlers.push({
+            path: pathNoTrailingSlash,
+            method: method.toUpperCase(),
+            headers,
+            handler,
+            name});
     }
 
     withRoutes(routes: Routing): Routing {
@@ -32,7 +38,7 @@ export class Routing {
     }
 
     withRoute(req: Req, handler: HttpHandler): Routing {
-        this.handlers.push({path: req.uri.path(), method: req.method, headers: req.headers, handler});
+        this.handlers.push({path: req.uri.path(), method: req.method, headers: req.headers, handler, name: 'unnamed'});
         return this;
     }
 
@@ -41,8 +47,8 @@ export class Routing {
         return this;
     }
 
-    withHandler(method: string, path: string, handler: HttpHandler, headers: HeadersType = {}): Routing {
-        this.handlers.push({path, method, headers, handler});
+    withHandler(method: string, path: string, handler: HttpHandler, headers: HeadersType = {}, name = 'unnamed'): Routing {
+        this.handlers.push({path, method, headers, handler, name});
         return this;
     }
 
@@ -138,19 +144,29 @@ export class Routing {
         return this.handlers.map(handler => ({
             method: handler.method,
             path: handler.path,
-            headers: handler.headers
+            headers: handler.headers,
+            name: handler.name,
         }))
     }
 
-    public mountedNotFoundHandler: MountedHttpHandler = {
+    mountedNotFoundHandler: MountedHttpHandler = {
         path: ".*",
         method: ".*",
         headers: {},
         handler: async (request: Req) => {
             const notFoundBodystring = `${request.method} to ${request.uri.asUriString()} did not match routes`;
             return new Res(404, notFoundBodystring);
-        }
+        },
+        name: 'default not found'
     };
+
+    handlerByName(name: string): MountedHttpHandler | undefined {
+        return this.handlers.find(it => it.name === name);
+    }
+    
+    handlerByPath(path: string): MountedHttpHandler | undefined {
+        return this.handlers.find(it => it.path === path);
+    }
 
     private handlersMostPreciseFirst(): MountedHttpHandler[] {
         return this.handlers.sort((h1, h2) => {
@@ -168,26 +184,26 @@ export function route(request: Req, handler: HttpHandler): Routing {
     return new Routing(request.method, request.uri.path(), request.headers, handler);
 }
 
-export function get(path: string, handler: HttpHandler, headers: HeadersType = {}): Routing {
-    return new Routing("GET", path, headers, handler);
+export function get(path: string, handler: HttpHandler, headers: HeadersType = {}, name: string = 'unnamed'): Routing {
+    return new Routing("GET", path, headers, handler, name);
 }
 
-export function post(path: string, handler: HttpHandler, headers: HeadersType = {}): Routing {
-    return new Routing("POST", path, headers, handler);
+export function post(path: string, handler: HttpHandler, headers: HeadersType = {}, name: string = 'unnamed'): Routing {
+    return new Routing("POST", path, headers, handler, name);
 }
 
-export function put(path: string, handler: HttpHandler, headers: HeadersType = {}): Routing {
-    return new Routing("PUT", path, headers, handler);
+export function put(path: string, handler: HttpHandler, headers: HeadersType = {}, name: string = 'unnamed'): Routing {
+    return new Routing("PUT", path, headers, handler, name);
 }
 
-export function patch(path: string, handler: HttpHandler, headers: HeadersType = {}): Routing {
-    return new Routing("PATCH", path, headers, handler);
+export function patch(path: string, handler: HttpHandler, headers: HeadersType = {}, name: string = 'unnamed'): Routing {
+    return new Routing("PATCH", path, headers, handler, name);
 }
 
-export function options(path: string, handler: HttpHandler, headers: HeadersType = {}): Routing {
-    return new Routing("OPTIONS", path, headers, handler);
+export function options(path: string, handler: HttpHandler, headers: HeadersType = {}, name: string = 'unnamed'): Routing {
+    return new Routing("OPTIONS", path, headers, handler, name);
 }
 
-export function head(path: string, handler: HttpHandler, headers: HeadersType = {}): Routing {
-    return new Routing("HEAD", path, headers, handler);
+export function head(path: string, handler: HttpHandler, headers: HeadersType = {}, name: string = 'unnamed'): Routing {
+    return new Routing("HEAD", path, headers, handler, name);
 }
