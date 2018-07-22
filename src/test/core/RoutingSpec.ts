@@ -23,7 +23,6 @@ describe('routing', async () => {
 
         equal(nested.status, 404);
         equal(fullPath.bodyString(), 'fullPath');
-        equal(fullPath.bodyString(), 'fullPath');
     });
 
     it('add a filter', async () => {
@@ -78,7 +77,32 @@ describe('routing', async () => {
         equal(response.header('another'), 'filter2');
     });
 
-    it('withRoutes mounts handlers and filters', async () => {
+    it('withRoutes mounts handlers but not filters', async () => {
+        const nested = get('/nested', async () => {
+            return ResOf(200).withBody('hi there deeply.')
+        }).withFilter((handler) => {
+            return (req) => handler(req).then(response => response.withHeader('nested', 'routes'))
+        });
+
+        const compositeRoutes = get('/', async () => ResOf(200, 'top level'))
+            .withFilter((handler) => {
+                return (req) => handler(req).then(response => response.withHeader('top-level', 'routes'))
+            })
+            .withRoutes(nested);
+
+        const topLevelResponse = await compositeRoutes.serve(ReqOf('GET', '/'));
+        const nestedResponse = await compositeRoutes.serve(ReqOf('GET', '/nested'));
+
+        equal(topLevelResponse.header('top-level'), 'routes');
+        equal(topLevelResponse.header('nested'), undefined);
+        equal(topLevelResponse.bodyString(), 'top level');
+
+        equal(nestedResponse.header('top-level'), undefined);
+        equal(nestedResponse.header('nested'), 'routes');
+        equal(nestedResponse.bodyString(), 'hi there deeply.');
+    });
+
+    it('nested routes when not found, filters only through top level filters', async () => {
         const nested = get('/nested', async () => {
             return ResOf(200).withBody('hi there deeply.')
         }).withFilter((handler) => {
@@ -90,12 +114,14 @@ describe('routing', async () => {
                 return (req) => handler(req).then(response => response.withHeader('top-level', 'routes'))
             })
             .withRoutes(nested)
-            .serve(ReqOf('GET', '/nested'));
+            .serve(ReqOf('GET', '/unknown-path'));
 
         equal(response.header('top-level'), 'routes');
-        equal(response.header('nested'), 'routes');
-        equal(response.bodyString(), 'hi there deeply.');
+        equal(response.header('nested'), undefined);
+        equal(response.bodyString(), 'GET to /unknown-path did not match routes');
     });
+
+
 
     it('matches path params only if specified a capture in route', async () => {
         const response = await get('/family', async() => ResOf(200, 'losh,bosh,tosh'))

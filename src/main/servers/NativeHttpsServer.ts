@@ -1,12 +1,12 @@
+import * as fs from "fs";
+import * as https from 'https';
 import {Res} from "../core/Res";
-
-const fs = require('fs');
-const https = require('https');
 import {Http4jsServer} from "./Server";
 import {Routing} from "../";
 import {Form, HeadersType} from "../core/HttpMessage";
 import {Req} from "../core/Req";
 import {HeaderValues} from "../core/Headers";
+
 require('ssl-root-cas')
     .inject()
     .addFile('src/ssl/my-root-ca.cert.pem');

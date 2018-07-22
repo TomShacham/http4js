@@ -3,7 +3,7 @@ set -x
 
 ./clean.sh && \
 yarn build && \
-yarn test && \
+yarn test-all && \
 rm -rf dist && \
 cp -r src/main dist && \
 cp package.json tsconfig.json README.md dist && \
