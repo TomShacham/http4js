@@ -14,7 +14,6 @@ export type DescribingHttpHandler = { path: string, method: string, headers: Hea
 export class Routing {
 
     server: Http4jsServer;
-    private root: string;
     private handlers: MountedHttpHandler[] = [];
     private filters: Array<(httpHandler: HttpHandler) => HttpHandler> = [];
     private nestedRouting: Routing[] = [];
@@ -23,7 +22,6 @@ export class Routing {
                 path: string,
                 headers: HeadersType = {},
                 handler: HttpHandler) {
-        this.root = path;
         const pathNoTrailingSlash = path.endsWith('/') && path !== "/" ? path.slice(0, -1) : path;
         this.handlers.push({path: pathNoTrailingSlash, method: method.toUpperCase(), headers, handler});
     }
@@ -33,10 +31,8 @@ export class Routing {
         return this;
     }
 
-    withRoute(request: Req, handler: HttpHandler): Routing {
-        const existingPath = this.root != "/" ? this.root : "";
-        const nestedPath = existingPath + request.uri.path();
-        this.handlers.push({path: nestedPath, method: request.method, handler: handler, headers: request.headers});
+    withRoute(req: Req, handler: HttpHandler): Routing {
+        this.handlers.push({path: req.uri.path(), method: req.method, headers: req.headers, handler});
         return this;
     }
 

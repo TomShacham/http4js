@@ -284,7 +284,7 @@ describe('routing', async () => {
 
     it('add route using a Req obj', async() => {
         const request = ReqOf('GET', '/tom');
-        const response = await route(ReqOf('GET', '/'), async() => ResOf(200, 'Hiyur'))
+        const response = await route(ReqOf('GET', '/root'), async() => ResOf(200, 'Hiyur'))
             .withRoute(request, async() => ResOf(200, 'Hiyur withRoute'))
             .serve(request);
 

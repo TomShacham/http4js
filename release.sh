@@ -12,4 +12,4 @@ npm publish && \
 popd && \
 rm -r dist && \
 ./clean.sh &&
-echo * add release notes *
+echo "* add release notes *"
