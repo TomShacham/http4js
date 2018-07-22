@@ -4,12 +4,20 @@ A lightweight HTTP framework for Typescript / JS, with zero dependencies
 
 ### Latest release notes
 
-For full notes, [read the docs](https://tomshacham.github.io/http4js/)
+[Full notes here](https://tomshacham.github.io/http4js/Release-notes/#release-notes)
 
-- 3.2.0: Filters only apply per routing - combining routes using `withRoutes` no longer combines filters from each routing. 
-- 3.1.0: New backend server: NativeHttpsServer. See [here](https://tomshacham.github.io/http4js/Https-server/#https-server) for more info
-- 3.0.2: New client: HttpsClient.
-- 3.0.0: *Breaking change*: routing paths are declared absolute, not relative. 
+### 3.2.0: Filters only apply per routing
+
+combining routes using `withRoutes` no longer combines filters from each routing. 
+
+### 3.1.0: New backend server: NativeHttpsServer. 
+
+See [here](https://tomshacham.github.io/http4js/Https-server/#https-server) for more info
+
+### 3.0.2: New client: HttpsClient.
+
+### 3.0.0: *Breaking change*: routing paths are declared absolute, not relative. 
+
 
 ### *** [read the docs](https://tomshacham.github.io/http4js/) ***
 
@@ -114,7 +122,6 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 
 ## To dos
 
-- provide pivoted routing (?)
 - reversible routing
 - zipkin tracing
   - build collector
@@ -122,7 +129,6 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
   - support sampled and debug
   - docs
   - pull out into a module
-- possibly have a Headers class for dicing with headers, not just an object
 - streaming
 
 ## Running HTTPS Server tests
