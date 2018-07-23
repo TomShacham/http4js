@@ -32,8 +32,6 @@ export class Filters {
 
 }
 
-const timing = Filters.TIMING;
-
 export function zipkinFilterBuilder(generator: IdGenerator): Filter {
     return (handler: HttpHandler) => async (req: Req) => {
         const debug = req.header(ZipkinHeaders.DEBUG);
