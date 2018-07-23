@@ -117,16 +117,16 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 
 ## To dos
 
+- zipkin tracing
+  - generate bytes not a math random string
+  - support sampled and debug
+  - docs, visualise a trace
+  - pull out into a module
 - reversible routing
   - what happens if names conflict?
   - what if multiple handlers match by path
-- zipkin tracing
-  - build collector
-  - generate bytes not a math random string
-  - support sampled and debug
-  - docs
-  - pull out into a module
-- streaming
+- client side httpclient (from stu)
+- streaming  
 - generalise routing to an interface, use totallylazy to implement new types of routing
 
 ## Running HTTPS Server tests
@@ -140,10 +140,10 @@ Then run
 yarn test-ssl
 ```
 
+## How I created ssl key, cert & ca cert
 
 [Commands](https://github.com/Daplie/nodejs-self-signed-certificate-example/blob/master/make-root-ca-and-certificates.sh)
-
-I followed slightly differently in http4js: 
+: I followed slightly differently in http4js: 
 
 ```bash
 cd src/test/ssl

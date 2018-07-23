@@ -6,9 +6,9 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "start": "ts-node src/main/index.ts",
-    "test": "mocha --require ts-node/register --watch-extensions ts,tsx 'src/test/**/*.{ts,tsx}'",
-    "test-ssl": "mocha --require ts-node/register --watch-extensions ts,tsx 'src/ssl/**/*.{ts,tsx}'",
-    "test-all": "tsc && mocha --require ts-node/register --watch-extensions ts,tsx 'src/{test,ssl}/**/*.{ts,tsx}'",
+    "test": "mocha --require ts-node/register --watch-extensions ts 'src/test/**/*.ts'",
+    "test-ssl": "mocha --require ts-node/register --watch-extensions ts 'src/ssl/**/*.ts'",
+    "test-all": "tsc && mocha --require ts-node/register --watch-extensions ts 'src/{test,ssl}/**/*.ts'",
     "build": "tsc",
     "app": "tsc; node index.js"
   },

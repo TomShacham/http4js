@@ -2,6 +2,7 @@ import {Req} from "./Req";
 import {HttpHandler, HeadersType} from "./HttpMessage";
 import {Redirect, Res} from "./Res";
 import {ZipkinIdGenerator, IdGenerator, ZipkinHeaders} from "../zipkin/Zipkin";
+import {Clock} from "../../test/filters/ZipkinFilterSpec";
 
 export type Filter = (HttpHandler: HttpHandler) => HttpHandler
 
@@ -16,7 +17,7 @@ export class Filters {
 
     static TIMING: Filter = (handler: HttpHandler) => async (req: Req) => {
         const start = Date.now();
-        const response = await handler(req.withHeader('Start-Time', start.toString()));
+        const response = await handler(req);
         const end = Date.now();
         const total = end - start;
         return response
@@ -29,18 +30,9 @@ export class Filters {
 
     static ZIPKIN: Filter = zipkinFilterBuilder(new ZipkinIdGenerator());
 
-    static TIMED_ZIPKIN: Filter = timedZipkinFilterBuilder();
-
 }
 
 const timing = Filters.TIMING;
-
-export function timedZipkinFilterBuilder(timingFilter: Filter = timing): Filter {
-    return (httpHandler: HttpHandler) => {
-        return timingFilter(zipkinFilterBuilder(new ZipkinIdGenerator())(httpHandler))
-
-    }
-}
 
 export function zipkinFilterBuilder(generator: IdGenerator): Filter {
     return (handler: HttpHandler) => async (req: Req) => {
@@ -72,6 +64,19 @@ export function zipkinFilterBuilder(generator: IdGenerator): Filter {
     }
 }
 
+export function timingFilterBuilder(clock: Clock): Filter {
+    return (handler: HttpHandler) => async (req: Req) => {
+        const start = clock.now();
+        const response = await handler(req);
+        const end = clock.now();
+        const total = end - start;
+        return response
+            .withHeader("Total-Time", total.toString())
+            .withHeader("Start-Time", start.toString())
+            .withHeader("End-Time", end.toString());
+    };
+
+}
 
 export function debugFilterBuilder(out: any): Filter {
     return (handler: HttpHandler) => (req: Req) => {
