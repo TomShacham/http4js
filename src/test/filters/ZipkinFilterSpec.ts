@@ -83,31 +83,55 @@ const moreUpstream = get('/', async() => ResOf())
     .withFilter(loggingFilter)
     .asServer(new NativeHttpServer(3034));
 
-
 interface ZipkinTrace {
+    spans: ZipkinSpan,
+    traceId: number,
+    timeTaken: number,
+    start: number,
+    end: number,
+}
+
+interface ZipkinSpan {
     parentId: number | undefined,
     spanId: number,
     traceId: number,
     start: number,
     end: number,
     timeTaken: number,
+    children: ZipkinSpan[],
 }
 
-function ZipkinCollector(logLines: string[]): ZipkinTrace[] {
-    return logLines.reduce((acc: ZipkinTrace[], next: string) => {
-        const responseZipkinParts = next.split(';');
-        const parentId = responseZipkinParts[0];
-        const zipkinTrace = {
+
+function ZipkinCollector(logLines: string[]): ZipkinTrace {
+    const zipkinSpans = logLines.reduce((acc: ZipkinSpan[], next: string) => {
+        const logLineZipkinParts = next.split(';');
+        const parentId = logLineZipkinParts[0];
+        const zipkinSpan = {
             parentId: parentId ? +parentId : undefined,
-            spanId: +responseZipkinParts[1],
-            traceId: +responseZipkinParts[2],
-            start: +responseZipkinParts[3],
-            end: +responseZipkinParts[4],
-            timeTaken: +responseZipkinParts[4] - +responseZipkinParts[3],
+            spanId: +logLineZipkinParts[1],
+            traceId: +logLineZipkinParts[2],
+            start: +logLineZipkinParts[3],
+            end: +logLineZipkinParts[4],
+            timeTaken: +logLineZipkinParts[4] - +logLineZipkinParts[3],
+            children: [],
         };
-        acc.push(zipkinTrace);
+        acc.push(zipkinSpan);
         return acc;
-    }, [])
+    }, []);
+    const topLevelRequest = zipkinSpans.find(it => !it.parentId);
+    return {
+        spans: treeStructure(topLevelRequest, zipkinSpans),
+        traceId: topLevelRequest.traceId,
+        timeTaken: topLevelRequest.end - topLevelRequest.start,
+        start: topLevelRequest.start,
+        end: topLevelRequest.end,
+    };
+
+    function treeStructure(span: ZipkinSpan, spans: ZipkinSpan[]): ZipkinSpan {
+        const children = spans.filter(it => it.parentId === span.spanId);
+        span.children = children.map(child => treeStructure(child, spans));
+        return span;
+    }
 }
 
 describe('Zipkin', () => {
@@ -165,14 +189,34 @@ describe('Zipkin', () => {
         equal(!isNullOrUndefined(response.header('end-time')), true);
     });
 
-    it('collect log lines into a description of trace', async() => {
+    it('collect log lines into a tree description of trace', async() => {
         const traceId = 2;
-        deepEqual(ZipkinCollector(logLines), [
-            { parentId: 1, spanId: 3, traceId: traceId, start: 2, end: 3, timeTaken: 1},
-            { parentId: 4, spanId: 5, traceId: traceId, start: 5, end: 6, timeTaken: 1},
-            { parentId: 1, spanId: 4, traceId: traceId, start: 4, end: 7, timeTaken: 3},
-            { parentId: undefined, spanId: 1, traceId: traceId, start: 1, end: 8, timeTaken: 7},
-        ]);
+        const moreUpstream = { parentId: 4, spanId: 5, traceId: traceId, start: 5, end: 6, timeTaken: 1, children: []};
+        const upstreamB = { parentId: 1, spanId: 4, traceId: traceId, start: 4, end: 7, timeTaken: 3, children: [moreUpstream]};
+        const upstreamA = { parentId: 1, spanId: 3, traceId: traceId, start: 2, end: 3, timeTaken: 1, children: []};
+        const topLevel = {
+            parentId: undefined,
+            spanId: 1,
+            traceId: traceId,
+            start: 1,
+            end: 8,
+            timeTaken: 7,
+            children: [upstreamA, upstreamB]
+        };deepEqual(ZipkinCollector(logLines), {
+            spans: topLevel,
+            start: 1,
+            end: 8,
+            timeTaken: 7,
+            traceId: 2,
+        });
     });
+
+    it('draw trace from log lines', async() => {
+        drawHtml(ZipkinCollector(logLines));
+    });
+
+    function drawHtml(zipkinTrace: ZipkinTrace) {
+
+    }
 
 });
