@@ -117,11 +117,14 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 
 ## To dos
 
+- update example app
 - zipkin tracing
+  - visualise a trace, parse many sets of loglines into many traces
   - generate bytes not a math random string
   - support sampled and debug
-  - docs, visualise a trace
   - pull out into a module
+  - docs
+- breakout httpclients to module (probably have in both core and separate module 'http4js-client')
 - reversible routing
   - what happens if names conflict?
   - what if multiple handlers match by path

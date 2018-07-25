@@ -83,14 +83,6 @@ const moreUpstream = get('/', async() => ResOf())
     .withFilter(loggingFilter)
     .asServer(new NativeHttpServer(3034));
 
-interface ZipkinTrace {
-    spans: ZipkinSpan,
-    traceId: number,
-    timeTaken: number,
-    start: number,
-    end: number,
-}
-
 interface ZipkinSpan {
     parentId: number | undefined,
     spanId: number,
@@ -102,7 +94,7 @@ interface ZipkinSpan {
 }
 
 
-function ZipkinCollector(logLines: string[]): ZipkinTrace {
+function ZipkinCollector(logLines: string[]): ZipkinSpan {
     const zipkinSpans = logLines.reduce((acc: ZipkinSpan[], next: string) => {
         const logLineZipkinParts = next.split(';');
         const parentId = logLineZipkinParts[0];
@@ -119,18 +111,12 @@ function ZipkinCollector(logLines: string[]): ZipkinTrace {
         return acc;
     }, []);
     const topLevelRequest = zipkinSpans.find(it => !it.parentId);
-    return {
-        spans: treeStructure(topLevelRequest, zipkinSpans),
-        traceId: topLevelRequest.traceId,
-        timeTaken: topLevelRequest.end - topLevelRequest.start,
-        start: topLevelRequest.start,
-        end: topLevelRequest.end,
-    };
+    return treeStructure(topLevelRequest, zipkinSpans);
 
-    function treeStructure(span: ZipkinSpan, spans: ZipkinSpan[]): ZipkinSpan {
-        const children = spans.filter(it => it.parentId === span.spanId);
-        span.children = children.map(child => treeStructure(child, spans));
-        return span;
+    function treeStructure(root: ZipkinSpan, spans: ZipkinSpan[]): ZipkinSpan {
+        const children = spans.filter(it => it.parentId === root.spanId);
+        root.children = children.map(child => treeStructure(child, spans));
+        return root;
     }
 }
 
@@ -202,21 +188,40 @@ describe('Zipkin', () => {
             end: 8,
             timeTaken: 7,
             children: [upstreamA, upstreamB]
-        };deepEqual(ZipkinCollector(logLines), {
-            spans: topLevel,
-            start: 1,
-            end: 8,
-            timeTaken: 7,
-            traceId: 2,
-        });
+        };
+        deepEqual(ZipkinCollector(logLines), {...topLevel, foo: 'foo'})
     });
 
     it('draw trace from log lines', async() => {
         drawHtml(ZipkinCollector(logLines));
     });
 
-    function drawHtml(zipkinTrace: ZipkinTrace) {
+    function drawHtml(zipkinTrace: ZipkinSpan) {
+        const topLevelRequestStartTime = zipkinTrace.start;
+        const topLevelRequest = drawChild(zipkinTrace);
+        const children = drawChildren(zipkinTrace.children);
+        children.forEach(child => topLevelRequest.appendChild(child));
+        return topLevelRequest;
 
+        function drawChild(child) {
+            const el = document.createElement('div');
+            el.style.flex = 'column';
+            el.style.left = child.start - topLevelRequestStartTime + 'px';
+            el.style.width = child.end - child.start + 'px';
+            el.style.height = '25px';
+            el.innerText = child.timeTaken;
+            if (child.children.length > 0) {
+                const newChildren = drawChildren(child.children);
+                if (newChildren.length > 0 ) newChildren.forEach(child => el.appendChild(child));
+            }
+            return el;
+        }
+
+        function drawChildren(children) {
+            return children.map(child => {
+                return drawChild(child);
+            })
+        }
     }
 
 });
