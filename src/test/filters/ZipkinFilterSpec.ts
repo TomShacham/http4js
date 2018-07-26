@@ -212,8 +212,7 @@ describe('Zipkin', () => {
 
 
         const topLevelRequest = drawChild(orderedSpans[0]);
-        console.log(orderedSpans)
-        orderedSpans.slice(1).reduce((_, span) => {
+        orderedSpans.slice(1).map(span => {
            topLevelRequest.appendChild(drawChild(span));
         });
         return topLevelRequest;
@@ -226,7 +225,7 @@ describe('Zipkin', () => {
             el.style.left = Math.floor(1024*(child.start - topLevelRequestStartTime)/zipkinTrace.timeTaken) + 'px';
             el.style.width = 1024*(child.end - child.start)/zipkinTrace.timeTaken + 'px';
             el.style.height = '25px';
-            el.innerText = child.timeTaken;
+            el.innerText = 'start: ' + child.start + ' end: ' + child.end + ' span: ' + child.spanId;
             return el;
         }
 
