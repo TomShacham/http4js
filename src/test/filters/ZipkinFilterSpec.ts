@@ -198,30 +198,38 @@ describe('Zipkin', () => {
 
     function drawHtml(zipkinTrace: ZipkinSpan) {
         const topLevelRequestStartTime = zipkinTrace.start;
-        const topLevelRequest = drawChild(zipkinTrace);
-        const children = drawChildren(zipkinTrace.children);
-        children.forEach(child => topLevelRequest.appendChild(child));
+
+        const orderedSpans = [zipkinTrace].reduce((orderedList, span) => {
+            pushChild(span);
+            return orderedList;
+
+            function pushChild(span) {
+                const child = {start: span.start, end: span.end, spanId: span.spanId, timeTaken: span.timeTaken};
+                orderedList.push(child);
+                if (span.children.length > 0) span.children.map(child => pushChild(child));
+            }
+        }, []);
+
+
+        const topLevelRequest = drawChild(orderedSpans[0]);
+        console.log(orderedSpans)
+        orderedSpans.slice(1).reduce((_, span) => {
+           topLevelRequest.appendChild(drawChild(span));
+        });
         return topLevelRequest;
 
         function drawChild(child) {
             const el = document.createElement('div');
+            el.style.backgroundColor = 'lightgreen';
             el.style.flex = 'column';
-            el.style.left = child.start - topLevelRequestStartTime + 'px';
-            el.style.width = child.end - child.start + 'px';
+            el.style.position = 'relative';
+            el.style.left = Math.floor(1024*(child.start - topLevelRequestStartTime)/zipkinTrace.timeTaken) + 'px';
+            el.style.width = 1024*(child.end - child.start)/zipkinTrace.timeTaken + 'px';
             el.style.height = '25px';
             el.innerText = child.timeTaken;
-            if (child.children.length > 0) {
-                const newChildren = drawChildren(child.children);
-                if (newChildren.length > 0 ) newChildren.forEach(child => el.appendChild(child));
-            }
             return el;
         }
 
-        function drawChildren(children) {
-            return children.map(child => {
-                return drawChild(child);
-            })
-        }
     }
 
 });
