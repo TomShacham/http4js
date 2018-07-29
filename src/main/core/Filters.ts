@@ -2,7 +2,7 @@ import {Req} from "./Req";
 import {HttpHandler, HeadersType} from "./HttpMessage";
 import {Redirect, Res} from "./Res";
 import {ZipkinIdGenerator, IdGenerator, ZipkinHeaders} from "../zipkin/Zipkin";
-import {Clock} from "../../test/filters/ZipkinFilterSpec";
+import {Clock} from "../../test/clock/Clock";
 
 export type Filter = (HttpHandler: HttpHandler) => HttpHandler
 

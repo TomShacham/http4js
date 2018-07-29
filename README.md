@@ -2,6 +2,8 @@
 
 A lightweight HTTP framework for Typescript / JS, with zero dependencies
 
+### *** [read the docs](https://tomshacham.github.io/http4js/) ***
+
 ## Latest release notes
 
 [Full notes here](https://tomshacham.github.io/http4js/Release-notes/#release-notes)
@@ -18,8 +20,6 @@ See [here](https://tomshacham.github.io/http4js/Https-server/#https-server) for 
 
 ### 3.0.0: **Breaking change**: routing paths are declared absolute, not relative. 
 
-
-### *** [read the docs](https://tomshacham.github.io/http4js/) ***
 
 ## Use http4js in your project
 
@@ -119,19 +119,19 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 
 - update example app
 - zipkin tracing
-  - visualise a trace, parse many sets of loglines into many traces
+  - visualise a trace, spin up a few apps and do it for reals
   - generate bytes not a math random string
   - support sampled and debug
   - pull out into a module
   - docs
 - breakout httpclients to module (probably have in both core and separate module 'http4js-client')
-- reversible routing
-  - what happens if names conflict?
-  - what if multiple handlers match by path
 - client side httpclient (from stu)
 - streaming  
 - generalise routing to an interface, use totallylazy to implement new types of routing
-
+- reversible routing
+  - what happens if names conflict?
+  - what if multiple handlers match by path
+  
 ## Running HTTPS Server tests
 
 Follow these [Instructions](https://stackoverflow.com/questions/19665863/how-do-i-use-a-self-signed-certificate-for-a-https-node-js-server)

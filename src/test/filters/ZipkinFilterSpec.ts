@@ -9,6 +9,7 @@ import {Client} from '../../main/client/Client';
 import {DeterministicIdGenerator, ZipkinHeaders} from '../../main/zipkin/Zipkin';
 import {isNullOrUndefined} from 'util';
 import {HttpHandler, timingFilterBuilder} from '../../main';
+import {FakeClock} from "../clock/FakeClock";
 
 const upstream1BaseUrl = 'http://localhost:3032';
 const upstream2BaseUrl = 'http://localhost:3033';
@@ -17,7 +18,7 @@ const moreUpstreamBaseUrl = 'http://localhost:3034';
 const logLines: string[] = [];
 const deterministicZipkinFilter = zipkinFilterBuilder(new DeterministicIdGenerator());
 
-const loggingFilter: Filter = (handler: HttpHandler) => async (req: Req) => {
+const loggingFilter: Filter = (handler: HttpHandler) => async(req: Req) => {
     const res = await handler(req);
     const parentId = res.header(ZipkinHeaders.PARENT_ID);
     const spanId = res.header(ZipkinHeaders.SPAN_ID);
@@ -29,23 +30,10 @@ const loggingFilter: Filter = (handler: HttpHandler) => async (req: Req) => {
     return res;
 };
 
-class FakeClock {
-    private time: number = 0;
-    now() {
-        this.time += 1;
-        return this.time;
-    }
-}
-
-export interface Clock {
-    now(): number
-}
-
 const fakeClock = new FakeClock();
+const deterministicTimingFilter: Filter = timingFilterBuilder(fakeClock);
 
-const deterministicTimingFilter = timingFilterBuilder(fakeClock);
-
-const parent = get('/', async(req: Req) => {
+const topLevelRequestRoutes = get('/', async(req: Req) => {
     const parentZipkinClient = Client.zipkinClientFrom(req);
     const upstreamResponse1 = await parentZipkinClient(ReqOf('GET', `${upstream1BaseUrl}/`));
     const upstreamResponse2 = await parentZipkinClient(ReqOf('GET', `${upstream2BaseUrl}/`));
@@ -123,14 +111,14 @@ function ZipkinCollector(logLines: string[]): ZipkinSpan {
 describe('Zipkin', () => {
 
     before(() => {
-        parent.start();
+        topLevelRequestRoutes.start();
         upstream1.start();
         upstream2.start();
         moreUpstream.start();
     });
 
     after(() => {
-        parent.stop();
+        topLevelRequestRoutes.stop();
         upstream1.stop();
         upstream2.stop();
         moreUpstream.stop();
@@ -177,9 +165,17 @@ describe('Zipkin', () => {
 
     it('collect log lines into a tree description of trace', async() => {
         const traceId = 2;
-        const moreUpstream = { parentId: 4, spanId: 5, traceId: traceId, start: 5, end: 6, timeTaken: 1, children: []};
-        const upstreamB = { parentId: 1, spanId: 4, traceId: traceId, start: 4, end: 7, timeTaken: 3, children: [moreUpstream]};
-        const upstreamA = { parentId: 1, spanId: 3, traceId: traceId, start: 2, end: 3, timeTaken: 1, children: []};
+        const moreUpstream = {parentId: 4, spanId: 5, traceId: traceId, start: 5, end: 6, timeTaken: 1, children: []};
+        const upstreamB = {
+            parentId: 1,
+            spanId: 4,
+            traceId: traceId,
+            start: 4,
+            end: 7,
+            timeTaken: 3,
+            children: [moreUpstream]
+        };
+        const upstreamA = {parentId: 1, spanId: 3, traceId: traceId, start: 2, end: 3, timeTaken: 1, children: []};
         const topLevel = {
             parentId: undefined,
             spanId: 1,
@@ -189,46 +185,7 @@ describe('Zipkin', () => {
             timeTaken: 7,
             children: [upstreamA, upstreamB]
         };
-        deepEqual(ZipkinCollector(logLines), {...topLevel, foo: 'foo'})
+        deepEqual(ZipkinCollector(logLines), topLevel)
     });
-
-    it('draw trace from log lines', async() => {
-        drawHtml(ZipkinCollector(logLines));
-    });
-
-    function drawHtml(zipkinTrace: ZipkinSpan) {
-        const topLevelRequestStartTime = zipkinTrace.start;
-
-        const orderedSpans = [zipkinTrace].reduce((orderedList, span) => {
-            pushChild(span);
-            return orderedList;
-
-            function pushChild(span) {
-                const child = {start: span.start, end: span.end, spanId: span.spanId, timeTaken: span.timeTaken};
-                orderedList.push(child);
-                if (span.children.length > 0) span.children.map(child => pushChild(child));
-            }
-        }, []);
-
-
-        const topLevelRequest = drawChild(orderedSpans[0]);
-        orderedSpans.slice(1).map(span => {
-           topLevelRequest.appendChild(drawChild(span));
-        });
-        return topLevelRequest;
-
-        function drawChild(child) {
-            const el = document.createElement('div');
-            el.style.backgroundColor = 'lightgreen';
-            el.style.flex = 'column';
-            el.style.position = 'relative';
-            el.style.left = Math.floor(1024*(child.start - topLevelRequestStartTime)/zipkinTrace.timeTaken) + 'px';
-            el.style.width = 1024*(child.end - child.start)/zipkinTrace.timeTaken + 'px';
-            el.style.height = '25px';
-            el.innerText = 'start: ' + child.start + ' end: ' + child.end + ' span: ' + child.spanId;
-            return el;
-        }
-
-    }
 
 });
