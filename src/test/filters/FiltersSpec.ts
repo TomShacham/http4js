@@ -46,7 +46,7 @@ describe("Built in filters", () => {
             .withFilter(debugFilterBuilder(logger))
             .serve(ReqOf("GET", "/"));
 
-        equal(logger.messages[0], 'GET to / with response 200');
+        equal(logger.messages[0], 'GET to / gave status 200 with headers {}');
     });
 
 });

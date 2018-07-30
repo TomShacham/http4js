@@ -10,6 +10,7 @@
 - [In Memory Testing](/http4js/In-memory-testing/#in-memory-testing)
 - [End to End Testing](/http4js/End-to-end-testing/#end-to-end-testing)
 - [Approval testing with fakes](/http4js/Approval-testing-with-fakes/#approval-testing-with-fakes)
+- [Zipkin tracing](/http4js/Zipkin-tracing/#zipkin-tracing)
 - [Express or Koa Backend](/http4js/Express-or-koa-backend/#express-or-koa-backend)
 - [Https Server](/http4js/Https-server/#https-server)
 - [Proxy](/http4js/Proxy/#proxy)
@@ -109,6 +110,6 @@ Here is the code for the Express backend:
     }
 ```
 
-Prev: [Approval testing with fakes](/http4js/Approval-testing-with-fakes/#approval-testing-with-fakes)
+Prev: [Zipkin tracing](/http4js/Zipkin-tracing/#zipkin-tracing)
 
 Next: [Https Server](/http4js/Https-server/#https-server)

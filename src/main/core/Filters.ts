@@ -76,12 +76,13 @@ export function timingFilterBuilder(clock: Clock): Filter {
 
 }
 
-export function debugFilterBuilder(out: any): Filter {
-    return (handler: HttpHandler) => (req: Req) => {
-        const response = handler(req);
-        return response.then(response => {
-            out.log(`${req.method} to ${req.uri.asUriString()} with response ${response.status}`);
-            return response;
-        });
+const defaultMessageFrom = (req: Req, res: Res) => (`${req.method} to ${req.uri.asUriString()} gave status ${res.status}` +
+    ` with headers ${JSON.stringify(res.headers)}`);
+
+export function debugFilterBuilder(out: any, messageFrom: (req: Req, res: Res)=>string = (req, res)=> defaultMessageFrom(req, res)): Filter {
+    return (handler: HttpHandler) => async (req: Req) => {
+        const res = await handler(req);
+        out.log(messageFrom(req, res));
+        return res;
     }
 }
