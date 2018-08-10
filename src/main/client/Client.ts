@@ -16,7 +16,7 @@ export class Client {
     static zipkinClientFrom(incomingReq: Req): HttpHandler {
         return (req: Req) => HttpClient(
             req.replaceHeader(ZipkinHeaders.PARENT_ID, incomingReq.header(ZipkinHeaders.SPAN_ID))
-                .withHeader(ZipkinHeaders.TRACE_ID, incomingReq.header(ZipkinHeaders.TRACE_ID))
+                .replaceHeader(ZipkinHeaders.TRACE_ID, incomingReq.header(ZipkinHeaders.TRACE_ID))
         );
     }
 }

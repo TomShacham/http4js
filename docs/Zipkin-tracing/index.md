@@ -30,7 +30,33 @@ A clearer explanation can be found [here](https://github.com/openzipkin/b3-propa
 We provide a filter on the server `Filters.ZIPKIN` and a client `Client.withZipkinHeaders(req)`. The two work together
 to add the correct headers to outbound requests. 
 
-If your apps log these headers to a central place, we can look back and build a trace by grouping logs together
+Upstream servers need only add the `Filters.ZIPKIN` filter and the `Filters.TIMING` filter to their routes.
+ 
+```typescript
+get('/', async(req) => ResOf(200, JSON.stringify(req.headers)))
+    .withFilter(Filters.ZIPKIN)
+    .withFilter(Filters.TIMING)
+```
+
+However, clients will need to do something a bit special. This is because outbound zipkin request headers need to be
+generated based on incoming request headers. 
+
+```typescript
+get('/', async(req) => {
+    const clientWithZipkinHeaders = Client.zipkinClientFrom(req);
+    const upstream = await clientWithZipkinHeaders(ReqOf('GET', 'http://localhost:3001/'));
+    return ResOf(200, JSON.stringify(upstream.headers));
+})
+```
+
+This process could be hidden away, by either having a zipkin client put on the incoming req e.g. `const client = req.zipkinClient`
+or by placing the incoming zipkin request headers in some global state e.g. thread-local storage, so that clients can
+reach in and get the zipkin header values they need to make outbound requests with the correct zipkin headers. This is a
+bit dirty and difficult to achieve in Nodejs.
+
+## Collection
+
+If your apps log zipkin headers to a central place, we can look back and build a trace by grouping logs together
 based on `traceId` and using `parentId` to create a tree structure representing the entire trace dependency graph.
   
 Below is an example of one server with a route that makes a client call to another server. Our client sets the correct
@@ -44,6 +70,7 @@ debugFilterBuilder({log: (line)=>logLines.push(line)}, (req, res) => (
         `${res.header('x-b3-parentspanid')};${res.header('x-b3-spanid')};${res.header('x-b3-traceid')};` +
         `${res.header('start-time')};${res.header('end-time')} || `
     )
+)
 ```
 
 We have another route at `/log` which dumps our `loglines` into the browser and has a submit box that will go through

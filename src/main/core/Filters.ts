@@ -38,9 +38,9 @@ export function zipkinFilterBuilder(generator: IdGenerator): Filter {
         const sampled = req.header(ZipkinHeaders.SAMPLED);
         const isTopLevelRequest = req.header(ZipkinHeaders.PARENT_ID) === undefined;
         const zipkinHeaders: HeadersType = {
-            [ZipkinHeaders.PARENT_ID]: req.header(ZipkinHeaders.PARENT_ID) || generator.newId(),
-            [ZipkinHeaders.SPAN_ID]: req.header(ZipkinHeaders.SPAN_ID) || generator.newId(),
-            [ZipkinHeaders.TRACE_ID]: req.header(ZipkinHeaders.TRACE_ID) || generator.newId(),
+            [ZipkinHeaders.PARENT_ID]: req.header(ZipkinHeaders.PARENT_ID) || generator.newId(16),
+            [ZipkinHeaders.SPAN_ID]: req.header(ZipkinHeaders.SPAN_ID) || generator.newId(16),
+            [ZipkinHeaders.TRACE_ID]: req.header(ZipkinHeaders.TRACE_ID) || generator.newId(32),
         };
         const reqWithZipkinHeaders = req
             .replaceHeader(ZipkinHeaders.PARENT_ID, zipkinHeaders[ZipkinHeaders.PARENT_ID])

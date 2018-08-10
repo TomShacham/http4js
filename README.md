@@ -119,10 +119,6 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 
 - update example app
 - zipkin tracing
-  - visualise a trace, spin up a few apps and do it for reals
-  - docs
-  - generate bytes not a math random string
-  - more accurate than to the ms
   - support sampled and debug
   - pull out into a module
 - breakout httpclients to module (probably have in both core and separate module 'http4js-client')

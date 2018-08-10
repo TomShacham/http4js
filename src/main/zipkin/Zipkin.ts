@@ -1,4 +1,6 @@
+import * as crypto from 'crypto';
 import {HeadersType} from "../core/HttpMessage";
+
 export enum ZipkinHeaders {
     PARENT_ID = 'x-b3-parentspanid',
     SPAN_ID = 'x-b3-spanid',
@@ -8,7 +10,7 @@ export enum ZipkinHeaders {
 }
 
 export interface IdGenerator {
-    newId(): string
+    newId(size: number): string
 }
 
 export class DeterministicIdGenerator implements IdGenerator {
@@ -22,16 +24,10 @@ export class DeterministicIdGenerator implements IdGenerator {
 }
 
 export class ZipkinIdGenerator implements IdGenerator {
-    newId(): string {
-        return Math.random().toString();
+    newId(size: number): string {
+        return crypto.randomBytes(size).toString('hex');
     }
 }
-
-export type ParentSpanId = string;
-export type SpanId = string;
-export type TraceId = string;
-export type Sampled = string;
-export type Debug = string;
 
 export function zipkinHeadersBuilder(generator: IdGenerator) {
     return (headers: HeadersType) => {
