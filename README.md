@@ -117,12 +117,12 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 
 ## To dos
 
-
 - monorepo: breakout zipkin & httpclients to module (probably have in both core and separate module 'http4js-client')
 - update example app
 - chain withHeaders calls on an http client
 - client side httpclient (from stu)
-- streaming  
+- streaming
+- add convenience responses like ok() and badRequest()
 - generalise routing to an interface, use totallylazy to implement new types of routing
 - reversible routing
   - what happens if names conflict?

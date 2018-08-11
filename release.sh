@@ -3,7 +3,7 @@ set -x
 
 yarn build && \
 yarn test && \
-rm -rf dist && \
+rm -r dist && \
 cp -r src/main dist && \
 cp package.json tsconfig.json README.md dist && \
 pushd dist && \
