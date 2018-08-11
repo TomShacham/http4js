@@ -828,7 +828,7 @@ sshpk@^1.7.0:
     jsbn "~0.1.0"
     tweetnacl "~0.14.0"
 
-ssl-root-cas@^1.2.5:
+ssl-root-cas@1.2.5:
   version "1.2.5"
   resolved "https://registry.yarnpkg.com/ssl-root-cas/-/ssl-root-cas-1.2.5.tgz#8bf3fdfa96158d62dfad5e9089407e2982b8cf35"
   dependencies:
@@ -910,9 +910,9 @@ type-is@^1.5.5, type-is@^1.6.14, type-is@~1.6.15, type-is@~1.6.16:
     media-typer "0.3.0"
     mime-types "~2.1.18"
 
-typescript@2.9.2:
-  version "2.9.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.9.2.tgz#1cbf61d05d6b96269244eb6a3bce4bd914e0f00c"
+typescript@3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.0.1.tgz#43738f29585d3a87575520a4b93ab6026ef11fdb"
 
 unpipe@1.0.0, unpipe@~1.0.0:
   version "1.0.0"

@@ -117,11 +117,9 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 
 ## To dos
 
+
+- monorepo: breakout zipkin & httpclients to module (probably have in both core and separate module 'http4js-client')
 - update example app
-- zipkin tracing
-  - support sampled and debug
-  - pull out into a module
-- breakout httpclients to module (probably have in both core and separate module 'http4js-client')
 - chain withHeaders calls on an http client
 - client side httpclient (from stu)
 - streaming  
