@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "test": "mocha --require ts-node/register 'src/test/**/*.ts'",
+    "test": "tsc; mocha --require ts-node/register 'src/test/**/*.ts'",
     "start": "ts-node src/main/index.ts"
   },
   "repository": {

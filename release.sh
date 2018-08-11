@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -x
 
-./clean.sh && \
 yarn build && \
 yarn test-all && \
 rm -rf dist && \
