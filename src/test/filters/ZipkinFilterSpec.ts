@@ -6,10 +6,11 @@ import {Req, ReqOf} from '../../main/core/Req';
 import {NativeHttpServer} from '../../main/servers/NativeHttpServer';
 import {HttpClient} from '../../main/client/HttpClient';
 import {Client} from '../../main/client/Client';
-import {DeterministicIdGenerator, ZipkinHeaders} from '../../main/zipkin/Zipkin';
+import {ZipkinHeaders, ZipkinCollector, ZipkinSpan} from '../../main/zipkin/Zipkin';
 import {isNullOrUndefined} from 'util';
 import {HttpHandler, timingFilterBuilder} from '../../main';
 import {FakeClock} from "../clock/FakeClock";
+import {DeterministicIdGenerator} from "./DeterministicIdGenerator";
 
 const upstream1BaseUrl = 'http://localhost:3032';
 const upstream2BaseUrl = 'http://localhost:3033';
@@ -70,43 +71,6 @@ const moreUpstream = get('/', async() => ResOf())
     .withFilter(deterministicTimingFilter)
     .withFilter(loggingFilter)
     .asServer(new NativeHttpServer(3034));
-
-interface ZipkinSpan {
-    parentId: number | undefined,
-    spanId: number,
-    traceId: number,
-    start: number,
-    end: number,
-    timeTaken: number,
-    children: ZipkinSpan[],
-}
-
-
-function ZipkinCollector(logLines: string[]): ZipkinSpan {
-    const zipkinSpans = logLines.reduce((acc: ZipkinSpan[], next: string) => {
-        const logLineZipkinParts = next.split(';');
-        const parentId = logLineZipkinParts[0];
-        const zipkinSpan = {
-            parentId: parentId ? +parentId : undefined,
-            spanId: +logLineZipkinParts[1],
-            traceId: +logLineZipkinParts[2],
-            start: +logLineZipkinParts[3],
-            end: +logLineZipkinParts[4],
-            timeTaken: +logLineZipkinParts[4] - +logLineZipkinParts[3],
-            children: [],
-        };
-        acc.push(zipkinSpan);
-        return acc;
-    }, []);
-    const topLevelRequest = zipkinSpans.find(it => !it.parentId);
-    return treeStructure(topLevelRequest, zipkinSpans);
-
-    function treeStructure(root: ZipkinSpan, spans: ZipkinSpan[]): ZipkinSpan {
-        const children = spans.filter(it => it.parentId === root.spanId);
-        root.children = children.map(child => treeStructure(child, spans));
-        return root;
-    }
-}
 
 describe('Zipkin', () => {
 
@@ -185,7 +149,21 @@ describe('Zipkin', () => {
             timeTaken: 7,
             children: [upstreamA, upstreamB]
         };
-        deepEqual(ZipkinCollector(logLines), topLevel)
+        deepEqual(ZipkinCollector(logLines, extractor), topLevel)
     });
 
 });
+
+function extractor(logLine: string): ZipkinSpan {
+    const logLineZipkinParts = logLine.split(';');
+    const parentId = logLineZipkinParts[0];
+    return {
+        parentId: parentId ? +parentId : undefined,
+        spanId: +logLineZipkinParts[1],
+        traceId: +logLineZipkinParts[2],
+        start: +logLineZipkinParts[3],
+        end: +logLineZipkinParts[4],
+        timeTaken: +logLineZipkinParts[4] - +logLineZipkinParts[3],
+        children: [],
+    };
+}

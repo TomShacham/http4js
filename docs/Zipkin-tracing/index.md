@@ -58,7 +58,63 @@ bit dirty and difficult to achieve in Nodejs.
 
 If your apps log zipkin headers to a central place, we can look back and build a trace by grouping logs together
 based on `traceId` and using `parentId` to create a tree structure representing the entire trace dependency graph.
+
+We provide a basic collection function should you want to use it. Given an array of strings and an `extractor`, a function
+from a `string` to a `ZipkinSpan`, then it spits out a `ZipkinSpan` whose children and children's children and so on shall
+be in the correct tree structure representing the requests and responses of the trace.
+
+```typescript
+function ZipkinCollector(logLines: string[], extractor: (logLine: string) => ZipkinSpan): ZipkinSpan {
+    const zipkinSpans = logLines.reduce((spans: ZipkinSpan[], line: string) => {
+        const zipkinSpan = extractor(line);
+        spans.push(zipkinSpan);
+        return spans;
+    }, []);
+    const topLevelRequest = zipkinSpans.find(it => !it.parentId);
+    return treeStructure(topLevelRequest!, zipkinSpans);
+
+    function treeStructure(root: ZipkinSpan, spans: ZipkinSpan[]): ZipkinSpan {
+        const children = spans.filter(it => it.parentId === root.spanId);
+        root.children = children.map(child => treeStructure(child, spans));
+        return root;
+    }
+}
+```
+
+It assumes the `logLines` are for one `trace`, so to reduce over many traces you will need to write something like this:
+
+```typescript
+function reduceLogsToTraces(allLogs: string[], extractTraceId: (line: string) => string) {
+    const groupedByTraceId = allLogs.reduce((traces, line) => {
+        if (traces[extractTraceId(line)] !== undefined) {
+            traces[extractTraceId(line)] = traces[extractTraceId(line)].push(line)
+        } else {
+            traces[extractTraceId(line)] = [line]
+        }
+    }, {});
+    Object.keys(groupedByTraceId).reduce((zipkinTraces, traceId) => {
+        zipkinTraces.push(ZipkinCollector(groupedByTraceId[traceId], extractor));
+        return zipkinTraces;
+    }, []);
+        
+    function extractor(logLine: string): ZipkinSpan {
+        const logLineZipkinParts = logLine.split(';');
+        const parentId = logLineZipkinParts[0];
+        return {
+            parentId: parentId ? +parentId : undefined,
+            spanId: +logLineZipkinParts[1],
+            traceId: +logLineZipkinParts[2],
+            start: +logLineZipkinParts[3],
+            end: +logLineZipkinParts[4],
+            timeTaken: +logLineZipkinParts[4] - +logLineZipkinParts[3],
+            children: [],
+        };
+    }
+}
+```
   
+## Example
+
 Below is an example of one server with a route that makes a client call to another server. Our client sets the correct
 zipkin headers by looking at the incoming req `const client = Client.zipkinClientFrom(req);`.
 

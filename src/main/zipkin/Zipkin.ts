@@ -1,5 +1,14 @@
 import * as crypto from 'crypto';
-import {HeadersType} from "../core/HttpMessage";
+
+export interface ZipkinSpan {
+    parentId: number | undefined,
+    spanId: number,
+    traceId: number,
+    start: number,
+    end: number,
+    timeTaken: number,
+    children: ZipkinSpan[],
+}
 
 export enum ZipkinHeaders {
     PARENT_ID = 'x-b3-parentspanid',
@@ -13,32 +22,24 @@ export interface IdGenerator {
     newId(size: number): string
 }
 
-export class DeterministicIdGenerator implements IdGenerator {
-    private counter: number = 0;
-
-    newId(): string {
-        const counter = this.counter;
-        this.counter += 1;
-        return counter.toString();
-    }
-}
-
 export class ZipkinIdGenerator implements IdGenerator {
     newId(size: number): string {
         return crypto.randomBytes(size).toString('hex');
     }
 }
 
-export function zipkinHeadersBuilder(generator: IdGenerator) {
-    return (headers: HeadersType) => {
-        const zipkinHeaders: HeadersType = {};
-        if (headers[ZipkinHeaders.PARENT_ID]) zipkinHeaders[ZipkinHeaders.PARENT_ID] = headers[ZipkinHeaders.PARENT_ID];
-        if (headers[ZipkinHeaders.SPAN_ID]) zipkinHeaders[ZipkinHeaders.SPAN_ID] = headers[ZipkinHeaders.SPAN_ID];
-        if (headers[ZipkinHeaders.TRACE_ID]) zipkinHeaders[ZipkinHeaders.TRACE_ID] = headers[ZipkinHeaders.TRACE_ID];
-        if (headers[ZipkinHeaders.SAMPLED]) zipkinHeaders[ZipkinHeaders.SAMPLED] = headers[ZipkinHeaders.SAMPLED];
-        if (headers[ZipkinHeaders.DEBUG]) zipkinHeaders[ZipkinHeaders.DEBUG] = headers[ZipkinHeaders.DEBUG];
-        return zipkinHeaders;
+export function ZipkinCollector(logLines: string[], extractor: (logLine: string) => ZipkinSpan): ZipkinSpan {
+    const zipkinSpans = logLines.reduce((spans: ZipkinSpan[], line: string) => {
+        const zipkinSpan = extractor(line);
+        spans.push(zipkinSpan);
+        return spans;
+    }, []);
+    const topLevelRequest = zipkinSpans.find(it => !it.parentId);
+    return treeStructure(topLevelRequest!, zipkinSpans);
+
+    function treeStructure(root: ZipkinSpan, spans: ZipkinSpan[]): ZipkinSpan {
+        const children = spans.filter(it => it.parentId === root.spanId);
+        root.children = children.map(child => treeStructure(child, spans));
+        return root;
     }
 }
-
-export const zipkinHeadersFrom = zipkinHeadersBuilder(new ZipkinIdGenerator());
