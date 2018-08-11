@@ -7,6 +7,7 @@
   "scripts": {
     "build": "tsc",
     "test": "tsc; mocha --require ts-node/register 'src/test/**/*.ts'",
+    "test-ssl": "tsc; mocha --require ts-node/register 'src/ssl/**/*.ts'",
     "start": "ts-node src/main/index.ts"
   },
   "repository": {
