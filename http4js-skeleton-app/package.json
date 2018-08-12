@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "http4js": "4.0.0",
+    "http4js": "3.2.0",
     "typescript": "3.0.1"
   },
   "devDependencies": {
