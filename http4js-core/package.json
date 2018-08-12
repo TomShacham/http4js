@@ -1,0 +1,30 @@
+{
+  "name": "http4js-clients",
+  "version": "0.0.1",
+  "description": "A lightweight HTTP toolkit",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "tsc; mocha --require ts-node/register 'test/**/*.ts'",
+    "start": "ts-node src/main/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tomshacham/http4js.git"
+  },
+  "author": "Tom Shacham",
+  "license": "ISC",
+  "keywords": [
+    "http",
+    "Server as a Function",
+    "client"
+  ],
+  "devDependencies": {
+    "@types/mocha": "2.2.47",
+    "@types/node": "9.4.0",
+    "mocha": "5.0.0",
+    "ts-node": "4.1.0",
+    "typescript": "3.0.1"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "http4js",
+  "version": "3.2.1",
+  "description": "A lightweight HTTP toolkit",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "mocha --require ts-node/register 'test/**/*.ts'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tomshacham/http4js.git"
+  },
+  "author": "Tom Shacham",
+  "license": "ISC",
+  "keywords": [
+    "http",
+    "Server as a Function"
+  ],
+  "devDependencies": {
+    "@types/koa": "2.0.46",
+    "@types/mocha": "2.2.47",
+    "@types/node": "9.4.0",
+    "koa": "2.5.0",
+    "koa-bodyparser": "4.2.0",
+    "mocha": "5.2.0",
+    "ts-node": "7.0.1",
+    "typescript": "3.0.1"
+  }
+}

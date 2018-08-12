@@ -1,10 +1,10 @@
+import * as Koa from "koa";
 import {get} from "../../http4js-core/src/core/Routing";
-import {HttpClient} from "../../main/client/HttpClient";
 import {Req} from "../../http4js-core/src/core/Req";
 import {deepEqual, equal} from "assert";
 import {KoaServer} from "../src/KoaServer";
-import * as Koa from "koa";
-import {ResOf} from "../../main";
+import {ResOf} from "../../http4js-core/src/core/Res";
+import {HttpClient} from "../../http4js-clients/src/HttpClient";
 
 const bodyParser = require('koa-bodyparser');
 const koaApp = new Koa();

@@ -1,7 +1,0 @@
-{
-  "files": [],
-  "references": [
-    { "path": "http4js-clients" },
-    { "path": "http4js-core" }
-  ]
-}
