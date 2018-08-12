@@ -1,8 +1,7 @@
 .idea
 *.js
-node_modules
-dist
-package-lock.json
 *.d.ts
+node_modules
 *.pem
 *.srl
+*.actual

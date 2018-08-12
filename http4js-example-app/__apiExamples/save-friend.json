@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "POST",
+    "path": "/friends"
+  },
+  "response": {
+    "status": 302,
+    "headers": {
+      "location": "/friends"
+    },
+    "body": ""
+  }
+}

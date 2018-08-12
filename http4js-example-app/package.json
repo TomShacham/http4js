@@ -1,0 +1,23 @@
+{
+  "name": "http4js-eg",
+  "version": "0.0.1",
+  "scripts": {
+    "test": "mocha --require ts-node/register --watch-extensions ts,tsx 'src/test/**/*.{ts,tsx}'",
+    "build": "tsc",
+    "prepublishOnly": "tsc -p ./ --outDir dist/",
+    "start": "ts-node index.ts"
+  },
+  "dependencies": {
+    "handlebars": "4.0.11",
+    "http4js": "4.0.0",
+    "ts-node": "7.0.1",
+    "pg": "7.4.1"
+  },
+  "devDependencies": {
+    "typescript": "3.0.1",
+    "@types/mocha": "2.2.47",
+    "@types/handlebars": "4.0.36",
+    "@types/node": "9.4.6",
+    "mocha": "5.2.0"
+  }
+}
