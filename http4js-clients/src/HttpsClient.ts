@@ -1,6 +1,8 @@
 import * as https from "https";
-import {HeadersType, Req, Res, ResOf} from "../";
-import * as fs from "fs";
+import {Req} from "../../http4js-core/src/core/Req";
+import {Res} from "../../http4js-core/src/core/Res";
+import {ResOf} from "../../http4js-core/src/core/Res";
+import {HeadersType} from "../../http4js-core/src/core/HttpMessage";
 
 export async function HttpsClient(req: Req): Promise<Res> {
     const options = req.uri.asNativeNodeRequest;
