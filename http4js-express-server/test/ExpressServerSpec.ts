@@ -1,10 +1,10 @@
 import * as express from "express";
 import {get} from "../../http4js-core/src/core/Routing";
-import {ExpressServer} from "../../../http4js-core/src/servers/ExpressServer";
-import {HttpClient} from "../../main/client/HttpClient";
 import {Req} from "../../http4js-core/src/core/Req";
 import {deepEqual, equal} from "assert";
-import {ResOf} from "../../main";
+import {ResOf} from "../../http4js-core/src/core/Res";
+import {HttpClient} from "../../http4js-clients/src/HttpClient";
+import {ExpressServer} from "../src/ExpressServer";
 
 const bodyParser = require('body-parser');
 
@@ -76,7 +76,7 @@ describe("express", async() => {
     });
 
     it("sets multiple headers of same name", async() => {
-        const request = new Req("GET", baseUrl, null, {tom: ["smells", "smells more"]});
+        const request = new Req("GET", baseUrl, '', {tom: ["smells", "smells more"]});
         const response = await HttpClient(request);
         deepEqual(response.header("tom"), "smells, smells more")
     });

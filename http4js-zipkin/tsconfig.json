@@ -12,5 +12,9 @@
   ],
   "exclude": [
     "node_modules"
+  ],
+  "references": [
+    {"path": "../http4js-core"},
+    {"path": "../http4js-clients"}
   ]
 }

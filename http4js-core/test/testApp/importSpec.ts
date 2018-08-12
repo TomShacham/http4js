@@ -3,7 +3,7 @@ import {get} from "../../src/index";
 import {ReqOf} from "../../src/index";
 import {equal} from "assert";
 import {NativeHttpServer} from "../../src/servers/NativeHttpServer";
-import {HttpClient} from "../../main/client/HttpClient";
+import {HttpClient} from "../../../http4js-clients/src/HttpClient";
 
 describe('requiring http4js from index export file', () => {
     const port = 4001;
@@ -16,7 +16,7 @@ describe('requiring http4js from index export file', () => {
     });
 
     it('serve a request over the wire', async () => {
-        const res = await server.serveE2E(ReqOf('GET', '/'));
+        const res = await server.serve(ReqOf('GET', 'http://localhost:4001/'));
         equal(res.bodyString(), 'ok');
     });
 

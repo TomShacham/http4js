@@ -2,14 +2,14 @@ import * as fs from "fs";
 import * as https from 'https';
 import {Res} from "../core/Res";
 import {Http4jsServer} from "./Server";
-import {Routing} from "./";
 import {Form, HeadersType} from "../core/HttpMessage";
 import {Req} from "../core/Req";
 import {HeaderValues} from "../core/Headers";
+import {Routing} from "../core/Routing";
 
 require('ssl-root-cas')
     .inject()
-    .addFile('src/ssl/my-root-ca.cert.pem');
+    .addFile('ssl/my-root-ca.cert.pem');
 
 type Certs = { key: Buffer; cert: Buffer; ca: Buffer };
 
@@ -21,12 +21,11 @@ export class NativeHttpsServer implements Http4jsServer {
     validHostnameRegex: RegExp = new RegExp('^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*$')
 
     constructor(port: number, options: Certs | undefined = undefined) {
-        const certs = {
-            key: fs.readFileSync('src/ssl/key.pem'),
-            cert: fs.readFileSync('src/ssl/fullchain.pem'),
-            ca: fs.readFileSync('src/ssl/my-root-ca.cert.pem'),
+        if (!options) this.options = {
+            key: fs.readFileSync('ssl/key.pem'),
+            cert: fs.readFileSync('ssl/fullchain.pem'),
+            ca: fs.readFileSync('ssl/my-root-ca.cert.pem'),
         };
-        this.options = options || certs;
         this.port = port;
         this.server = https.createServer(this.options);
     }

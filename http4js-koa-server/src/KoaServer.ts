@@ -2,6 +2,7 @@ import {Routing} from "../../http4js-core/src/core/Routing";
 import {Res} from "../../http4js-core/src/core/Res";
 import {Http4jsServer} from "../../http4js-core/src/servers/Server";
 import {HeadersType} from "../../http4js-core/src/core/HttpMessage";
+import {ReqOf} from "../../http4js-core/src/core/Req";
 
 export class KoaServer implements Http4jsServer {
     server: any;

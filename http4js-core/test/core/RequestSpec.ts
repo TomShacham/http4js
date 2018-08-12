@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 import {deepEqual, equal, notEqual} from 'assert';
 import {Headers, HeaderValues} from '../../src/core/Headers';
-import {ReqOf} from '../../main';
+import {ReqOf} from "../../src/core/Req";
 
 describe('in mem request', () => {
 

@@ -1,9 +1,10 @@
-import {ResOf} from '../.';
-import {get} from '../.';
 import {NativeHttpServer} from '../../http4js-core/src/servers/NativeHttpServer';
-import {Client} from '../../main/client/Client';
-import {Req, ReqOf} from '../.';
 import {equal} from 'assert';
+import {get} from "../../http4js-core/src/core/Routing";
+import {Req} from "../../http4js-core/src/core/Req";
+import {ResOf} from "../../http4js-core/src/core/Res";
+import {Client} from "../src/Client";
+import {ReqOf} from "../../http4js-core/src/core/Req";
 
 describe('client', () => {
     const server = get('/', async(req: Req) => ResOf(200, JSON.stringify(req.headers)))

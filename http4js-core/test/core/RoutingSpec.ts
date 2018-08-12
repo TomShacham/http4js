@@ -223,7 +223,7 @@ describe('routing', async () => {
     });
 
     it('Post redirect.', async () => {
-        const friends = [];
+        const friends: any = [];
         const routes = get('/', async () => ResOf(200, 'root'))
             .withHandler('GET', '/family', async () => ResOf(200, friends.join(', ')))
             .withHandler('GET', '/family/{name}', async () => ResOf(200, 'fuzzy'))
@@ -324,14 +324,8 @@ describe('routing', async () => {
         equal(response.bodyString(), 'Cool beans.');
     });
 
-    it('serves a request e2e is you have a server attached', async () => {
-        const response = await get('/', async() => ResOf()).asServer(new NativeHttpServer(3004))
-            .serveE2E(ReqOf('GET', '/'));
-        equal(response.status, 200);
-    });
-
     it('reverses routing: get handler by name', async() => {
-        const handler = get('/path', async() => ResOf(200, 'OK path'), {'Cache-control': 'private'}, 'root')
+        const handler: any = get('/path', async() => ResOf(200, 'OK path'), {'Cache-control': 'private'}, 'root')
             .handlerByName('root');
         equal(handler.path, '/path');
         equal(handler.method, 'GET');
@@ -340,7 +334,7 @@ describe('routing', async () => {
     });
 
     it('reverses routing: get handler by path', async() => {
-        const handler = get('/path', async() => ResOf(200, 'OK path'), {'Cache-control': 'private'})
+        const handler: any = get('/path', async() => ResOf(200, 'OK path'), {'Cache-control': 'private'})
             .handlerByPath('/path');
         equal(handler.path, '/path');
         equal(handler.method, 'GET');

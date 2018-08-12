@@ -4,13 +4,14 @@ import {deepEqual, equal} from 'assert';
 import {ResOf} from '../../http4js-core/src/core/Res';
 import {Req, ReqOf} from '../../http4js-core/src/core/Req';
 import {NativeHttpServer} from '../../http4js-core/src/servers/NativeHttpServer';
-import {HttpClient} from '../../main/client/HttpClient';
-import {Client} from '../../main/client/Client';
 import {ZipkinHeaders, ZipkinCollector, ZipkinSpan} from '../src/Zipkin';
 import {isNullOrUndefined} from 'util';
-import {HttpHandler, timingFilterBuilder} from '../../main';
 import {FakeClock} from "../../http4js-core/test/clock/FakeClock";
 import {DeterministicIdGenerator} from "../../http4js-core/test/filters/DeterministicIdGenerator";
+import {HttpHandler} from "../../http4js-core/src/core/HttpMessage";
+import {timingFilterBuilder} from "../../http4js-core/src/core/Filters";
+import {Client} from "../../http4js-clients/src/Client";
+import {HttpClient} from "../../http4js-clients/src/HttpClient";
 
 const upstream1BaseUrl = 'http://localhost:3032';
 const upstream2BaseUrl = 'http://localhost:3033';

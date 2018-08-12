@@ -11,7 +11,7 @@ describe("Built in filters", () => {
         const server = get('/', async(req: Req) => ResOf(200, 'OK'))
             .withFilter(Filters.UPGRADE_TO_HTTPS)
             .asServer(new NativeHttpServer(3030));
-        const response = await server.serveE2E(ReqOf('GET', '/'));
+        const response = await server.serve(ReqOf('GET', 'http://localhost:3030/'));
 
         equal(response.header('Location'), "https://localhost:3030/");
     });
@@ -35,13 +35,13 @@ describe("Built in filters", () => {
     });
 
     it("debugging filter", async() => {
-        function memoryLogger() {
-            this.messages = [];
-            this.log = (msg) => {
+        class MemoryLogger {
+            messages: string[] = [];
+            public log(msg: string) {
                 this.messages.push(msg);
             }
         }
-        const logger = new memoryLogger();
+        const logger = new MemoryLogger();
         const response = await routes("GET", "/", async () => ResOf(200, "OK"))
             .withFilter(debugFilterBuilder(logger))
             .serve(ReqOf("GET", "/"));

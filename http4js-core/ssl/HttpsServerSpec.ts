@@ -1,7 +1,7 @@
-import {HttpsClient} from "../main/client/HttpsClient";
-import {get, ReqOf, ResOf} from "../src/index";
 import {equal} from "assert";
+import {get, ReqOf, ResOf} from "../src/index";
 import {NativeHttpsServer} from "../src/servers/NativeHttpsServer";
+import {HttpsClient} from "../../http4js-clients/src/HttpsClient";
 
 describe('https server', () => {
 

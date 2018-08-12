@@ -1,9 +1,9 @@
 import {get} from "../../src/core/Routing";
-import {Req} from "../../src/core/Req";
+import {Req, ReqOf} from "../../src/core/Req";
 import {deepEqual, equal} from "assert";
-import {HttpClient} from "../../main/client/HttpClient";
 import {NativeHttpServer} from "../../src/servers/NativeHttpServer";
-import {HeaderValues, ReqOf, ResOf} from "../../main";
+import {ResOf} from "../../src/core/Res";
+import {HttpClient} from "../../../http4js-clients/src/HttpClient";
 
 describe("native node over the wire", () => {
 
@@ -56,7 +56,7 @@ describe("native node over the wire", () => {
     });
 
     it("sets multiple headers of same name", async() => {
-        const request = ReqOf("GET", baseUrl, null, {tom: ["smells", "smells more"]});
+        const request = ReqOf("GET", baseUrl, '', {tom: ["smells", "smells more"]});
         const response = await HttpClient(request);
         deepEqual(response.header("tom"), "smells, smells more")
     });

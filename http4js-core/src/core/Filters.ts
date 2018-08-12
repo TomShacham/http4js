@@ -1,7 +1,7 @@
+import {ZipkinIdGenerator, ZipkinHeaders, IdGenerator} from "../../../http4js-zipkin/src/Zipkin";
 import {Req} from "./Req";
 import {HttpHandler, HeadersType} from "./HttpMessage";
 import {Redirect, Res} from "./Res";
-import {ZipkinIdGenerator, IdGenerator, ZipkinHeaders} from "../../../http4js-zipkin/src/Zipkin";
 import {Clock} from "./Clock";
 
 export type Filter = (HttpHandler: HttpHandler) => HttpHandler
@@ -32,6 +32,31 @@ export class Filters {
 
 }
 
+export function timingFilterBuilder(clock: Clock): Filter {
+    return (handler: HttpHandler) => async (req: Req) => {
+        const start = clock.now();
+        const response = await handler(req);
+        const end = clock.now();
+        const total = end - start;
+        return response
+            .withHeader("Total-Time", total.toString())
+            .withHeader("Start-Time", start.toString())
+            .withHeader("End-Time", end.toString());
+    };
+
+}
+
+const defaultMessageFrom = (req: Req, res: Res) => (`${req.method} to ${req.uri.asUriString()} gave status ${res.status}` +
+    ` with headers ${JSON.stringify(res.headers)}`);
+
+export function debugFilterBuilder(out: any, messageFrom: (req: Req, res: Res)=>string = (req, res)=> defaultMessageFrom(req, res)): Filter {
+    return (handler: HttpHandler) => async (req: Req) => {
+        const res = await handler(req);
+        out.log(messageFrom(req, res));
+        return res;
+    }
+}
+
 export function zipkinFilterBuilder(generator: IdGenerator): Filter {
     return (handler: HttpHandler) => async (req: Req) => {
         const debug = req.header(ZipkinHeaders.DEBUG);
@@ -59,30 +84,5 @@ export function zipkinFilterBuilder(generator: IdGenerator): Filter {
                 return finalResponse
             }
         } , response)
-    }
-}
-
-export function timingFilterBuilder(clock: Clock): Filter {
-    return (handler: HttpHandler) => async (req: Req) => {
-        const start = clock.now();
-        const response = await handler(req);
-        const end = clock.now();
-        const total = end - start;
-        return response
-            .withHeader("Total-Time", total.toString())
-            .withHeader("Start-Time", start.toString())
-            .withHeader("End-Time", end.toString());
-    };
-
-}
-
-const defaultMessageFrom = (req: Req, res: Res) => (`${req.method} to ${req.uri.asUriString()} gave status ${res.status}` +
-    ` with headers ${JSON.stringify(res.headers)}`);
-
-export function debugFilterBuilder(out: any, messageFrom: (req: Req, res: Res)=>string = (req, res)=> defaultMessageFrom(req, res)): Filter {
-    return (handler: HttpHandler) => async (req: Req) => {
-        const res = await handler(req);
-        out.log(messageFrom(req, res));
-        return res;
     }
 }

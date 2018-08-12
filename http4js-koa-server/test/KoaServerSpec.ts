@@ -70,7 +70,7 @@ describe("koa", () => {
     });
 
     it("sets multiple headers of same name", async() => {
-        const request = new Req("GET", baseUrl, null, {tom: ["smells", "smells more"]});
+        const request = new Req("GET", baseUrl, '', {tom: ["smells", "smells more"]});
         const response = await HttpClient(request);
         deepEqual(response.header("tom"), "smells, smells more")
     });

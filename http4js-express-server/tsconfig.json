@@ -8,10 +8,16 @@
     "composite": true
   },
   "include": [
-    "src/main/**/*"
+    "src/**/*"
   ],
   "exclude": [
     "node_modules",
     "dist"
+  ],
+  "files": [
+    "../http4js-zipkin/src/zipkin.ts"
+  ],
+  "references": [
+    {"path": "../http4js-core"}
   ]
 }

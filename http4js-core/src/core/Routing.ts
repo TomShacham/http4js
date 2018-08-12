@@ -6,7 +6,6 @@ import {Filter} from "./Filters";
 import {Http4jsServer} from "../servers/Server";
 import {NativeHttpServer} from "../servers/NativeHttpServer";
 import {ResOf} from "./Res";
-import {HttpClient} from "../client/HttpClient";
 
 export type MountedHttpHandler = { path: string, method: string, headers: HeadersType, handler: HttpHandler, name: string }
 export type DescribingHttpHandler = { path: string, method: string, headers: HeadersType, name: string }
@@ -64,14 +63,6 @@ export class Routing {
 
     stop(): void {
         this.server.stop();
-    }
-
-    async serveE2E(request: Req): Promise<Res> {
-        if (!this.server) return ResOf(400, 'Routing does not have a server');
-        await this.start();
-        const response = await HttpClient(request.withUri(`http://localhost:${this.server.port}${request.uri.path()}`));
-        await this.stop();
-        return response;
     }
 
     serve(req: Req): Promise<Res> {

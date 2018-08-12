@@ -1,8 +1,8 @@
 import {Routing} from "../../http4js-core/src/core/Routing";
 import {Res} from "../../http4js-core/src/core/Res";
 import {Http4jsServer} from "../../http4js-core/src/servers/Server";
-import {KeyValues, HeadersType} from "../../http4js-core/src/core/HttpMessage";
-import {ReqOf} from "../";
+import {HeadersType} from "../../http4js-core/src/core/HttpMessage";
+import {ReqOf} from "../../http4js-core/src/core/Req";
 
 export class ExpressServer implements Http4jsServer {
     server: any;
