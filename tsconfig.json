@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["es2015"],
+    "declaration": true,
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "composite": true
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "references": [
+    { "path": "../http4js-core" },
+    { "path": "../http4js-clients" },
+    { "path": "../http4js-express-server" },
+    { "path": "../http4js-koa-server" },
+    { "path": "../http4js-zipkin" }
+  ]
+}
