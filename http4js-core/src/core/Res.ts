@@ -59,7 +59,7 @@ export class Res implements HttpMessage {
     }
 
     bodyString(): string {
-        return decodeURIComponent(this.body);
+        return this.body;
     }
 
     private static clone(a: {}) {
