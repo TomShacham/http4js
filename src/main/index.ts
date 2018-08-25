@@ -13,3 +13,5 @@ export * from "./servers/ExpressServer";
 export * from "./servers/KoaServer";
 
 export * from "./client/HttpClient";
+
+export * from "./zipkin/Zipkin";
