@@ -6,6 +6,8 @@
 
 # Release notes
 
+### 3.2.2: bug fix: decodeURIComponent no longer called on response body.
+
 ### 3.2.0: Filters only apply per routing
 
 combining routes using `withRoutes` no longer combines filters from each routing. 

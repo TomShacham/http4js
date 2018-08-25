@@ -8,6 +8,8 @@ A lightweight HTTP framework for Typescript / JS, with zero dependencies
 
 [Full notes here](https://tomshacham.github.io/http4js/Release-notes/#release-notes)
 
+### 3.2.2: bug fix: decodeURIComponent no longer called on response body.
+
 ### 3.2.0: Filters only apply per routing
 
 combining routes using `withRoutes` no longer combines filters from each routing. 
