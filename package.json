@@ -23,6 +23,7 @@
   "devDependencies": {
     "@types/mocha": "2.2.47",
     "@types/node": "9.4.0",
+    "@types/node-fetch": "2.1.2",
     "body-parser": "1.18.2",
     "express": "4.16.3",
     "koa": "2.5.0",
@@ -31,5 +32,8 @@
     "ssl-root-cas": "1.2.5",
     "ts-node": "7.0.1",
     "typescript": "3.0.1"
+  },
+  "dependencies": {
+    "node-fetch": "2.2.0"
   }
 }

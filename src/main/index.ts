@@ -15,5 +15,6 @@ export * from "./servers/KoaServer";
 export * from "./client/HttpClient";
 export * from "./client/Client";
 export * from "./client/HttpsClient";
+export * from "./client/FetchClient";
 
 export * from "./zipkin/Zipkin";
