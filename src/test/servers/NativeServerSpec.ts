@@ -44,7 +44,7 @@ describe("native node over the wire", () => {
     });
 
     it("sets post form body", async() => {
-        const request = ReqOf("POST", `${baseUrl}/post-form-body`).withForm({name: ["tom%20shacham", "bosh", "losh"]});
+        const request = ReqOf("POST", `${baseUrl}/post-form-body`).withForm({name: ["tom shacham", "bosh", "losh"]});
         const response = await HttpClient(request);
         equal(response.bodyString(), JSON.stringify({name: ["tom shacham", "bosh", "losh"]}))
     });
