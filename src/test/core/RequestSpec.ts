@@ -113,7 +113,6 @@ describe('in mem request', () => {
         equal(
             ReqOf('GET', '/')
                 .withBody(BodyOf(readable))
-                .body
                 .bodyStream(),
             readable
         )

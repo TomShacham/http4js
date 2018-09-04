@@ -111,6 +111,10 @@ export class Req implements HttpMessage {
         return this.body.bodyString() || '';
     }
 
+    bodyStream(): Readable {
+        return this.body.bodyStream();
+    }
+
     bodyForm(): Form {
         const form: Form = {};
         if (this.bodyString() === '') {

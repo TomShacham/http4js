@@ -1,12 +1,12 @@
 {
   "name": "http4js",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "A lightweight HTTP toolkit",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "test": "mocha --require ts-node/register 'src/test/**/*.ts'",
+    "test": "tsc; mocha --require ts-node/register 'src/test/**/*.ts'",
     "test-ssl": "tsc; mocha --require ts-node/register 'src/ssl/**/*.ts'",
     "start": "ts-node src/main/index.ts"
   },

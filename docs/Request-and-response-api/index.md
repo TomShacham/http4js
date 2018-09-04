@@ -33,6 +33,12 @@ ReqOf("GET", "/")
 They are named `Req` and `Res` in this short-hand manner so that they don't 
 conflict with other objects named Request and Response. 
 
+## Streaming
+
+Incoming `Req`s are streamed (as is default in Node). We expose a handle on this
+stream by handing the function `bodyStream()`. Soon we will be able to pipe this
+ to a `Res`. 
+
 ## Immutability - why?
 
 Both `Req` and `Res` are immutable, so every method on them returns a new object. 
@@ -91,7 +97,7 @@ The full api is as follows:
 
 ```typescript
 
-class Request {
+class Req {
     withUri(uri: Uri | string): Req
     
     header(name: string): string 
@@ -108,9 +114,11 @@ class Request {
     
     withForm(form: object): Req 
     
-    bodyString(): string 
+    formField(name: string): string | string[]
     
-    formBodystring(): string 
+    bodyString(): string
+    
+    bodyForm(): {}
     
     withQuery(name: string, value: string): Req
     
@@ -119,7 +127,7 @@ class Request {
     query(name: string): string
 }
 
-class Response {
+class Res {
     header(name: string): string
 
     withHeader(name: string, value: string): Res 

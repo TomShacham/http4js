@@ -6,6 +6,12 @@
 
 # Release notes
 
+### 4.0.1: Handle on incoming `Req` stream
+
+As we provide this handle via `req.bodyStream()`, accessing the `form` on an 
+incoming `Req` is now done via `req.bodyForm()` in order to realise the stream. 
+`req.bodyString()` will also realise it and work as expected. 
+
 ### 4.0.0: ! Breaking change: drop support for Koa and Express backends
   
 In order to evolve the core library faster support for Express and Koa backends
