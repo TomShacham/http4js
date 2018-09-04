@@ -52,10 +52,7 @@ function wire(req: Req): Promise<Res> {
                 return resolve(new Res(res.statusCode, Buffer.concat(chunks).toString(), res.headers as HeadersType));
             });
         });
-        console.log('client');
-        const chunk2 = req.bodyString();
-        console.log(chunk2);
-        clientRequest.write(chunk2);
+        clientRequest.write(req.bodyString());
         clientRequest.end();
     });
 }

@@ -18,13 +18,7 @@ describe("native node over the wire", () => {
     })
         .withGet('/url', async(req: Req) => ResOf(200, req.uri.asUriString()))
         .withHandler("POST", "/post-body", async (req) => ResOf(200, req.bodyString()))
-        .withHandler("POST", "/post-form-body", async (req) => {
-            console.log('handler');
-            const value = req.bodyForm();
-            console.log('value');
-            console.log(value);
-            return ResOf(200, JSON.stringify(value));
-        })
+        .withHandler("POST", "/post-form-body", async (req) => ResOf(200, JSON.stringify(req.bodyForm())))
         .withHandler("GET", "/get", async () => ResOf(200, "Done a GET request init?"))
         .withHandler("POST", "/post", async () => ResOf(200, "Done a POST request init?"))
         .withHandler("PUT", "/put", async () => ResOf(200, "Done a PUT request init?"))
@@ -50,11 +44,8 @@ describe("native node over the wire", () => {
     });
 
     it("sets post form body", async() => {
-        console.log('request')
         const request = ReqOf("POST", `${baseUrl}/post-form-body`).withForm({name: ["tom shacham", "bosh", "losh"]});
-        console.log('client')
         const response = await HttpClient(request);
-        console.log(response)
         equal(response.bodyString(), JSON.stringify({name: ["tom shacham", "bosh", "losh"]}))
     });
 
