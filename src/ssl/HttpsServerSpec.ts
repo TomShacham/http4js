@@ -10,6 +10,9 @@ describe('https server', () => {
         .asServer(new NativeHttpsServer(8000));
 
     before(() => {
+        require('ssl-root-cas')
+            .inject()
+            .addFile('src/ssl/my-root-ca.cert.pem');
         httpsServer.start();
     });
 

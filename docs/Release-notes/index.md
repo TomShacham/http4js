@@ -6,6 +6,12 @@
 
 # Release notes
 
+### 4.0.2: Move ssl-root-cas from prod code to test
+
+We use `ssl-root-cas` to trust self-signed certs for testing `NativeHttpsServer`.
+This has been moved from prod code to the test code. Needs releasing because
+otherwise `ssl-root-cas` needs to be a dependency.
+
 ### 4.0.1: Handle on incoming `Req` stream
 
 As we provide this handle via `req.bodyStream()`, accessing the `form` on an 

@@ -7,10 +7,6 @@ import {Form, HeadersType} from "../core/HttpMessage";
 import {Req} from "../core/Req";
 import {HeaderValues} from "../core/Headers";
 
-require('ssl-root-cas')
-    .inject()
-    .addFile('src/ssl/my-root-ca.cert.pem');
-
 type Certs = { key: Buffer; cert: Buffer; ca: Buffer };
 
 export class NativeHttpsServer implements Http4jsServer {
