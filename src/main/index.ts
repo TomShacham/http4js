@@ -9,11 +9,11 @@ export * from "./core/Filters";
 export * from "./core/Status";
 
 export * from "./servers/Server";
-export * from "./servers/ExpressServer";
-export * from "./servers/KoaServer";
+export * from "./servers/NativeHttpServer";
+export * from "./servers/NativeHttpsServer";
 
-export * from "./client/HttpClient";
 export * from "./client/Client";
+export * from "./client/HttpClient";
 export * from "./client/HttpsClient";
 
 export * from "./zipkin/Zipkin";

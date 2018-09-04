@@ -6,6 +6,11 @@
 
 # Release notes
 
+### 4.0.0: ! Breaking change: drop support for Koa and Express backends
+  
+In order to evolve the core library faster support for Express and Koa backends
+has been dropped. Happy to add back later. 
+
 ### 3.2.2: bug fix: decodeURIComponent no longer called on response body.
 
 ### 3.2.0: Filters only apply per routing
