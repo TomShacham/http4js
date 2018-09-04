@@ -1,14 +1,16 @@
 import {Res} from "./Res";
 import {Req} from "./Req";
+import {Body} from "./Body";
 
 export type KeyValues = {[key:string]: string};
-export type Form = {[key:string]: string|string[]};
+export type FormField = string|string[];
+export type Form = {[key:string]: FormField};
 export type HeadersType = {[key:string]: string};
 
 
 export interface HttpMessage {
     headers: HeadersType;
-    body: string;
+    body: Body;
 
     header(name: string): string;
 

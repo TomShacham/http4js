@@ -5,6 +5,7 @@ import {HttpHandler} from '../../main/core/HttpMessage';
 import {Headers, HeaderValues} from '../../main/core/Headers';
 import {ResOf} from "../../main/core/Res";
 import {NativeHttpServer} from "../../main/servers/NativeHttpServer";
+import {MountedHttpHandler} from "../../main/core/Routing";
 
 describe('routing', async () => {
 
@@ -223,12 +224,12 @@ describe('routing', async () => {
     });
 
     it('Post redirect.', async () => {
-        const friends = [];
+        const friends: any = [];
         const routes = get('/', async () => ResOf(200, 'root'))
             .withHandler('GET', '/family', async () => ResOf(200, friends.join(', ')))
             .withHandler('GET', '/family/{name}', async () => ResOf(200, 'fuzzy'))
             .withHandler('POST', '/family', async (req) => {
-                friends.push(req.form['name']);
+                friends.push(req.formField('name'));
                 return ResOf(302).withHeader('Location', '/family');
             });
 
@@ -243,8 +244,8 @@ describe('routing', async () => {
     it('extract form params', async () => {
         const request = ReqOf('POST', '/family', 'p1=1&p2=tom&p3=bosh&p4=losh')
             .withHeader('Content-Type', 'application/x-www-form-urlencoded');
-        // console.log(request)
-        const response = await post('/family', async(req) => ResOf(200, JSON.stringify(req.form)))
+
+        const response = await post('/family', async(req) => ResOf(200, JSON.stringify(req.bodyForm())))
             .serve(request);
 
         deepStrictEqual(response.bodyString(), JSON.stringify({p1: '1', p2: 'tom', p3: 'bosh', p4: 'losh'}));
@@ -332,7 +333,7 @@ describe('routing', async () => {
 
     it('reverses routing: get handler by name', async() => {
         const handler = get('/path', async() => ResOf(200, 'OK path'), {'Cache-control': 'private'}, 'root')
-            .handlerByName('root');
+            .handlerByName('root') as MountedHttpHandler;
         equal(handler.path, '/path');
         equal(handler.method, 'GET');
         deepEqual(handler.headers, {'Cache-control': 'private'});
@@ -341,7 +342,7 @@ describe('routing', async () => {
 
     it('reverses routing: get handler by path', async() => {
         const handler = get('/path', async() => ResOf(200, 'OK path'), {'Cache-control': 'private'})
-            .handlerByPath('/path');
+            .handlerByPath('/path') as MountedHttpHandler;
         equal(handler.path, '/path');
         equal(handler.method, 'GET');
         deepEqual(handler.headers, {'Cache-control': 'private'});

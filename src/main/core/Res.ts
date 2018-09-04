@@ -1,13 +1,15 @@
 import {HttpMessage, HeadersType} from "./HttpMessage";
+import {Body} from "./Body";
+import {BodyOf} from "./Body";
 
 export class Res implements HttpMessage {
     headers: HeadersType = {};
-    body: string;
+    body: Body;
     status: number;
 
-    constructor(status: number = 200, body: string = "", headers: HeadersType = {}) {
+    constructor(status: number = 200, body: Body | string = '', headers: HeadersType = {}) {
         this.status = status;
-        this.body = body;
+        this.body = typeof body === 'string' ? BodyOf(body) : body;
         this.headers = headers;
     }
 
@@ -52,14 +54,14 @@ export class Res implements HttpMessage {
         return response;
     }
 
-    withBody(body: string): Res {
+    withBody(body: Body | string): Res {
         const response = Res.clone(this);
-        response.body = body;
+        response.body = typeof body === 'string' ? BodyOf(body) : body;
         return response;
     }
 
     bodyString(): string {
-        return this.body;
+        return this.body.bodyString() || '';
     }
 
     private static clone(a: {}) {
@@ -68,11 +70,12 @@ export class Res implements HttpMessage {
 
 }
 
-export function ResOf(status: number = 200, body: string = "", headers: HeadersType = {}): Res {
-    return new Res(status, body, headers);
+export function ResOf(status: number = 200, body: Body | string = '', headers: HeadersType = {}): Res {
+    const wrappedBody = typeof body === 'string' ? BodyOf(body) : body;
+    return new Res(status, wrappedBody, headers);
 }
 
 export function Redirect(status: number = 301, path: string, headers: HeadersType = {}): Res {
-    return new Res(status, "", headers).withHeader("Location", path);
+    return new Res(status, BodyOf(''), headers).withHeader("Location", path);
 }
 

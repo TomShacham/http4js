@@ -124,11 +124,14 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 
 ## To dos
 
+- streaming
+  - extract building up form when asked for form() or formField() 
+  - servers
+  - clients
 - withOptions
 - convenience response methods eg ok()
 - generalise routing to an interface, use totallylazy to implement new types of routing
 - chain withHeaders calls on an http client
-- streaming  
 - client side httpclient (from stu)
 - update example app
 - reversible routing

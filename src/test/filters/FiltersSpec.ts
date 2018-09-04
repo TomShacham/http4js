@@ -35,13 +35,13 @@ describe("Built in filters", () => {
     });
 
     it("debugging filter", async() => {
-        function memoryLogger() {
-            this.messages = [];
-            this.log = (msg) => {
+        class MemoryLogger {
+            messages: string[] = [];
+            log(msg: string ) {
                 this.messages.push(msg);
             }
         }
-        const logger = new memoryLogger();
+        const logger = new MemoryLogger();
         const response = await routes("GET", "/", async () => ResOf(200, "OK"))
             .withFilter(debugFilterBuilder(logger))
             .serve(ReqOf("GET", "/"));

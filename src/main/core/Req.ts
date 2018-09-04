@@ -4,21 +4,23 @@ import {Headers, HeaderValues} from "./Headers";
 import {HttpMessage, HeadersType} from "./HttpMessage";
 import {KeyValues} from "./HttpMessage";
 import {Form} from "./HttpMessage";
+import {Body, BodyOf} from "./Body";
+import {FormField} from "./HttpMessage";
+import {Readable} from "stream";
 
 export class Req implements HttpMessage {
 
     uri: Uri;
     method: string;
     headers: HeadersType = {};
-    body: string;
+    body: Body;
     queries: KeyValues = {};
     pathParams: KeyValues = {};
-    form: Form = {};
-    error?: {status: string, message: string};
+    private form: Form = {};
 
     constructor(method: string,
                 uri: Uri | string,
-                body: string = "",
+                body: Body | string = '',
                 headers = {}) {
         this.method = method.toUpperCase();
         if (typeof uri == "string") {
@@ -27,15 +29,9 @@ export class Req implements HttpMessage {
         } else {
             this.uri = uri;
         }
-        this.body = body;
+        this.body = typeof body === 'string' ? BodyOf(body) : body;
         this.headers = headers ? headers : {};
         this.queries = this.getQueryParams();
-        if (this.method == "POST") {
-            this.body.split("&").map(kv => {
-                const pair = kv.split("=");
-                if (pair.length > 1) this.form[pair[0]] = pair[1];
-            })
-        }
         return this;
     }
 
@@ -46,8 +42,7 @@ export class Req implements HttpMessage {
     }
 
     header(name: string): string {
-        const request = Req.clone(this);
-        return request.headers[name.toLowerCase()];
+        return this.headers[name.toLowerCase()];
     }
 
     withHeader(name: string, value: string): Req {
@@ -65,7 +60,7 @@ export class Req implements HttpMessage {
 
     replaceHeader(name: string, value: string): Req {
         const request = Req.clone(this);
-        request.headers[name] = value;
+        request.headers[name.toLowerCase()] = value;
         return request;
     }
 
@@ -75,48 +70,66 @@ export class Req implements HttpMessage {
         return request;
     }
 
-    withBody(body: string): Req {
+    withBody(body: Body | Readable | string): Req {
         const request = Req.clone(this);
-        request.body = body;
+        request.body = body instanceof Body ? body : BodyOf(body);
         return request;
     }
 
     withFormField(name: string, value: string | string[]): Req {
-        const request = Req.clone(this);
-        if (!request.header(Headers.CONTENT_TYPE)) request.withHeader(Headers.CONTENT_TYPE, HeaderValues.FORM);
-        if (request.form[name]) {
-            typeof (request.form[name]) == "string"
-                ? request.form[name] = [request.form[name], value]
-                : request.form[name].push(value);
+        const form = this.bodyForm();
+        if (form[name]) {
+            if (typeof form[name] === 'string') {
+                (typeof value === 'string')
+                    ? form[name] = [form[name] as string, value as string]
+                    : form[name] = [form[name] as string, ...value as string[]]
+            } else {
+                (typeof value === 'string')
+                    ? form[name] = [...form[name] as string[], value as string]
+                    : form[name] = [...form[name] as string[], ...value as string[]]
+            }
         } else {
-            request.form[name] = value;
+            form[name] = value;
         }
-        return request;
+        return this.withForm(form)
     }
 
-    withForm(form: {}): Req {
-        const request = Req.clone(this);
-        if (!request.header(Headers.CONTENT_TYPE)) request.withHeader(Headers.CONTENT_TYPE, HeaderValues.FORM);
-        request.form = form;
-        return request;
+    withForm(form: Form): Req {
+        const bodyForm = this.formBodystring(form);
+        const req = ReqOf(this.method, this.uri, bodyForm, this.headers);
+        if (!req.header(Headers.CONTENT_TYPE)) {
+            return req.withHeader(Headers.CONTENT_TYPE, HeaderValues.FORM);
+        }
+        return req;
+    }
+
+    formField(name: string): FormField | undefined {
+        return this.bodyForm()[name];
     }
 
     bodyString(): string {
-        if (Object.keys(this.form).length > 0) {
-            return this.formBodystring();
-        } else {
-            return this.body;
-        }
+        return this.body.bodyString() || '';
     }
 
-    formBodystring(): string {
-        let reduce: string[] = Object.keys(this.form).reduce((bodyParts: string[], field: string) => {
-            typeof (this.form[field]) === "object"
-                ? (this.form[field] as string[]).map(value => bodyParts.push(`${field}=${value}`))
-                : bodyParts.push(`${field}=${this.form[field]}`);
-            return bodyParts;
-        }, []);
-        return reduce.join("&")
+    bodyForm(): Form {
+        const form: Form = {};
+        if (this.bodyString() === '') {
+            return form;
+        } else {
+            this.bodyString().split("&").map(keyvalue => {
+                const strings = keyvalue.split("=");
+                const name = strings[0];
+                const value = strings[1];
+                if (form[name]) {
+                    typeof (form[name]) === "string"
+                        ? (form[name]) = [(form[name] as string), value]
+                        : (form[name] as string[]).push(value);
+                } else {
+                    form[name] = value;
+                }
+            });
+        }
+        return form;
     }
 
     withQuery(name: string, value: string): Req {
@@ -138,6 +151,16 @@ export class Req implements HttpMessage {
 
     query(name: string): string {
         return this.queries[name];
+    }
+
+    private formBodystring(form: Form): string {
+        let reduce: string[] = Object.keys(form).reduce((bodyParts: string[], field: string) => {
+            typeof (form[field]) === "object"
+                ? (form[field] as string[]).map(value => bodyParts.push(`${field}=${value}`))
+                : bodyParts.push(`${field}=${form[field]}`);
+            return bodyParts;
+        }, []);
+        return reduce.join("&");
     }
 
     private getQueryParams(): KeyValues {
@@ -163,7 +186,7 @@ export class Req implements HttpMessage {
 
 export function ReqOf(method: string,
                     uri: Uri | string,
-                    body: string = "",
+                    body: Body | string = '',
                     headers = {}): Req {
     return new Req(method, uri, body, headers);
 }

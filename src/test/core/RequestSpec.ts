@@ -2,6 +2,8 @@ import * as assert from 'assert';
 import {deepEqual, equal, notEqual} from 'assert';
 import {Headers, HeaderValues} from '../../main/core/Headers';
 import {ReqOf} from '../../main';
+import {Readable} from "stream";
+import {BodyOf} from "../../main/core/Body";
 
 describe('in mem request', () => {
 
@@ -37,11 +39,11 @@ describe('in mem request', () => {
     });
 
     it('sets form field body on post', () => {
-        equal(
+        deepEqual(
             ReqOf('POST', '/')
                 .withFormField('name', 'tosh')
-                .bodyString(),
-            'name=tosh'
+                .bodyForm(),
+            {name: 'tosh'}
         )
     });
 
@@ -67,18 +69,19 @@ describe('in mem request', () => {
     });
 
     it('sets all form on post', () => {
-        equal(
+        deepEqual(
             ReqOf('POST', '/')
-                .withForm({name: ['tosh', 'bosh'], age: 27})
-                .bodyString(),
-            'name=tosh&name=bosh&age=27'
+                .withForm({name: ['tosh', 'bosh'], age: '27'})
+                .withHeader(Headers.CONTENT_TYPE, HeaderValues.FORM)
+                .bodyForm(),
+            { name: [ 'tosh', 'bosh' ], age: '27' }
         )
     });
 
     it('sets form encoded header', () => {
         equal(
             ReqOf('POST', '/')
-                .withForm({name: ['tosh', 'bosh'], age: 27})
+                .withForm({name: ['tosh', 'bosh'], age: '27'})
                 .withFormField('name', 'tosh')
                 .header(Headers.CONTENT_TYPE),
             HeaderValues.FORM
@@ -89,7 +92,7 @@ describe('in mem request', () => {
         equal(
             ReqOf('POST', '/')
                 .withHeader(Headers.CONTENT_TYPE, HeaderValues.MULTIPART_FORMDATA)
-                .withForm({name: ['tosh', 'bosh'], age: 27})
+                .withForm({name: ['tosh', 'bosh'], age: '27'})
                 .header(Headers.CONTENT_TYPE),
             HeaderValues.MULTIPART_FORMDATA
         )
@@ -101,6 +104,28 @@ describe('in mem request', () => {
                 .withBody('tommy boy')
                 .bodyString(),
             'tommy boy')
+    });
+
+    it('body is handle on stream if given a stream', () => {
+        const readable = new Readable({read(){}});
+        readable.push('some body');
+        readable.push(null);
+        equal(
+            ReqOf('GET', '/')
+                .withBody(BodyOf(readable))
+                .body
+                .bodyStream(),
+            readable
+        )
+    });
+
+    it('bodystring works as expected whether or not req body is a stream', () => {
+        const readable = new Readable({read(){}});
+        readable.push('some body');
+        readable.push(null);
+        const reqWithStreamBody = ReqOf('GET', '/').withBody(BodyOf(readable));
+        equal(reqWithStreamBody.bodyString(), 'some body');
+        equal(reqWithStreamBody.bodyString(), 'some body'); // read multiple times
     });
 
     it('sets query string', () => {

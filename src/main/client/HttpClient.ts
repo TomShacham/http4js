@@ -34,12 +34,12 @@ function get(request: Req): Promise<Res> {
     });
 }
 
-function wire(request: Req): Promise<Res> {
-    const options = request.uri.asNativeNodeRequest;
+function wire(req: Req): Promise<Res> {
+    const options = req.uri.asNativeNodeRequest;
     const requestOptions = {
         ...options,
-        headers: request.headers,
-        method: request.method,
+        headers: req.headers,
+        method: req.method,
     };
 
     return new Promise(resolve => {
@@ -52,7 +52,10 @@ function wire(request: Req): Promise<Res> {
                 return resolve(new Res(res.statusCode, Buffer.concat(chunks).toString(), res.headers as HeadersType));
             });
         });
-        clientRequest.write(request.bodyString());
+        console.log('client');
+        const chunk2 = req.bodyString();
+        console.log(chunk2);
+        clientRequest.write(chunk2);
         clientRequest.end();
     });
 }

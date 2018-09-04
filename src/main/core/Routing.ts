@@ -77,10 +77,10 @@ export class Routing {
     serve(req: Req): Promise<Res> {
         const matchedRouting = [this, ...this.nestedRouting].map(routing => routing.matchRouting(req))
             .filter(it => it.handler !== it.routing.mountedNotFoundHandler);
-        const match = matchedRouting[0] || {routing: this};
+        const match = matchedRouting[0] || {routing: this, handler: undefined};
         const matchedHandler = match.handler || this.mountedNotFoundHandler;
-        if (matchedHandler.path.includes("{"))
-            req.pathParams = Uri.of(matchedHandler.path).extract(req.uri.path()).matches;
+        const hasPathParam = matchedHandler.path.includes("{");
+        if (hasPathParam) req.pathParams = Uri.of(matchedHandler.path).extract(req.uri.path()).matches;
         const filtered = match.routing.filters.reduce((prev, next) => {
             return next(prev)
         }, matchedHandler.handler);
