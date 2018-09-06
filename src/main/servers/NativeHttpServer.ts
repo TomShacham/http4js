@@ -26,11 +26,7 @@ export class NativeHttpServer implements Http4jsServer {
         this.server.on("request", (req: any, res: any) => {
             const {headers, method, url} = req;
             const inStream = new Readable({ read() {} });
-            const hostHeader = req.headers.host;
-            const isLocalhost = req.socket.localAddress === '::ffff:127.0.0.1';
-            const hostname = this.validHostnameRegex.test(hostHeader)
-                ? `http://${hostHeader}`
-                : (isLocalhost ? `http://localhost:${req.socket.localPort}` : '');
+            const hostname = this.hostnameFrom(req);
 
             req.on('error', (err: any) => {
                 console.error(err);
@@ -38,14 +34,30 @@ export class NativeHttpServer implements Http4jsServer {
                 inStream.push(chunk);
             }).on('end', () => {
                 inStream.push(null); // No more data
+
                 const req = ReqOf(method, `${hostname}${url}`, BodyOf(inStream), headers);
                 const response = this.routing.serve(req);
+
                 response.then(response => {
                     res.writeHead(response.status, response.headers);
-                    res.end(response.bodyString());
+                    const bodyStream = response.bodyStream();
+                    if (bodyStream){
+                        bodyStream.pipe(res);
+                    } else {
+                        res.write(response.bodyString());
+                        res.end();
+                    }
                 }).catch(rej => console.log(rej));
             })
         });
+    }
+
+    private hostnameFrom(req: any) {
+        const hostHeader = req.headers.host;
+        const isLocalhost = req.socket.localAddress === '::ffff:127.0.0.1';
+        return this.validHostnameRegex.test(hostHeader)
+            ? `http://${hostHeader}`
+            : (isLocalhost ? `http://localhost:${req.socket.localPort}` : '');
     }
 
     async start(): Promise<void> {

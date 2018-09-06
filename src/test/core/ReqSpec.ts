@@ -118,7 +118,7 @@ describe('in mem request', () => {
         )
     });
 
-    it('bodystring works as expected whether or not req body is a stream', () => {
+    it('bodystring works as expected even if req body is a stream', () => {
         const readable = new Readable({read(){}});
         readable.push('some body');
         readable.push(null);

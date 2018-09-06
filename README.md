@@ -8,6 +8,24 @@ A lightweight HTTP framework for Typescript / JS, with zero dependencies
 
 [Full notes here](https://tomshacham.github.io/http4js/Release-notes/#release-notes)
 
+### 4.1.0: streaming by default
+
+`NativeHttpServer` and `HttpClient` stream in and out by default. A handle on 
+the stream is provided by `req.bodyStream()` and a `res` is streamed out if
+a `Res(200, BodyOf(readable))` is provided, i.e. a `Readable` stream body.
+
+### 4.0.2: Move ssl-root-cas from prod code to test
+
+We use `ssl-root-cas` to trust self-signed certs for testing `NativeHttpsServer`.
+This has been moved from prod code to the test code. Needs releasing because
+otherwise `ssl-root-cas` needs to be a dependency.
+
+### 4.0.1: Handle on incoming `Req` stream
+
+As we provide this handle via `req.bodyStream()`, accessing the `form` on an 
+incoming `Req` is now done via `req.bodyForm()` in order to realise the stream. 
+`req.bodyString()` will also realise it and work as expected. 
+
 ### 4.0.0: ! Breaking change: drop support for Koa and Express backends
   
 In order to evolve the core library faster support for Express and Koa backends
@@ -125,10 +143,13 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 ## To dos
 
 - streaming
-  - extract building up form when asked for form() or formField() 
-  - servers
-  - clients
-- withOptions
+  - big file mem usage test  
+  - servers, https O
+  - clients, https O
+- refactor req and res to not use clone and instead construct new self
+- extract Form
+- example app
+- withOptions on withPost
 - convenience response methods eg ok()
 - generalise routing to an interface, use totallylazy to implement new types of routing
 - chain withHeaders calls on an http client

@@ -36,8 +36,42 @@ conflict with other objects named Request and Response.
 ## Streaming
 
 Incoming `Req`s are streamed (as is default in Node). We expose a handle on this
-stream by handing the function `bodyStream()`. Soon we will be able to pipe this
- to a `Res`. 
+stream with the function `bodyStream()`. 
+
+```typescript
+post("/body-stream", async (req) => {
+    console.log(req.bodyStream())
+    return ResOf(200, BodyOf(req.bodyStream()));
+})
+
+/*
+Readable {
+  _readableState: 
+   ReadableState {
+     objectMode: false,
+     highWaterMark: 16384,
+     buffer: BufferList { length: 1 },
+     length: 9,
+     pipes: null,
+     ... }
+ */
+```
+
+In order to respond with a stream, we can return a `ResOf(200, BodyOf(readable))`
+where `readable` is a `Readable` stream. Our `NativeHttpServer` sees that the 
+`Res` has a `bodyStream` and streams the outgoing response.
+
+```typescript
+const bodyStream = response.bodyStream();
+if (bodyStream){
+    bodyStream.pipe(res);
+} else {
+    res.write(response.bodyString());
+    res.end();
+}
+```
+
+Our `HttpClient` works in the same way, streaming in and out.
 
 ## Immutability - why?
 

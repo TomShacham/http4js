@@ -43,6 +43,7 @@ export enum HeaderValues {
     CACHE_CONTROL_MAX_STALE = "max-stale=",
     CACHE_CONTROL_MIN_FRESH = "min-fresh=",
     CACHE_CONTROL_ONLY_IF_CACHED = "only-if-cached",
+    CHUNKED = "chunked",
     FORM = "application/x-www-form-urlencoded",
     TEXT_PLAIN = "text/plain",
     TEXT_HTML = "text/html",

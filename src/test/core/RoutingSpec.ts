@@ -6,6 +6,8 @@ import {Headers, HeaderValues} from '../../main/core/Headers';
 import {ResOf} from "../../main/core/Res";
 import {NativeHttpServer} from "../../main/servers/NativeHttpServer";
 import {MountedHttpHandler} from "../../main/core/Routing";
+import {BodyOf} from "../../main/core/Body";
+import {Readable} from "stream";
 
 describe('routing', async () => {
 
@@ -121,8 +123,6 @@ describe('routing', async () => {
         equal(response.header('nested'), undefined);
         equal(response.bodyString(), 'GET to /unknown-path did not match routes');
     });
-
-
 
     it('matches path params only if specified a capture in route', async () => {
         const response = await get('/family', async() => ResOf(200, 'losh,bosh,tosh'))
@@ -329,6 +329,15 @@ describe('routing', async () => {
         const response = await get('/', async() => ResOf()).asServer(new NativeHttpServer(3004))
             .serveE2E(ReqOf('GET', '/'));
         equal(response.status, 200);
+    });
+
+    it('res body is a stream if req body is a stream', async () => {
+        const readable = new Readable({read(){}});
+        readable.push('some body');
+        readable.push(null);
+        const response = await post('/', async(req) => ResOf(200, BodyOf(req.bodyStream())))
+            .serve(ReqOf('POST', '/', BodyOf(readable)));
+        equal(response.bodyStream(), readable);
     });
 
     it('reverses routing: get handler by name', async() => {

@@ -6,6 +6,12 @@
 
 # Release notes
 
+### 4.1.0: streaming by default
+
+`NativeHttpServer` and `HttpClient` stream in and out by default. A handle on 
+the stream is provided by `req.bodyStream()` and a `res` is streamed out if
+a `Res(200, BodyOf(readable))` is provided, i.e. a `Readable` stream body.
+
 ### 4.0.2: Move ssl-root-cas from prod code to test
 
 We use `ssl-root-cas` to trust self-signed certs for testing `NativeHttpsServer`.

@@ -1,5 +1,7 @@
 import {deepEqual, equal, notEqual} from "assert";
-import {Res, Redirect} from "../../main/core/Res";
+import {Res, Redirect, ResOf} from "../../main/core/Res";
+import {BodyOf} from "../../main/core/Body";
+import {Readable} from "stream";
 
 describe("in mem response", () => {
 
@@ -25,6 +27,28 @@ describe("in mem response", () => {
                 .bodyString(),
             "body boy-o")
     });
+
+    it('body is handle on stream if given a stream', () => {
+        const readable = new Readable({read(){}});
+        readable.push('some body');
+        readable.push(null);
+        equal(
+            ResOf(200)
+                .withBody(BodyOf(readable))
+                .bodyStream(),
+            readable
+        )
+    });
+
+    it('bodystring works as expected even if res body is a stream', () => {
+        const readable = new Readable({read(){}});
+        readable.push('some body');
+        readable.push(null);
+        const reqWithStreamBody = ResOf(200).withBody(BodyOf(readable));
+        equal(reqWithStreamBody.bodyString(), 'some body');
+        equal(reqWithStreamBody.bodyString(), 'some body'); // read multiple times
+    });
+
 
     it("set header on response", () => {
         equal(

@@ -4,6 +4,9 @@ import {deepEqual, equal} from "assert";
 import {HttpClient} from "../../main/client/HttpClient";
 import {NativeHttpServer} from "../../main/servers/NativeHttpServer";
 import {HeaderValues, ReqOf, ResOf} from "../../main";
+import {BodyOf} from "../../main/core/Body";
+import {Readable} from "stream";
+import {Headers} from "../../main/core/Headers";
 
 describe("native node over the wire", () => {
 
@@ -19,6 +22,7 @@ describe("native node over the wire", () => {
         .withGet('/url', async(req: Req) => ResOf(200, req.uri.asUriString()))
         .withHandler("POST", "/post-body", async (req) => ResOf(200, req.bodyString()))
         .withHandler("POST", "/post-form-body", async (req) => ResOf(200, JSON.stringify(req.bodyForm())))
+        .withHandler("POST", "/body-stream", async (req) => ResOf(200, BodyOf(req.bodyStream())))
         .withHandler("GET", "/get", async () => ResOf(200, "Done a GET request init?"))
         .withHandler("POST", "/post", async () => ResOf(200, "Done a POST request init?"))
         .withHandler("PUT", "/put", async () => ResOf(200, "Done a PUT request init?"))
@@ -47,6 +51,18 @@ describe("native node over the wire", () => {
         const request = ReqOf("POST", `${baseUrl}/post-form-body`).withForm({name: ["tom shacham", "bosh", "losh"]});
         const response = await HttpClient(request);
         equal(response.bodyString(), JSON.stringify({name: ["tom shacham", "bosh", "losh"]}))
+    });
+
+    it('streams request body and responds with a bodyStream', async() => {
+        const readable = new Readable({read(){}});
+        readable.push('some body');
+        readable.push(null);
+
+        const request = ReqOf("POST", `${baseUrl}/body-stream`, BodyOf(readable));
+        const response = await HttpClient(request);
+
+        equal(response.header(Headers.TRANSFER_ENCODING), HeaderValues.CHUNKED);
+        equal(response.bodyStream().read().toString('utf8'), 'some body');
     });
 
     it("sets query params", async() => {

@@ -1,6 +1,7 @@
 import {HttpMessage, HeadersType} from "./HttpMessage";
 import {Body} from "./Body";
 import {BodyOf} from "./Body";
+import {Readable} from "stream";
 
 export class Res implements HttpMessage {
     headers: HeadersType = {};
@@ -55,13 +56,15 @@ export class Res implements HttpMessage {
     }
 
     withBody(body: Body | string): Res {
-        const response = Res.clone(this);
-        response.body = typeof body === 'string' ? BodyOf(body) : body;
-        return response;
+        return ResOf(this.status, body, this.headers);
     }
 
     bodyString(): string {
         return this.body.bodyString() || '';
+    }
+
+    bodyStream(): Readable | undefined {
+        return this.body.bodyStream();
     }
 
     private static clone(a: {}) {
