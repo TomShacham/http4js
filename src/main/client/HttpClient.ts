@@ -26,12 +26,13 @@ function get(request: Req): Promise<Res> {
 
     return new Promise(resolve => {
         http.request(requestOptions, (res) => {
-            const chunks: Buffer[] = [];
+            const inStream = new Readable({ read() {} });
             res.on('data', (chunk: Buffer) => {
-                chunks.push(chunk);
+                inStream.push(chunk);
             });
             res.on('end', () => {
-                return resolve(ResOf(res.statusCode, Buffer.concat(chunks).toString(), res.headers as HeadersType));
+                inStream.push(null); // No more data
+                return resolve(new Res(res.statusCode, BodyOf(inStream), res.headers as HeadersType));
             });
         }).end();
     });
