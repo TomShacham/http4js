@@ -143,7 +143,6 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 ## To dos
 
 - streaming
-  - big file mem usage test  
   - servers, https O
   - clients, https O
 - refactor req and res to not use clone and instead construct new self

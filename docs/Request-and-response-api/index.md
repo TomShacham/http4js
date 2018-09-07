@@ -38,9 +38,10 @@ conflict with other objects named Request and Response.
 Incoming `Req`s are streamed (as is default in Node). We expose a handle on this
 stream with the function `bodyStream()`. 
 
+A simple streaming proxy would look like this:
+
 ```typescript
 post("/body-stream", async (req) => {
-    console.log(req.bodyStream())
     return ResOf(200, BodyOf(req.bodyStream()));
 })
 
@@ -58,7 +59,19 @@ Readable {
 ```
 
 In order to respond with a stream, we can return a `ResOf(200, BodyOf(readable))`
-where `readable` is a `Readable` stream. Our `NativeHttpServer` sees that the 
+where `readable` is a `Readable` stream. 
+
+Streaming a large file for example, is as simple as:
+
+```typescript
+get('/bigfile', async() => ResOf(200, BodyOf(fs.createReadStream('./bigfile.txt'))))
+    .asServer()
+    .start();
+```
+
+### How it works
+
+Our `NativeHttpServer` sees that the 
 `Res` has a `bodyStream` and streams the outgoing response.
 
 ```typescript
