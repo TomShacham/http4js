@@ -2,7 +2,52 @@
 
 A lightweight HTTP framework for Typescript / JS, with zero dependencies
 
-### *** [read the docs](https://tomshacham.github.io/http4js/) ***
+##  [read the docs](https://tomshacham.github.io/http4js/) 
+
+## Use http4js in your project
+
+```
+npm install --save http4js
+```
+
+## Contents 
+
+- [Example](https://github.com/tomshacham/http4js#example)
+- [Latest features](https://github.com/tomshacham/http4js#latest-features)
+- [Contributing](https://github.com/tomshacham/http4js#contributing)
+- [History and Design](https://github.com/tomshacham/http4js#history-and-design)
+- [To dos](https://github.com/tomshacham/http4js#to-dos)
+- [Running HTTPS Server tests](https://github.com/tomshacham/http4js#running-https-server-tests)
+- [Sanity Testing Streaming](https://github.com/tomshacham/http4js#sanity-testing-streaming)
+
+## Example
+
+An example server and client
+
+```typescript
+//define our routes
+const routing = routes('GET', ".*", async (req: Req) => {
+    console.log(req);
+    return ResOf(Status.OK, 'OK');
+})
+
+//add csrf token header to every request and vary gzip to every response
+const headerFilter = (handler: HttpHandler) => {
+    return async (req: Req) => {
+        const response = await handler(req.withHeader(Headers.X_CSRF_TOKEN, Math.random()))
+        return response.withHeader(Headers.VARY, "gzip");
+    }
+};
+
+// start routing as a NativeHttpServer on port 3000
+routing
+    .withFilter(headerFilter)
+    .asServer(new NativeHttpServer(3000))
+    .start();
+
+// make an http request to our server and log the response
+HttpClient(ReqOf(Method.GET, "http://localhost:3000/any/path"))
+```
 
 ## Latest features
 
@@ -23,77 +68,6 @@ a `Res(200, BodyOf(readable))` is provided, i.e. a `Readable` stream body.
 In order to evolve the core library faster support for Express and Koa backends
 has been dropped. Happy to add back later.
 
-## Use http4js in your project
-
-### To install:
-
-```
-npm install --save http4js
-```
-
-or
-
-```
-yarn add http4js
-```
-
-
-## Example
-
-An example server and client
-
-```typescript
-
-//define our routes
-const routing = routes('GET', ".*", async (req: Req) => {
-    console.log(req);
-    return ResOf(Status.OK, 'OK');
-})
-
-//add csrf token header to every request and vary gzip to every response
-const headerFilter = (handler: HttpHandler) => {
-    return async (req: Req) => {
-        const response = await handler(req.withHeader(Headers.X_CSRF_TOKEN, Math.random()))
-        return response.withHeader(Headers.VARY, "gzip");
-    }
-};
-
-routing
-    .withFilter(headerFilter)
-    .asServer() // starts on port 3000 by default
-    .start();
-
-//make an http request to our server and log the response
-HttpClient(ReqOf(Method.GET, "http://localhost:3000/any/path"))
-
-// output
-Req {
-  headers: 
-   { host: 'localhost:3000',
-     connection: 'close',
-     'content-type': 'application/x-www-form-urlencoded',
-     'x-csrf-token': 0.8369821184747923 },
-  queries: {},
-  pathParams: {},
-  form: {},
-  method: 'GET',
-  uri: 
-   Uri {
-     matches: {},
-     asNativeNodeRequest: 
-      Url {
-        ...,
-        protocol: 'http:',
-        host: 'localhost:3000',
-        port: '3000',
-        pathname: '/any/path',
-        path: '/any/path',
-        href: 'http://localhost:3000/any/path' } },
-  body: '' }
-
-
-```
-
 ## Contributing
 
 I'd be very happy if you'd like to contribute :)
@@ -103,9 +77,9 @@ I'd be very happy if you'd like to contribute :)
 ```
 git clone git@github.com:TomShacham/http4js.git && \ 
 cd http4js && \
-yarn && \
-yarn build && \
-yarn test
+npm i --save && \
+./create-ssl-certs.sh && \
+npm test
 ```
 
 ## History and Design

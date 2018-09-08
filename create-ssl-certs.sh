@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-cd src/ssl
+pushd src/ssl
 
 # create your own CA key
 openssl genrsa \
@@ -48,3 +48,5 @@ openssl x509 \
 
 # Create fullchain, your new cert followed by CA cert
 cat cert.pem my-root-ca.cert.pem > fullchain.pem
+
+popd
