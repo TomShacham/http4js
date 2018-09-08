@@ -14,7 +14,7 @@ See [streaming docs](https://tomshacham.github.io/http4js/Request-and-response-a
 
 `NativeHttpServer` and `HttpClient` stream in and out by default. A handle on 
 the stream is provided by `req.bodyStream()` and a `res` is streamed out if
-a `Res(200, BodyOf(readable))` is provided, i.e. a `Readable` stream body.
+a `Res(200, readable)` is provided, i.e. a `Readable` stream body.
 
 ### 4.0.2: Move ssl-root-cas from prod code to test
 

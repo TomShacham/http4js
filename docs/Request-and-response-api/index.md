@@ -42,17 +42,17 @@ A simple `Req` streamed in and out to a streamed `Res` would look like this:
 
 ```typescript
 get("/body-stream", async (req: Req) => {
-    return ResOf(200, BodyOf(req.bodyStream()!));
+    return ResOf(200, req.bodyStream()!);
 })
 ```
 
-In order to respond with a stream, we can return a `ResOf(200, BodyOf(readable))`
+In order to respond with a stream, we can return a `ResOf(200, readable)`
 where `readable` is a `Readable` stream. 
 
 Streaming a large file for example, is as simple as:
 
 ```typescript
-get('/bigfile', async() => ResOf(200, BodyOf(fs.createReadStream('./bigfile.txt'))))
+get('/bigfile', async() => ResOf(200, fs.createReadStream('./bigfile.txt')))
     .asServer()
     .start();
 ```
@@ -60,7 +60,7 @@ get('/bigfile', async() => ResOf(200, BodyOf(fs.createReadStream('./bigfile.txt'
 Or proxy streaming is as simple as:
 
 ```typescript
-get('/bigfile', async() => ResOf(200, BodyOf(fs.createReadStream('./bigfile.txt'))))
+get('/bigfile', async() => ResOf(200, fs.createReadStream('./bigfile.txt')))
     .asServer(new NativeHttpServer(3006))
     .start();
 
@@ -68,7 +68,7 @@ get('/proxy/bigfile', async() => {
     // proxy this response 
     const response = await HttpClient(ReqOf('GET', 'http://localhost:3006/bigfile'));
     // streamed file from http://localhost:3006/bigfile and out to http://localhost:3007/proxy/bigfile
-    return ResOf(200, BodyOf(response.bodyStream())); // streamed! :)
+    return ResOf(200, response.bodyStream()); // streamed! :)
 })
     .asServer(new NativeHttpServer(3007))
     .start();

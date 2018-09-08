@@ -112,7 +112,7 @@ describe('in mem request', () => {
         readable.push(null);
         equal(
             ReqOf('GET', '/')
-                .withBody(BodyOf(readable))
+                .withBody(readable)
                 .bodyStream(),
             readable
         )
@@ -122,7 +122,7 @@ describe('in mem request', () => {
         const readable = new Readable({read(){}});
         readable.push('some body');
         readable.push(null);
-        const reqWithStreamBody = ReqOf('GET', '/').withBody(BodyOf(readable));
+        const reqWithStreamBody = ReqOf('GET', '/').withBody(readable);
         equal(reqWithStreamBody.bodyString(), 'some body');
         equal(reqWithStreamBody.bodyString(), 'some body'); // read multiple times
     });

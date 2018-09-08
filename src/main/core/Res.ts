@@ -8,9 +8,15 @@ export class Res implements HttpMessage {
     body: Body;
     status: number;
 
-    constructor(status: number = 200, body: Body | string = '', headers: HeadersType = {}) {
+    constructor(status: number = 200,
+                body: Body | Readable | string = '',
+                headers: HeadersType = {}) {
         this.status = status;
-        this.body = typeof body === 'string' ? BodyOf(body) : body;
+        if (typeof body === 'string' || body instanceof Readable) {
+            this.body = BodyOf(body);
+        } else {
+            this.body = body;
+        }
         this.headers = headers;
     }
 
@@ -55,7 +61,7 @@ export class Res implements HttpMessage {
         return response;
     }
 
-    withBody(body: Body | string): Res {
+    withBody(body: Body | Readable | string): Res {
         return ResOf(this.status, body, this.headers);
     }
 
@@ -73,12 +79,13 @@ export class Res implements HttpMessage {
 
 }
 
-export function ResOf(status: number = 200, body: Body | string = '', headers: HeadersType = {}): Res {
-    const wrappedBody = typeof body === 'string' ? BodyOf(body) : body;
-    return new Res(status, wrappedBody, headers);
+export function ResOf(status: number = 200,
+                      body: Body | Readable | string = '',
+                      headers: HeadersType = {}): Res {
+    return new Res(status, body, headers);
 }
 
 export function Redirect(status: number = 301, path: string, headers: HeadersType = {}): Res {
-    return new Res(status, BodyOf(''), headers).withHeader("Location", path);
+    return new Res(status, '', headers).withHeader("Location", path);
 }
 

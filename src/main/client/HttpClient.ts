@@ -26,7 +26,7 @@ function get(request: Req): Promise<Res> {
 
     return new Promise(resolve => {
         http.request(requestOptions, (res: IncomingMessage) => {
-            return resolve(ResOf(res.statusCode, BodyOf(res), res.headers as HeadersType));
+            return resolve(ResOf(res.statusCode, res, res.headers as HeadersType));
         }).end();
     });
 }
@@ -43,8 +43,8 @@ function wire(req: Req): Promise<Res> {
     };
 
     return new Promise(resolve => {
-        const clientRequest = http.request(requestOptions, (res) => {
-            return resolve(ResOf(res.statusCode, BodyOf(res), res.headers as HeadersType));
+        const clientRequest = http.request(requestOptions, (res: IncomingMessage) => {
+            return resolve(ResOf(res.statusCode, res, res.headers as HeadersType));
         });
         if (req.bodyStream()){
             req.bodyStream()!.pipe(clientRequest);

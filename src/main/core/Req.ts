@@ -20,7 +20,7 @@ export class Req implements HttpMessage {
 
     constructor(method: string,
                 uri: Uri | string,
-                body: Body | string = '',
+                body: Body | Readable | string = '',
                 headers = {}) {
         this.method = method.toUpperCase();
         if (typeof uri == "string") {
@@ -29,7 +29,11 @@ export class Req implements HttpMessage {
         } else {
             this.uri = uri;
         }
-        this.body = typeof body === 'string' ? BodyOf(body) : body;
+        if (typeof body === 'string' || body instanceof Readable) {
+            this.body = BodyOf(body);
+        } else {
+            this.body = body;
+        }
         this.headers = headers ? headers : {};
         this.queries = this.getQueryParams();
         return this;
@@ -190,7 +194,7 @@ export class Req implements HttpMessage {
 
 export function ReqOf(method: string,
                     uri: Uri | string,
-                    body: Body | string = '',
+                    body: Body | Readable | string = '',
                     headers = {}): Req {
     return new Req(method, uri, body, headers);
 }

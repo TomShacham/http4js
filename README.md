@@ -61,7 +61,7 @@ See [streaming docs](https://tomshacham.github.io/http4js/Request-and-response-a
 
 `NativeHttpServer` and `HttpClient` stream in and out by default. A handle on 
 the stream is provided by `req.bodyStream()` and a `res` is streamed out if
-a `Res(200, BodyOf(readable))` is provided, i.e. a `Readable` stream body.
+a `Res(200, readable)` is provided, i.e. a `Readable` stream body.
 
 ### 4.0.0: ! Breaking change: drop support for Koa and Express backends
   
@@ -94,7 +94,6 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 ## To dos
 
 - streaming
-  - clean up BodyOf leak
   - servers, https O
   - clients, https O
 - refactor req and res to not use clone and instead construct new self
@@ -143,7 +142,7 @@ cat /dev/urandom | base64 >> bigfile.txt
 Start up a server and stream the file 
 
 ```typescript
-get('/bigfile', async() => ResOf(200, BodyOf(fs.createReadStream('./bigfile.txt'))))
+get('/bigfile', async() => ResOf(200, fs.createReadStream('./bigfile.txt')))
     .asServer()
     .start();
 ```

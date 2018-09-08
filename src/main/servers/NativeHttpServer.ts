@@ -1,14 +1,9 @@
 import * as http from "http";
+import {IncomingMessage, ServerResponse} from "http";
 import {Routing} from "../core/Routing";
-import {Res} from "../core/Res";
-import {Req} from "../core/Req";
-import {Http4jsServer} from "./Server";
-import {HeaderValues} from "../core/Headers";
-import {Form, HeadersType} from "../core/HttpMessage";
-import { Readable } from 'stream';
-import {Stream} from "stream";
-import {BodyOf} from "../core/Body";
 import {ReqOf} from "../core/Req";
+import {Http4jsServer} from "./Server";
+import {Readable} from "stream";
 
 export class NativeHttpServer implements Http4jsServer {
     server: any;
@@ -23,10 +18,10 @@ export class NativeHttpServer implements Http4jsServer {
 
     registerCatchAllHandler(routing: Routing): void {
         this.routing = routing;
-        this.server.on("request", (req: any, res: any) => {
+        this.server.on("request", (req: IncomingMessage, res: ServerResponse) => {
             const {headers, method, url} = req;
-            const inStream = new Readable({ read() {} });
             const hostname = this.hostnameFrom(req);
+            const inStream = new Readable({ read() {} });
 
             req.on('error', (err: any) => {
                 console.error(err);
@@ -35,8 +30,8 @@ export class NativeHttpServer implements Http4jsServer {
             }).on('end', () => {
                 inStream.push(null); // No more data
 
-                const req = ReqOf(method, `${hostname}${url}`, BodyOf(inStream), headers);
-                const response = this.routing.serve(req);
+                const request = ReqOf(method!, `${hostname}${url}`, inStream, headers);
+                const response = this.routing.serve(request);
 
                 response.then(response => {
                     res.writeHead(response.status, response.headers);

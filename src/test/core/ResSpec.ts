@@ -34,7 +34,7 @@ describe("in mem response", () => {
         readable.push(null);
         equal(
             ResOf(200)
-                .withBody(BodyOf(readable))
+                .withBody(readable)
                 .bodyStream(),
             readable
         )
@@ -44,7 +44,7 @@ describe("in mem response", () => {
         const readable = new Readable({read(){}});
         readable.push('some body');
         readable.push(null);
-        const reqWithStreamBody = ResOf(200).withBody(BodyOf(readable));
+        const reqWithStreamBody = ResOf(200).withBody(readable);
         equal(reqWithStreamBody.bodyString(), 'some body');
         equal(reqWithStreamBody.bodyString(), 'some body'); // read multiple times
     });
