@@ -30,7 +30,7 @@ const certs = {
 };
 
 get("/path", async () => ResOf(200, "OK"))
-    .asServer(new NativeHttpsServer(8000, certs)) // default value
+    .asServer(HttpsServer(8000, certs)) // default value
     .start();
 ```
 

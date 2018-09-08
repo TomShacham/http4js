@@ -27,7 +27,7 @@ const upstream = routes(".*", ".*", async (req: Req) => {
     console.log(response);
     return response;
 })
-    .asServer(new NativeHttpServer(3001))
+    .asServer(HttpServer(3001))
     .start();
 
 const proxy = routes(".*", ".*", (req: Req) => {
@@ -37,7 +37,7 @@ const proxy = routes(".*", ".*", (req: Req) => {
     console.log(rewrittenRequest);
     return HttpClient(rewrittenRequest);
 })
-    .asServer(new NativeHttpServer(3000))
+    .asServer(HttpServer(3000))
     .start();
 
 ```

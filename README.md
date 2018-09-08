@@ -42,7 +42,7 @@ const headerFilter = (handler: HttpHandler) => {
 // start routing as a NativeHttpServer on port 3000
 routing
     .withFilter(headerFilter)
-    .asServer(new NativeHttpServer(3000))
+    .asServer(HttpServer(3000))
     .start();
 
 // make an http request to our server and log the response
@@ -94,8 +94,7 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 ## To dos
 
 - streaming
-  - servers, https O
-  - clients, https O
+    - check how to stream in req in native server
 - refactor req and res to not use clone and instead construct new self
 - extract Form
 - example app

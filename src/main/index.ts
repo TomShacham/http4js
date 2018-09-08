@@ -9,8 +9,7 @@ export * from "./core/Filters";
 export * from "./core/Status";
 
 export * from "./servers/Server";
-export * from "./servers/NativeHttpServer";
-export * from "./servers/NativeHttpsServer";
+export * from "./servers/NativeServer";
 
 export * from "./client/Client";
 export * from "./client/HttpClient";

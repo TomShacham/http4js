@@ -135,7 +135,7 @@ the log lines and build a trace visualisation given a `traceId`.
 import {get} from "./core/Routing";
 import {ResOf} from "./core/Res";
 import {Filters, debugFilterBuilder} from "./core/Filters";
-import {NativeHttpServer} from "./servers/NativeHttpServer";
+import {HttpServer} from "./servers/NativeServer";
 import {Client} from "./client/Client";
 import {ReqOf} from "./core/Req";
 
@@ -161,7 +161,7 @@ get('/', async(req) => {
         `${res.header('start-time')};${res.header('end-time')} || `
     )))
     .withFilter(Filters.DEBUG)
-    .asServer(new NativeHttpServer(3000))
+    .asServer(HttpServer(3000))
     .start();
 
 // upstream server
@@ -173,7 +173,7 @@ get('/', async(req) => ResOf(200, JSON.stringify(req.headers)))
         `${res.header('start-time')};${res.header('end-time')} || `
     )))
     .withFilter(Filters.DEBUG)
-    .asServer(new NativeHttpServer(3001))
+    .asServer(HttpServer(3001))
     .start();
 
 const script = `

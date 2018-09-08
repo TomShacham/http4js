@@ -3,14 +3,14 @@ import {debugFilterBuilder, Filters} from "../../main/core/Filters";
 import {equal} from "assert";
 import {ResOf} from "../../main/core/Res";
 import {ReqOf, Req} from "../../main/core/Req";
-import {NativeHttpServer} from "../../main/servers/NativeHttpServer";
+import {HttpServer} from "../../main/servers/NativeServer";
 
 describe("Built in filters", () => {
 
     it("upgrade to https", async() => {
         const server = get('/', async(req: Req) => ResOf(200, 'OK'))
             .withFilter(Filters.UPGRADE_TO_HTTPS)
-            .asServer(new NativeHttpServer(3030));
+            .asServer(HttpServer(3030));
         const response = await server.serveE2E(ReqOf('GET', '/'));
 
         equal(response.header('Location'), "https://localhost:3030/");

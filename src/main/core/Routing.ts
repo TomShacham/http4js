@@ -4,9 +4,9 @@ import {Req} from "./Req";
 import {Uri} from "./Uri";
 import {Filter} from "./Filters";
 import {Http4jsServer} from "../servers/Server";
-import {NativeHttpServer} from "../servers/NativeHttpServer";
 import {ResOf} from "./Res";
 import {HttpClient} from "../client/HttpClient";
+import {HttpServer} from "../servers/NativeServer";
 
 export type MountedHttpHandler = { path: string, method: string, headers: HeadersType, handler: HttpHandler, name: string }
 export type DescribingHttpHandler = { path: string, method: string, headers: HeadersType, name: string }
@@ -52,7 +52,7 @@ export class Routing {
         return this;
     }
 
-    asServer(server: Http4jsServer = new NativeHttpServer(3000)): Routing {
+    asServer(server: Http4jsServer = HttpServer(3000)): Routing {
         this.server = server;
         server.registerCatchAllHandler(this);
         return this;

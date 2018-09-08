@@ -1,13 +1,11 @@
-import {ResOf} from '../../main';
-import {get} from '../../main';
-import {NativeHttpServer} from '../../main/servers/NativeHttpServer';
-import {Client} from '../../main/client/Client';
-import {Req, ReqOf} from '../../main';
-import {equal} from 'assert';
+import {ResOf, get, Req, ReqOf} from "../../main";
+import {Client} from "../../main/client/Client";
+import {equal} from "assert";
+import {HttpServer} from "../../main/servers/NativeServer";
 
 describe('client', () => {
     const server = get('/', async(req: Req) => ResOf(200, JSON.stringify(req.headers)))
-        .asServer(new NativeHttpServer(3045));
+        .asServer(HttpServer(3045));
 
     before(() => {
         server.start()

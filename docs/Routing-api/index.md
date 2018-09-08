@@ -208,7 +208,7 @@ class Routing {
 
     withHandler(method: string, path: string, handler: HttpHandler, headers: HeadersType = {}): Routing
 
-    asServer(server: Http4jsServer = new NativeHttpServer(3000)): Http4jsServer
+    asServer(server: Http4jsServer = HttpServer(3000)): Http4jsServer
 
     serve(request: Req): Promise<Res> 
 

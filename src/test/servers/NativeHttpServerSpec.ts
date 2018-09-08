@@ -2,11 +2,10 @@ import {get} from "../../main/core/Routing";
 import {Req} from "../../main/core/Req";
 import {deepEqual, equal} from "assert";
 import {HttpClient} from "../../main/client/HttpClient";
-import {NativeHttpServer} from "../../main/servers/NativeHttpServer";
 import {HeaderValues, ReqOf, ResOf} from "../../main";
-import {BodyOf} from "../../main/core/Body";
 import {Readable} from "stream";
 import {Headers} from "../../main/core/Headers";
+import {HttpServer} from "../../main/servers/NativeServer";
 
 describe("native node over the wire", () => {
 
@@ -31,7 +30,7 @@ describe("native node over the wire", () => {
         .withHandler("OPTIONS", "/options", async () => ResOf(200, "Done a OPTIONS request init?"))
         .withHandler("HEAD", "/head", async () => ResOf(200, "Done a HEAD request init?"))
         .withHandler("TRACE", "/trace", async () => ResOf(200, "Done a TRACE request init?"))
-        .asServer(new NativeHttpServer(port));
+        .asServer(HttpServer(port));
 
     before(() => {
         server.start();

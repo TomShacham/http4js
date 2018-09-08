@@ -3,7 +3,6 @@ import {Filter, zipkinFilterBuilder} from '../../main/core/Filters';
 import {deepEqual, equal} from 'assert';
 import {ResOf} from '../../main/core/Res';
 import {Req, ReqOf} from '../../main/core/Req';
-import {NativeHttpServer} from '../../main/servers/NativeHttpServer';
 import {HttpClient} from '../../main/client/HttpClient';
 import {Client} from '../../main/client/Client';
 import {ZipkinHeaders, ZipkinCollector, ZipkinSpan} from '../../main/zipkin/Zipkin';
@@ -11,6 +10,7 @@ import {isNullOrUndefined} from 'util';
 import {HttpHandler, timingFilterBuilder} from '../../main';
 import {FakeClock} from "../clock/FakeClock";
 import {DeterministicIdGenerator} from "./DeterministicIdGenerator";
+import {HttpServer} from "../../main/servers/NativeServer";
 
 const upstream1BaseUrl = 'http://localhost:3032';
 const upstream2BaseUrl = 'http://localhost:3033';
@@ -48,13 +48,13 @@ const topLevelRequestRoutes = get('/', async(req: Req) => {
     .withFilter(deterministicZipkinFilter)
     .withFilter(deterministicTimingFilter)
     .withFilter(loggingFilter)
-    .asServer(new NativeHttpServer(3031));
+    .asServer(HttpServer(3031));
 
 const upstream1 = get('/', async() => ResOf())
     .withFilter(deterministicZipkinFilter)
     .withFilter(deterministicTimingFilter)
     .withFilter(loggingFilter)
-    .asServer(new NativeHttpServer(3032));
+    .asServer(HttpServer(3032));
 
 const upstream2 = get('/', async(req: Req) => {
     const upstreamZipkinClient = Client.zipkinClientFrom(req);
@@ -64,13 +64,13 @@ const upstream2 = get('/', async(req: Req) => {
     .withFilter(deterministicZipkinFilter)
     .withFilter(deterministicTimingFilter)
     .withFilter(loggingFilter)
-    .asServer(new NativeHttpServer(3033));
+    .asServer(HttpServer(3033));
 
 const moreUpstream = get('/', async() => ResOf())
     .withFilter(deterministicZipkinFilter)
     .withFilter(deterministicTimingFilter)
     .withFilter(loggingFilter)
-    .asServer(new NativeHttpServer(3034));
+    .asServer(HttpServer(3034));
 
 describe('Zipkin', () => {
 

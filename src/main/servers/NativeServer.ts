@@ -1,19 +1,22 @@
 import * as http from "http";
+import * as https from "https";
 import {IncomingMessage, ServerResponse} from "http";
 import {Routing} from "../core/Routing";
 import {ReqOf} from "../core/Req";
 import {Http4jsServer} from "./Server";
 import {Readable} from "stream";
 
-export class NativeHttpServer implements Http4jsServer {
+type Certs = { key: Buffer; cert: Buffer; ca: Buffer };
+
+class NativeServer implements Http4jsServer {
     server: any;
     port: number;
     routing: Routing;
     validHostnameRegex: RegExp = new RegExp('^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*$')
 
-    constructor(port: number) {
+    constructor(port: number, certs?: Certs) {
         this.port = port;
-        this.server = http.createServer();
+        this.server = certs ? https.createServer(certs) : http.createServer();
     }
 
     registerCatchAllHandler(routing: Routing): void {
@@ -47,14 +50,6 @@ export class NativeHttpServer implements Http4jsServer {
         });
     }
 
-    private hostnameFrom(req: any) {
-        const hostHeader = req.headers.host;
-        const isLocalhost = req.socket.localAddress === '::ffff:127.0.0.1';
-        return this.validHostnameRegex.test(hostHeader)
-            ? `http://${hostHeader}`
-            : (isLocalhost ? `http://localhost:${req.socket.localPort}` : '');
-    }
-
     async start(): Promise<void> {
         this.server.listen(this.port);
     }
@@ -63,4 +58,19 @@ export class NativeHttpServer implements Http4jsServer {
         this.server.close();
     }
 
+    private hostnameFrom(req: any) {
+        const hostHeader = req.headers.host;
+        const isLocalhost = req.socket.localAddress === '::ffff:127.0.0.1';
+        return this.validHostnameRegex.test(hostHeader)
+            ? `http://${hostHeader}`
+            : (isLocalhost ? `http://localhost:${req.socket.localPort}` : '');
+    }
+
+}
+
+export function HttpServer(port: number): NativeServer {
+    return new NativeServer(port);
+}
+export function HttpsServer(port: number, certs: Certs): NativeServer {
+    return new NativeServer(port, certs);
 }

@@ -1,14 +1,12 @@
-import {ResOf} from "../../main/index";
-import {get} from "../../main/index";
-import {ReqOf} from "../../main/index";
+import {ResOf, get, ReqOf} from "../../main/index";
 import {equal} from "assert";
-import {NativeHttpServer} from "../../main/servers/NativeHttpServer";
 import {HttpClient} from "../../main/client/HttpClient";
+import {HttpServer} from "../../main/servers/NativeServer";
 
 describe('requiring http4js from index export file', () => {
     const port = 4001;
     const server = get('/', async() => ResOf(200, 'ok'))
-        .asServer(new NativeHttpServer(port));
+        .asServer(HttpServer(port));
 
     it('serve a route', async () => {
         const res = await get('/', async() => ResOf(200, 'ok')).serve(ReqOf('GET', '/'))
