@@ -1,13 +1,22 @@
-import {HttpsClient} from "../main/client/HttpsClient";
-import {get, ReqOf, ResOf} from "../main/index";
+import * as fs from 'fs';
 import {equal} from "assert";
-import {NativeHttpsServer} from "../main/servers/NativeHttpsServer";
+import {HttpsClient} from "../../main/client/HttpsClient";
+import {NativeHttpsServer} from "../../main/servers/NativeHttpsServer";
+import {get} from "../../main/core/Routing";
+import {ResOf} from "../../main/core/Res";
+import {ReqOf} from "../../main/core/Req";
 
 describe('https server', () => {
 
-    const httpsServer = get('/', async () => ResOf(200, 'hello, world!'))
+    const certs = {
+        key: fs.readFileSync('src/ssl/key.pem'),
+        cert: fs.readFileSync('src/ssl/fullchain.pem'),
+        ca: fs.readFileSync('src/ssl/my-root-ca.cert.pem'),
+    };
+
+    const httpsServer = get('/', async() => ResOf(200, 'hello, world!'))
         .withPost('/', async() => ResOf(200, 'hello, world!'))
-        .asServer(new NativeHttpsServer(8000));
+        .asServer(new NativeHttpsServer(8000, certs));
 
     before(() => {
         require('ssl-root-cas')
@@ -20,13 +29,13 @@ describe('https server', () => {
         httpsServer.stop();
     });
 
-    it('serves a get request', async () => {
+    it('serves a get request', async() => {
         const response = await HttpsClient(ReqOf('GET', 'https://localhost:8000/'));
         equal(response.status, 200);
         equal(response.bodyString(), 'hello, world!');
     });
 
-    it('serves a post request', async () => {
+    it('serves a post request', async() => {
         const response = await HttpsClient(ReqOf('POST', 'https://localhost:8000/'));
         equal(response.status, 200);
         equal(response.bodyString(), 'hello, world!');

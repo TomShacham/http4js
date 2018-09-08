@@ -1,10 +1,8 @@
 import * as http from "http";
-import {Res} from "../core/Res";
-import {Req} from "../core/Req";
-import {BodyOf} from "../core/Body";
-import {Headers, HeaderValues} from "../core/Headers";
 import {IncomingMessage} from "http";
-import {ResOf} from "../core/Res";
+import {Res, ResOf} from "../core/Res";
+import {Req} from "../core/Req";
+import {Headers, HeaderValues} from "../core/Headers";
 import {HeadersType} from "../core/HttpMessage";
 
 export function HttpClient(request: Req): Promise<Res> {
