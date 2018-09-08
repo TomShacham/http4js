@@ -2,7 +2,7 @@
 
 A lightweight HTTP framework for Typescript / JS, with zero dependencies
 
-##  [read the docs](https://tomshacham.github.io/http4js/) 
+# >> [read the docs :)](https://tomshacham.github.io/http4js/) <<
 
 ## Use http4js in your project
 
