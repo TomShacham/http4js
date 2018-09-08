@@ -22,7 +22,7 @@ describe("native node over the wire", () => {
         .withGet('/url', async(req: Req) => ResOf(200, req.uri.asUriString()))
         .withHandler("POST", "/post-body", async (req) => ResOf(200, req.bodyString()))
         .withHandler("POST", "/post-form-body", async (req) => ResOf(200, JSON.stringify(req.bodyForm())))
-        .withHandler("POST", "/body-stream", async (req) => ResOf(200, BodyOf(req.bodyStream())))
+        .withHandler("POST", "/body-stream", async (req) => ResOf(200, BodyOf(req.bodyStream()!)))
         .withHandler("GET", "/get", async () => ResOf(200, "Done a GET request init?"))
         .withHandler("POST", "/post", async () => ResOf(200, "Done a POST request init?"))
         .withHandler("PUT", "/put", async () => ResOf(200, "Done a PUT request init?"))
@@ -44,7 +44,7 @@ describe("native node over the wire", () => {
     it("sets post body", async() => {
         const request = ReqOf("POST", `${baseUrl}/post-body`, "my humps");
         const response = await HttpClient(request);
-        equal(response.bodyString(), "my humps")
+        equal(response.bodyString(), "my humps");
     });
 
     it("sets post form body", async() => {
@@ -62,7 +62,7 @@ describe("native node over the wire", () => {
         const response = await HttpClient(request);
 
         equal(response.header(Headers.TRANSFER_ENCODING), HeaderValues.CHUNKED);
-        equal(response.bodyStream().read().toString('utf8'), 'some body');
+        equal(response.bodyStream()!.read().toString('utf8'), 'some body');
     });
 
     it("sets query params", async() => {

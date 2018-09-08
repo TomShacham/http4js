@@ -69,6 +69,23 @@ get('/bigfile', async() => ResOf(200, BodyOf(fs.createReadStream('./bigfile.txt'
     .start();
 ```
 
+Or proxy streaming is as simple as:
+
+```typescript
+get('/bigfile', async() => ResOf(200, BodyOf(fs.createReadStream('./bigfile.txt'))))
+    .asServer(new NativeHttpServer(3006))
+    .start();
+
+get('/proxy/bigfile', async() => {
+    // proxy this response 
+    const response = await HttpClient(ReqOf('GET', 'http://localhost:3006/bigfile'));
+    // streamed file from http://localhost:3006/bigfile and out to http://localhost:3007/proxy/bigfile
+    return ResOf(200, BodyOf(response.bodyStream())); // streamed! :)
+})
+    .asServer(new NativeHttpServer(3007))
+    .start();
+```
+
 ### How it works
 
 Our `NativeHttpServer` sees that the 

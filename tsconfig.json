@@ -3,14 +3,13 @@
     "target": "es5",
     "lib": ["es2015"],
     "declaration": true,
-//    "strict": true,
+    "strict": true,
     "strictPropertyInitialization": false
   },
   "include": [
     "src/main/**/*"
   ],
   "exclude": [
-    "node_modules",
-    "dist"
+    "node_modules"
   ]
 }

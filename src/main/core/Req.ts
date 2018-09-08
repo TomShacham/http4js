@@ -111,7 +111,7 @@ export class Req implements HttpMessage {
         return this.body.bodyString() || '';
     }
 
-    bodyStream(): Readable {
+    bodyStream(): Readable | undefined {
         return this.body.bodyStream();
     }
 

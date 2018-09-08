@@ -177,3 +177,26 @@ Then run
 ```bash
 yarn test-ssl
 ```
+
+## Sanity Testing Streaming
+
+Create a big file 
+
+```bash
+cat /dev/urandom | base64 >> bigfile.txt
+# wait ...
+# ^C
+```
+
+Start up a server and stream the file 
+
+```typescript
+get('/bigfile', async() => ResOf(200, BodyOf(fs.createReadStream('./bigfile.txt'))))
+    .asServer()
+    .start();
+```
+
+Check the memory of usage of the process. 
+- If we are **not** streaming, then the whole
+file will be read into memory before the server responds, using lots of memory. 
+- If we **are** streaming then the memory usage should be much lower. 
