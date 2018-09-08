@@ -4,9 +4,13 @@ A lightweight HTTP framework for Typescript / JS, with zero dependencies
 
 ### *** [read the docs](https://tomshacham.github.io/http4js/) ***
 
-## Latest release notes
+## Latest features
 
-[Full notes here](https://tomshacham.github.io/http4js/Release-notes/#release-notes)
+[Full Release Notes here](https://tomshacham.github.io/http4js/Release-notes/#release-notes)
+
+### 4.1.1: Fix: HttpClient was not streaming out
+
+See [streaming docs](https://tomshacham.github.io/http4js/Request-and-response-api/#streaming) for more info
 
 ### 4.1.0: streaming by default
 
@@ -14,37 +18,10 @@ A lightweight HTTP framework for Typescript / JS, with zero dependencies
 the stream is provided by `req.bodyStream()` and a `res` is streamed out if
 a `Res(200, BodyOf(readable))` is provided, i.e. a `Readable` stream body.
 
-### 4.0.2: Move ssl-root-cas from prod code to test
-
-We use `ssl-root-cas` to trust self-signed certs for testing `NativeHttpsServer`.
-This has been moved from prod code to the test code. Needs releasing because
-otherwise `ssl-root-cas` needs to be a dependency.
-
-### 4.0.1: Handle on incoming `Req` stream
-
-As we provide this handle via `req.bodyStream()`, accessing the `form` on an 
-incoming `Req` is now done via `req.bodyForm()` in order to realise the stream. 
-`req.bodyString()` will also realise it and work as expected. 
-
 ### 4.0.0: ! Breaking change: drop support for Koa and Express backends
   
 In order to evolve the core library faster support for Express and Koa backends
 has been dropped. Happy to add back later.
-
-### 3.2.2: bug fix: decodeURIComponent no longer called on response body.
-
-### 3.2.0: Filters only apply per routing
-
-combining routes using `withRoutes` no longer combines filters from each routing. 
-
-### 3.1.0: New backend server: NativeHttpsServer. 
-
-See [here](https://tomshacham.github.io/http4js/Https-server/#https-server) for more info
-
-### 3.0.2: New client: HttpsClient.
-
-### 3.0.0: **Breaking change**: routing paths are declared absolute, not relative. 
-
 
 ## Use http4js in your project
 
@@ -143,6 +120,7 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 ## To dos
 
 - streaming
+  - clean up BodyOf leak
   - servers, https O
   - clients, https O
 - refactor req and res to not use clone and instead construct new self

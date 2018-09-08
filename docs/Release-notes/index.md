@@ -6,6 +6,10 @@
 
 # Release notes
 
+### 4.1.1: Fix: HttpClient was not streaming out
+
+See [streaming docs](https://tomshacham.github.io/http4js/Request-and-response-api/#streaming) for more info
+
 ### 4.1.0: streaming by default
 
 `NativeHttpServer` and `HttpClient` stream in and out by default. A handle on 

@@ -38,24 +38,12 @@ conflict with other objects named Request and Response.
 Incoming `Req`s are streamed (as is default in Node). We expose a handle on this
 stream with the function `bodyStream()`. 
 
-A simple streaming proxy would look like this:
+A simple `Req` streamed in and out to a streamed `Res` would look like this:
 
 ```typescript
-post("/body-stream", async (req) => {
-    return ResOf(200, BodyOf(req.bodyStream()));
+get("/body-stream", async (req: Req) => {
+    return ResOf(200, BodyOf(req.bodyStream()!));
 })
-
-/*
-Readable {
-  _readableState: 
-   ReadableState {
-     objectMode: false,
-     highWaterMark: 16384,
-     buffer: BufferList { length: 1 },
-     length: 9,
-     pipes: null,
-     ... }
- */
 ```
 
 In order to respond with a stream, we can return a `ResOf(200, BodyOf(readable))`
