@@ -90,6 +90,10 @@ if (bodyStream){
 
 Our `HttpClient` works in the same way, streaming in and out.
 
+## Convenience methods for starting a server
+
+We provide `HttpServer(3000)` and `HttpsServer(3000, certs)` as quick easy ways to provide a server.
+
 ## Immutability - why?
 
 Both `Req` and `Res` are immutable, so every method on them returns a new object. 
