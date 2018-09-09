@@ -65,7 +65,7 @@ describe("in mem response", () => {
                 .withHeader("tom", "smells more")
                 .withHeader("tom", "smells some more")
                 .header("tom"),
-            ["smells", "smells more", "smells some more"]);
+            "smells, smells more, smells some more");
     });
 
     it('replace header', () => {

@@ -97,9 +97,7 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 
 ## To dos
 
-- streaming
-    - check how to stream in req in native server
-- refactor req and res to not use clone and instead construct new self
+- refactor req to not use clone
 - extract Form
 - example app
 - withOptions on withPost

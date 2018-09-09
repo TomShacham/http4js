@@ -25,40 +25,34 @@ export class Res implements HttpMessage {
     }
 
     withHeader(name: string, value: string): Res {
-        const response = Res.clone(this);
+        const headers: HeadersType = {...this.headers};
         const lowercaseName = name.toLowerCase();
-        if (response.headers[lowercaseName] == null) {
-            response.headers[lowercaseName] = value;
-        } else if (typeof response.headers[lowercaseName] == "string") {
-            response.headers[lowercaseName] = [response.headers[lowercaseName], value];
-        } else {
-            response.headers[lowercaseName].push(value);
+        if (headers[lowercaseName] == null) {
+            headers[lowercaseName] = value;
+        } else if (typeof headers[lowercaseName] === "string") {
+            headers[lowercaseName] = [...headers[lowercaseName].split(', '), value].join(', ');
         }
-        return response;
+        return new Res(this.status, this.body, headers);
     }
 
     withHeaders(headers: HeadersType): Res {
-        const response = Res.clone(this);
-        response.headers = headers;
-        return response;
+        return new Res(this.status, this.body, {...this.headers, ...headers});
     }
 
     replaceAllHeaders(headers: HeadersType): Res {
-        const response = Res.clone(this);
-        response.headers = headers;
-        return response;
+        return new Res(this.status, this.body, headers);
     }
 
     replaceHeader(name: string, value: string): Res {
-        const response = Res.clone(this);
-        response.headers[name] = value;
-        return response;
+        const headers = {...this.headers};
+        headers[name] = value;
+        return new Res(this.status, this.body, headers);
     }
 
     removeHeader(name: string): Res {
-        const response = Res.clone(this);
-        delete response.headers[name];
-        return response;
+        const headers = {...this.headers};
+        delete headers[name];
+        return new Res(this.status, this.body, headers);
     }
 
     withBody(body: Body | Readable | string): Res {
@@ -71,10 +65,6 @@ export class Res implements HttpMessage {
 
     bodyStream(): Readable | undefined {
         return this.body.bodyStream();
-    }
-
-    private static clone(a: {}) {
-        return Object.assign(Object.create(a), a)
     }
 
 }
