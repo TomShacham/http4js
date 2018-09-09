@@ -53,6 +53,10 @@ HttpClient(ReqOf(Method.GET, "http://localhost:3000/any/path"))
 
 [Full Release Notes here](https://tomshacham.github.io/http4js/Release-notes/#release-notes)
 
+### 4.1.2: Convenience methods for starting server
+
+We provide `HttpServer(3000)` and `HttpsServer(3000, certs)` as quick easy ways to provide a server.
+
 ### 4.1.1: Fix: HttpClient was not streaming out
 
 See [streaming docs](https://tomshacham.github.io/http4js/Request-and-response-api/#streaming) for more info
