@@ -10,6 +10,8 @@ export * from "./core/Status";
 
 export * from "./servers/Server";
 export * from "./servers/NativeServer";
+export * from "./servers/NativeHttpServer";
+export * from "./servers/NativeHttpsServer";
 
 export * from "./client/Client";
 export * from "./client/HttpClient";

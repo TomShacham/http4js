@@ -5,7 +5,7 @@ import {HttpClient} from "../../main/client/HttpClient";
 import {HeaderValues, ReqOf, ResOf} from "../../main";
 import {Readable} from "stream";
 import {Headers} from "../../main/core/Headers";
-import {HttpServer} from "../../main/servers/NativeServer";
+import {NativeHttpServer} from "../../main/servers/NativeHttpServer";
 
 describe("native node over the wire", () => {
 
@@ -30,7 +30,7 @@ describe("native node over the wire", () => {
         .withHandler("OPTIONS", "/options", async () => ResOf(200, "Done a OPTIONS request init?"))
         .withHandler("HEAD", "/head", async () => ResOf(200, "Done a HEAD request init?"))
         .withHandler("TRACE", "/trace", async () => ResOf(200, "Done a TRACE request init?"))
-        .asServer(HttpServer(port));
+        .asServer(new NativeHttpServer(port));
 
     before(() => {
         server.start();

@@ -6,12 +6,11 @@ import {ReqOf} from "../core/Req";
 import {Http4jsServer} from "./Server";
 import {Readable} from "stream";
 
-type Certs = { key: Buffer; cert: Buffer; ca: Buffer };
+export type Certs = { key: Buffer; cert: Buffer; ca: Buffer };
 
-class NativeServer implements Http4jsServer {
-    server: any;
+export class NativeServer implements Http4jsServer {
+    server: http.Server | https.Server;
     port: number;
-    routing: Routing;
     validHostnameRegex: RegExp = new RegExp('^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*$')
 
     constructor(port: number, certs?: Certs) {
@@ -20,7 +19,6 @@ class NativeServer implements Http4jsServer {
     }
 
     registerCatchAllHandler(routing: Routing): void {
-        this.routing = routing;
         this.server.on("request", (req: IncomingMessage, res: ServerResponse) => {
             const {headers, method, url} = req;
             const hostname = this.hostnameFrom(req);
@@ -34,7 +32,7 @@ class NativeServer implements Http4jsServer {
                 inStream.push(null); // No more data
 
                 const request = ReqOf(method!, `${hostname}${url}`, inStream, headers);
-                const response = this.routing.serve(request);
+                const response = routing.serve(request);
 
                 response.then(response => {
                     res.writeHead(response.status, response.headers);
