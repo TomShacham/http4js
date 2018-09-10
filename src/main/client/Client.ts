@@ -6,11 +6,7 @@ import {ZipkinHeaders} from "../zipkin/Zipkin";
 export class Client {
 
     static withHeaders(headers: HeadersType): HttpHandler {
-        return (req: Req) => HttpClient(
-            Object.keys(headers).reduce((_: any, headerKey: string) => (
-                req.withHeader(headerKey, headers[headerKey])
-            ), req)
-        );
+        return (req: Req) => HttpClient(req.withHeaders(headers));
     }
 
     static zipkinClientFrom(incomingReq: Req): HttpHandler {

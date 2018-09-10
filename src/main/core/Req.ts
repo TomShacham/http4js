@@ -35,14 +35,12 @@ export class Req implements HttpMessage {
             this.body = body;
         }
         this.headers = headers ? headers : {};
-        this.queries = this.getQueryParams();
+        this.queries = this.getQueryParams(this.uri);
         return this;
     }
 
     withUri(uri: Uri | string): Req {
-        const request = Req.clone(this);
-        request.uri = typeof uri == "string" ? Uri.of(uri) : uri;
-        return request;
+        return new Req(this.method, uri, this.body, this.headers);
     }
 
     header(name: string): string {
@@ -50,34 +48,34 @@ export class Req implements HttpMessage {
     }
 
     withHeader(name: string, value: string): Req {
-        const request = Req.clone(this);
-        const caseInsensitiveName = name.toLowerCase();
-        if (request.headers[caseInsensitiveName] == null) {
-            request.headers[caseInsensitiveName] = value;
-        } else if (typeof request.headers[caseInsensitiveName] == "string") {
-            request.headers[caseInsensitiveName] = [request.headers[caseInsensitiveName], value];
-        } else {
-            request.headers[caseInsensitiveName].push(value);
+        const headers: HeadersType = {...this.headers};
+        const lowercaseName = name.toLowerCase();
+        if (headers[lowercaseName] == null) {
+            headers[lowercaseName] = value;
+        } else if (typeof headers[lowercaseName] === "string") {
+            headers[lowercaseName] = [...headers[lowercaseName].split(', '), value].join(', ');
         }
-        return request;
+        return new Req(this.method, this.uri, this.body, headers);
+    }
+
+    withHeaders(headers: HeadersType): Req {
+        return new Req(this.method, this.uri, this.body, {...this.headers, ...headers});
     }
 
     replaceHeader(name: string, value: string): Req {
-        const request = Req.clone(this);
-        request.headers[name.toLowerCase()] = value;
-        return request;
+        const headers = {...this.headers};
+        headers[name] = value;
+        return new Req(this.method, this.uri, this.body, headers);
     }
 
     removeHeader(name: string): Req {
-        const request = Req.clone(this);
-        delete(request.headers[name]);
-        return request;
+        const headers = {...this.headers};
+        delete headers[name];
+        return new Req(this.method, this.uri, this.body, headers);
     }
 
     withBody(body: Body | Readable | string): Req {
-        const request = Req.clone(this);
-        request.body = body instanceof Body ? body : BodyOf(body);
-        return request;
+        return new Req(this.method, this.uri, body, this.headers);
     }
 
     withFormField(name: string, value: string | string[]): Req {
@@ -141,20 +139,13 @@ export class Req implements HttpMessage {
     }
 
     withQuery(name: string, value: string): Req {
-        const request = Req.clone(this);
-        request.queries[name] = decodeURIComponent(value);
-        request.uri = request.uri.withQuery(name, value);
-        return request;
+        return new Req(this.method, this.uri.withQuery(name, value), this.body, this.headers);
     }
 
     withQueries(queries: KeyValues): Req {
-        const request = Req.clone(this);
-        for (let name in queries){
-            const value = queries[name];
-            request.queries[name] = decodeURIComponent(value);
-            request.uri = request.uri.withQuery(name, value);
-        }
-        return request;
+        return Object.keys(queries).reduce((req: Req, query: string) => (
+            req.withQuery(query, queries[query])
+        ), this);
     }
 
     query(name: string): string {
@@ -171,25 +162,25 @@ export class Req implements HttpMessage {
         return reduce.join("&");
     }
 
-    private getQueryParams(): KeyValues {
-        if (isNullOrUndefined(this.uri.queryString())) return {};
-        const pairs = this.uri.queryString().split("&");
+    private getQueryParams(uri: Uri): KeyValues {
+        const queries: KeyValues = {};
+        if (isNullOrUndefined(uri.queryString())) {
+            return queries;
+        }
+        const pairs = uri.queryString().split("&");
         pairs.map(pair => {
             const split = pair.split("=");
             let value = 'Malformed URI component';
             try {
                 value = decodeURIComponent(split[1]);
             } catch (e) {
-                this.queries[split[0]] = value;
+                queries[split[0]] = value;
             }
-            this.queries[split[0]] = value;
+            queries[split[0]] = value;
         });
-        return this.queries;
+        return queries;
     }
 
-    private static clone(a: {}) {
-        return Object.assign(Object.create(a), a);
-    }
 }
 
 export function ReqOf(method: string,
