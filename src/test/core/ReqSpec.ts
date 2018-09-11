@@ -78,22 +78,24 @@ describe('in mem request', () => {
     });
 
     it('sets form encoded header', () => {
+        const req = ReqOf('POST', '/')
+            .withForm({name: ['tosh', 'bosh'], age: '27'});
+        const req2 = req
+            .withFormField('name', 'tosh');
         equal(
-            ReqOf('POST', '/')
-                .withForm({name: ['tosh', 'bosh'], age: '27'})
-                .withFormField('name', 'tosh')
+            req2
                 .header(Headers.CONTENT_TYPE),
             HeaderValues.FORM
         )
     });
 
-    it('doesnt set form encoded header if content type header already set', () => {
+    it('overrides form encoded header if content type header already set', () => {
         equal(
             ReqOf('POST', '/')
                 .withHeader(Headers.CONTENT_TYPE, HeaderValues.MULTIPART_FORMDATA)
                 .withForm({name: ['tosh', 'bosh'], age: '27'})
                 .header(Headers.CONTENT_TYPE),
-            HeaderValues.MULTIPART_FORMDATA
+            HeaderValues.FORM
         )
     });
 

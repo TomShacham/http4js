@@ -38,7 +38,7 @@ export class Headers {
 
     replaceHeader(name: string, value: string): Headers {
         const headers = { ...this.headers };
-        headers[name] = value;
+        headers[name.toLowerCase()] = value;
         return Headers.of(headers)
     }
 
