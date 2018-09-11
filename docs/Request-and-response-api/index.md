@@ -74,6 +74,22 @@ get('/proxy/bigfile', async() => {
     .start();
 ```
 
+## Building a form
+
+We can build up the form on a `Req` easily.
+
+```typescript
+const req = ReqOf('POST', '/form')
+    .withForm({name: 'tom'})
+    .withFormField('name', 'tosh')
+    .withForm({name: 'ben', age: '31'})
+
+req.formBodyString()
+/*
+    name=tom&name=tosh&name=ben&age=31
+ */
+```
+
 ### How it works
 
 Our `NativeHttpServer` sees that the `Res` has a `bodyStream` and streams the outgoing response.

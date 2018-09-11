@@ -131,17 +131,20 @@ get("/hotels", async (req) => {
 
 ## Form params
 
-And form params are available in a similar way too
-
+And form params are available in a similar way too.
 
 ```typescript
 post("/hotels", async (req) => {
-  const hotelName = req.form['name'];
+  const hotelName = req.bodyForm()['name'];
   return ResOf(200, hotelName);
 }).serve(
   ReqOf(Method.POST, "http://localhost:3000/hotels").withFormField("name", "Tom Hotel")
 );
 ```
+
+We need to call `bodyForm()` because by default, our `Req` has a `Readable`
+stream as its body, and therefore we cannot get at the `form` without reading
+the stream into memory. 
 
 ## Convenience methods
 
