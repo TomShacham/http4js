@@ -1,6 +1,7 @@
 import {equal} from "assert";
 import {Uri} from "../../main/core/Uri";
 import {notEqual} from "assert";
+import {deepEqual} from "assert";
 
 describe("uri", () => {
 
@@ -106,6 +107,13 @@ describe("uri", () => {
         const newPath = initial.withQuery("bosh", "NYC");
         notEqual(initial, newPath);
         equal(newPath.asUriString(), "http://localhost:3000/?tom=foo&ben=bar&bosh=NYC")
+    });
+
+    it('accumulates queries', () => {
+        const initial = Uri.of("http://localhost:3000/?tom=foo&ben=bar");
+        const newPath = initial.withQuery("ben", "NYC");
+        equal(newPath.asUriString(), "http://localhost:3000/?tom=foo&ben=bar&ben=NYC");
+        deepEqual(newPath.queryParams(), {tom: 'foo', ben: ['bar', 'NYC']});
     });
 
     it("gives you a new Uri with new hostname", () => {

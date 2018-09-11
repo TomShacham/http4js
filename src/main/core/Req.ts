@@ -1,10 +1,8 @@
 import {Uri} from "./Uri";
-import {isNullOrUndefined} from "util";
 import {Headers, HeaderValues} from "./Headers";
-import {HttpMessage, HeadersJson, KeyValues, FormField, BodyContent} from "./HttpMessage";
+import {HttpMessage, HeadersJson, KeyValues, FormField, BodyContent, FormJson, Queries, QueryField} from "./HttpMessage";
 import {Body} from "./Body";
 import {Readable} from "stream";
-import {FormJson} from "./HttpMessage";
 import {Form} from "./Form";
 
 export class Req implements HttpMessage {
@@ -13,7 +11,7 @@ export class Req implements HttpMessage {
     method: string;
     headers: HeadersJson;
     body: Body;
-    queries: KeyValues = {};
+    queries: Queries = {};
     pathParams: KeyValues = {};
     private form: FormJson = {};
 
@@ -34,7 +32,7 @@ export class Req implements HttpMessage {
             this.body = body;
         }
         this.headers = headers instanceof Headers ? headers.asObject() : headers;
-        this.queries = this.getQueryParams(this.uri);
+        this.queries = this.uri.queryParams();
         return this;
     }
 
@@ -102,32 +100,11 @@ export class Req implements HttpMessage {
     }
 
     withQueries(queries: KeyValues): Req {
-        return Object.keys(queries).reduce((req: Req, query: string) => (
-            req.withQuery(query, queries[query])
-        ), this);
+        return new Req(this.method, this.uri.withQueries(queries), this.body, this.headers);
     }
 
-    query(name: string): string {
+    query(name: string): QueryField {
         return this.queries[name];
-    }
-
-    private getQueryParams(uri: Uri): KeyValues {
-        const queries: KeyValues = {};
-        if (isNullOrUndefined(uri.queryString())) {
-            return queries;
-        }
-        const pairs = uri.queryString().split("&");
-        pairs.map(pair => {
-            const split = pair.split("=");
-            let value = 'Malformed URI component';
-            try {
-                value = decodeURIComponent(split[1]);
-            } catch (e) {
-                queries[split[0]] = value;
-            }
-            queries[split[0]] = value;
-        });
-        return queries;
     }
 
 }

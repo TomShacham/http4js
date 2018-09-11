@@ -1,4 +1,6 @@
 import {KeyValues} from "./HttpMessage";
+import {isNullOrUndefined} from "util";
+import {Queries} from "./HttpMessage";
 const URI = require('url');
 
 const pathParamMatchingRegex: RegExp = new RegExp(/\{(\w+)\}/g);
@@ -46,12 +48,42 @@ export class Uri {
         return this.asNativeNodeRequest.query;
     }
 
+    queryParams(): Queries {
+        const queries: Queries = {};
+        if (isNullOrUndefined(this.queryString())) return queries;
+        const pairs = this.queryString().split("&");
+        pairs.map(pair => {
+            const split = pair.split("=");
+            const name = split[0];
+            let value;
+            try {
+                value = decodeURIComponent(split[1]);
+            } catch (e) {
+                value = 'Malformed URI component';
+            }
+            if (queries[name]) {
+                queries[name] = typeof queries[name] === 'string'
+                    ? [queries[name] as string, value as string]
+                    : [...queries[name] as string[], value as string];
+            } else {
+                queries[name] = value;
+            }
+        });
+        return queries;
+    }
+
     withQuery(name: string, value: string): Uri {
         if (this.queryString() && this.queryString().length > 0) {
             return Uri.of(`${this.asUriString()}&${name}=${value}`);
         } else {
             return Uri.of(`${this.asUriString()}?${name}=${value}`);
         }
+    }
+
+    withQueries(queries: KeyValues): Uri {
+        return Object.keys(queries).reduce((uri :Uri, queryName: string) => (
+            uri.withQuery(queryName, queries[queryName])
+        ), this);
     }
 
     path(): string {
