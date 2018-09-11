@@ -3,7 +3,6 @@ import {deepEqual, equal, notEqual} from 'assert';
 import {Headers, HeaderValues} from '../../main/core/Headers';
 import {ReqOf} from '../../main';
 import {Readable} from "stream";
-import {BodyOf} from "../../main/core/Body";
 
 describe('in mem request', () => {
 

@@ -4,7 +4,7 @@ import {Headers, HeaderValues} from "./Headers";
 import {HttpMessage, HeadersType} from "./HttpMessage";
 import {KeyValues} from "./HttpMessage";
 import {Form} from "./HttpMessage";
-import {Body, BodyOf} from "./Body";
+import {Body} from "./Body";
 import {FormField} from "./HttpMessage";
 import {Readable} from "stream";
 
@@ -30,7 +30,7 @@ export class Req implements HttpMessage {
             this.uri = uri;
         }
         if (typeof body === 'string' || body instanceof Readable) {
-            this.body = BodyOf(body);
+            this.body = Body.of(body);
         } else {
             this.body = body;
         }

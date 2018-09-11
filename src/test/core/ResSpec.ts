@@ -1,6 +1,5 @@
 import {deepEqual, equal, notEqual} from "assert";
 import {Res, Redirect, ResOf} from "../../main/core/Res";
-import {BodyOf} from "../../main/core/Body";
 import {Readable} from "stream";
 
 describe("in mem response", () => {

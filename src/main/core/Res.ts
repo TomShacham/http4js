@@ -1,6 +1,5 @@
 import {HttpMessage, HeadersType} from "./HttpMessage";
 import {Body} from "./Body";
-import {BodyOf} from "./Body";
 import {Readable} from "stream";
 import {Headers} from "./Headers";
 
@@ -14,7 +13,7 @@ export class Res implements HttpMessage {
                 headers: Headers | HeadersType = Headers.of({})) {
         this.status = status;
         if (typeof body === 'string' || body instanceof Readable) {
-            this.body = BodyOf(body);
+            this.body = Body.of(body);
         } else {
             this.body = body;
         }

@@ -13,6 +13,10 @@ export class Body {
         }
     }
 
+    static of(data: Readable | string): Body {
+        return new Body(data);
+    }
+
     bodyString() {
         if (this.bodystring !== undefined) {
             return this.bodystring;
@@ -27,8 +31,4 @@ export class Body {
         return this.readStream;
     }
 
-}
-
-export function BodyOf(data: Readable | string): Body {
-    return new Body(data);
 }
