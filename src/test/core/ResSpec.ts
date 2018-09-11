@@ -1,5 +1,5 @@
 import {deepEqual, equal, notEqual} from "assert";
-import {Res, Redirect, ResOf} from "../../main/core/Res";
+import {Res, ResOf} from "../../main/core/Res";
 import {Readable} from "stream";
 
 describe("in mem response", () => {
@@ -93,7 +93,7 @@ describe("in mem response", () => {
     });
 
     it("Redirect is sugar for Res withHeader Location", () => {
-        equal(Redirect(302, "/tosh").header("Location"),
+        equal(Res.Redirect(302, "/tosh").header("Location"),
             "/tosh"
         )
     })

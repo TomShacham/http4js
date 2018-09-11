@@ -6,6 +6,11 @@
 
 # Release notes
 
+### 4.1.3: Breaking change: Res Convenience methods for responding
+
+`Redirect` is now a static method `Res.Redirect` as we provide a number of 
+convenience methods eg. `Res.OK()` and `Res.GatewayTimeout`.
+
 ### 4.1.2: Convenience methods for starting server
 
 We provide `HttpServer(3000)` and `HttpsServer(3000, certs)` as quick easy ways to provide a server.

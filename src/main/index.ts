@@ -1,3 +1,6 @@
+import {Res} from "./core/Res";
+import {get} from "./core/Routing";
+import {HttpServer} from "./servers/NativeServer";
 export * from "./core/Routing";
 export * from "./core/Req";
 export * from "./core/Res";
@@ -18,3 +21,7 @@ export * from "./client/HttpClient";
 export * from "./client/HttpsClient";
 
 export * from "./zipkin/Zipkin";
+
+get('/', async() => Res.OK('hello, world'))
+    .asServer(HttpServer(3001))
+    .start();

@@ -53,6 +53,11 @@ HttpClient(ReqOf(Method.GET, "http://localhost:3000/any/path"))
 
 [Full Release Notes here](https://tomshacham.github.io/http4js/Release-notes/#release-notes)
 
+### 4.1.3: Breaking change: Res Convenience methods for responding
+
+`Redirect` is now a static method `Res.Redirect` as we provide a number of 
+convenience methods eg. `Res.OK()` and `Res.GatewayTimeout`.
+
 ### 4.1.2: Convenience methods for starting server
 
 We provide `HttpServer(3000)` and `HttpsServer(3000, certs)` as quick easy ways to provide a server.
@@ -97,15 +102,12 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 
 ## To dos
 
-- HttpS client use inStream?
-- extract Form, Query, Headers?
+- extract Form, Query
 - example app
 - withOptions on withPost
 - convenience response methods eg ok()
-- generalise routing to an interface, use totallylazy to implement new types of routing
-- chain withHeaders calls on an http client
 - client side httpclient (from stu)
-- update example app
+- generalise routing to an interface, use totallylazy to implement new types of routing
 - reversible routing
   - what happens if names conflict?
   - what if multiple handlers match by path

@@ -140,12 +140,27 @@ get("/", async (req) => ResOf(200, "Hello, world!"))
 HttpClient(ReqOf("GET", "http://localhost:3000/")).then(res=>console.log(res));
 ```
 
-We also have a dumb redirect helper 
+We also have `Res` helpers to be succinct
 
 ```typescript
-Redirect(302, "/somewhere/else") 
+Res.OK
+Res.Created
+Res.NoContent
+Res.Redirect
+Res.MovedPermanently
+Res.Found
+Res.SeeOther
+Res.NotModified
+Res.TemporaryRedirect
+Res.BadRequest
+Res.Unauthorized
+Res.Forbidden
+Res.NotFound
+Res.InternalServerError
+Res.BadGateway
+Res.ServiceUnavailable
+Res.GatewayTimeout
 ```
-
 which is just sugar for `ResOf(302).withHeader("Location", "/somewhere/else")`
 
 The full api is as follows:

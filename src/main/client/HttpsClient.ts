@@ -1,5 +1,6 @@
 import * as https from "https";
 import {HeadersType, Req, Res, ResOf} from "../";
+import {Readable} from "stream";
 
 export async function HttpsClient(req: Req): Promise<Res> {
     const options = req.uri.asNativeNodeRequest;
@@ -12,12 +13,14 @@ export async function HttpsClient(req: Req): Promise<Res> {
     // type system needs a hand
     const promise: Promise<Res> = new Promise(resolve => {
         https.request(reqOptions, (res) => {
-            const chunks: Buffer[] = [];
-            res.on('data', (chunk: Buffer) => {
-                chunks.push(chunk);
-            });
-            res.on('end', () => {
-                return resolve(ResOf(res.statusCode, Buffer.concat(chunks).toString(), res.headers as HeadersType));
+            const inStream = new Readable({ read() {} });
+            res.on('error', (err: any) => {
+                console.error(err);
+            }).on('data', (chunk: Buffer) => {
+                inStream.push(chunk);
+            }).on('end', () => {
+                inStream.push(null); // No more data
+                return resolve(ResOf(res.statusCode, inStream, res.headers as HeadersType));
             });
         }).end();
     });

@@ -1,11 +1,8 @@
 import {Uri} from "./Uri";
 import {isNullOrUndefined} from "util";
 import {Headers, HeaderValues} from "./Headers";
-import {HttpMessage, HeadersType} from "./HttpMessage";
-import {KeyValues} from "./HttpMessage";
-import {Form} from "./HttpMessage";
+import {HttpMessage, HeadersType, KeyValues, Form, FormField, BodyType} from "./HttpMessage";
 import {Body} from "./Body";
-import {FormField} from "./HttpMessage";
 import {Readable} from "stream";
 
 export class Req implements HttpMessage {
@@ -20,7 +17,7 @@ export class Req implements HttpMessage {
 
     constructor(method: string,
                 uri: Uri | string,
-                body: Body | Readable | string = '',
+                body: Body | BodyType = '',
                 headers: Headers | HeadersType = {}) {
         this.method = method.toUpperCase();
         if (typeof uri == "string") {
@@ -67,7 +64,7 @@ export class Req implements HttpMessage {
         return new Req(this.method, this.uri, this.body, Headers.of(this.headers).removeHeader(name));
     }
 
-    withBody(body: Body | Readable | string): Req {
+    withBody(body: Body | BodyType): Req {
         return new Req(this.method, this.uri, body, this.headers);
     }
 
@@ -178,7 +175,7 @@ export class Req implements HttpMessage {
 
 export function ReqOf(method: string,
                     uri: Uri | string,
-                    body: Body | Readable | string = '',
+                    body: Body | BodyType = '',
                     headers = {}): Req {
     return new Req(method, uri, body, headers);
 }

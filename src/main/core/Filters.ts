@@ -1,6 +1,6 @@
 import {Req} from "./Req";
 import {HttpHandler, HeadersType} from "./HttpMessage";
-import {Redirect, Res} from "./Res";
+import {Res} from "./Res";
 import {ZipkinIdGenerator, IdGenerator, ZipkinHeaders} from "../zipkin/Zipkin";
 import {Clock} from "./Clock";
 
@@ -9,7 +9,7 @@ export type Filter = (HttpHandler: HttpHandler) => HttpHandler
 export class Filters {
     static UPGRADE_TO_HTTPS: Filter = (handler: HttpHandler) => async (req: Req) => {
         if (req.header('x-forwarded-proto') !== 'https') {
-            return Redirect(301, `https://${req.uri.hostname()}:${req.uri.port()}${req.uri.path()}`)
+            return Res.Redirect(301, `https://${req.uri.hostname()}:${req.uri.port()}${req.uri.path()}`)
         } else {
             return handler(req);
         }
