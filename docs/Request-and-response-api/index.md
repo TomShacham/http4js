@@ -90,6 +90,9 @@ req.formBodyString()
  */
 ```
 
+`withForm` and `withFormField` will accumulate values as expected in a form and set the `Content-Type` header
+to `application/x-www-form-urlencoded`.
+
 ### How it works
 
 Our `NativeHttpServer` sees that the `Res` has a `bodyStream` and streams the outgoing response.
