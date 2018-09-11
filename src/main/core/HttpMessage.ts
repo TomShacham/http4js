@@ -5,7 +5,7 @@ import {Readable} from "stream";
 
 export type KeyValues = {[key:string]: string};
 export type FormField = string|string[];
-export type Form = {[key:string]: FormField};
+export type FormType = {[key:string]: FormField};
 export type HeadersType = {[key:string]: string};
 export type BodyType = Readable | string;
 

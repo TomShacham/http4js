@@ -103,14 +103,14 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 ## To dos
 
 - extract Form, Query
+    - rename FormType HeadersType to FormJson HeadersJson
 - example app
-- withOptions on withPost
-- convenience response methods eg ok()
-- client side httpclient (from stu)
+    - withOptions on withPost
 - generalise routing to an interface, use totallylazy to implement new types of routing
 - reversible routing
   - what happens if names conflict?
   - what if multiple handlers match by path
+- client side httpclient (from stu)
   
 ## Running HTTPS Server tests
 
