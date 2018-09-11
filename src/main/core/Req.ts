@@ -71,12 +71,13 @@ export class Req implements HttpMessage {
     }
 
     withFormField(name: string, value: FormField): Req {
-        const form = Form.of(this.bodyForm()).withFormField(name, value).asObject();
-        return this.withForm(form)
+        const newFormBodyString = Form.of(this.bodyForm()).withFormField(name, value).formBodyString();
+        return ReqOf(this.method, this.uri, newFormBodyString, this.headers)
+            .replaceHeader(Headers.CONTENT_TYPE, HeaderValues.FORM);
     }
 
     withForm(form: FormType): Req {
-        return ReqOf(this.method, this.uri, Form.of(form).formBodyString(), this.headers)
+        return ReqOf(this.method, this.uri, Form.of(this.bodyForm()).withForm(form).formBodyString(), this.headers)
             .replaceHeader(Headers.CONTENT_TYPE, HeaderValues.FORM);
     }
 

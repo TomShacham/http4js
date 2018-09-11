@@ -61,6 +61,13 @@ describe('in mem request', () => {
         equal(formRequest.bodyString(), 'name=tosh&name=bosh&name=losh');
     });
 
+    it('merges many forms', () => {
+        const formRequest = ReqOf('POST', '/')
+            .withForm({name: 'tosh', age: '27'})
+            .withForm({name: 'bosh', age: '31'});
+        equal(formRequest.bodyString(), 'name=tosh&name=bosh&age=27&age=31');
+    });
+
     it('gives form field as list of strings', () => {
         const formRequest = ReqOf('POST', '/')
             .withFormField('name', ['tosh', 'bosh']);

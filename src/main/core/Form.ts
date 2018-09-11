@@ -43,6 +43,13 @@ export class Form {
         return Form.of(form)
     }
 
+    withForm(newForm: FormType): Form {
+        const existingForm = Form.of({...this.form});
+        return Object.keys(newForm).reduce((form: Form, fieldName: string) => {
+            return form.withFormField(fieldName, newForm[fieldName]);
+        }, existingForm);
+    }
+
     asObject(): FormType {
         return this.form;
     }
