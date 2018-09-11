@@ -12,7 +12,7 @@ export class Req implements HttpMessage {
 
     uri: Uri;
     method: string;
-    headers: HeadersType = {};
+    headers: HeadersType;
     body: Body;
     queries: KeyValues = {};
     pathParams: KeyValues = {};
@@ -21,7 +21,7 @@ export class Req implements HttpMessage {
     constructor(method: string,
                 uri: Uri | string,
                 body: Body | Readable | string = '',
-                headers = {}) {
+                headers: Headers | HeadersType = {}) {
         this.method = method.toUpperCase();
         if (typeof uri == "string") {
             const uriNoTrailingSlash = uri.endsWith('/') && uri !== "/" ? uri.slice(0, -1) : uri;
@@ -34,44 +34,37 @@ export class Req implements HttpMessage {
         } else {
             this.body = body;
         }
-        this.headers = headers ? headers : {};
+        this.headers = headers instanceof Headers ? headers.asObject() : headers;
         this.queries = this.getQueryParams(this.uri);
         return this;
     }
 
     withUri(uri: Uri | string): Req {
-        return new Req(this.method, uri, this.body, this.headers);
+        return new Req(this.method, uri, this.body, Headers.of(this.headers));
     }
 
     header(name: string): string {
-        return this.headers[name.toLowerCase()];
+        return Headers.of(this.headers).header(name);
     }
 
     withHeader(name: string, value: string): Req {
-        const headers: HeadersType = {...this.headers};
-        const lowercaseName = name.toLowerCase();
-        if (headers[lowercaseName] == null) {
-            headers[lowercaseName] = value;
-        } else if (typeof headers[lowercaseName] === "string") {
-            headers[lowercaseName] = [...headers[lowercaseName].split(', '), value].join(', ');
-        }
-        return new Req(this.method, this.uri, this.body, headers);
+        return new Req(this.method, this.uri, this.body, Headers.of(this.headers).withHeader(name, value));
     }
 
     withHeaders(headers: HeadersType): Req {
-        return new Req(this.method, this.uri, this.body, {...this.headers, ...headers});
+        return new Req(this.method, this.uri, this.body, Headers.of(this.headers).withHeaders(headers));
     }
 
     replaceHeader(name: string, value: string): Req {
-        const headers = {...this.headers};
-        headers[name] = value;
-        return new Req(this.method, this.uri, this.body, headers);
+        return new Req(this.method, this.uri, this.body, Headers.of(this.headers).replaceHeader(name, value));
+    }
+
+    replaceAllHeaders(headers: HeadersType): Req {
+        return new Req(this.method, this.uri, this.body, Headers.of(this.headers).replaceAllHeaders(headers));
     }
 
     removeHeader(name: string): Req {
-        const headers = {...this.headers};
-        delete headers[name];
-        return new Req(this.method, this.uri, this.body, headers);
+        return new Req(this.method, this.uri, this.body, Headers.of(this.headers).removeHeader(name));
     }
 
     withBody(body: Body | Readable | string): Req {

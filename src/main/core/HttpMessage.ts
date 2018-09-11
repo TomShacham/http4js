@@ -13,15 +13,11 @@ export interface HttpMessage {
     body: Body;
 
     header(name: string): string;
-
     withHeader(name: string, value: string): HttpMessage;
-
     replaceHeader(name: string, value: string): HttpMessage
-
+    replaceAllHeaders(headers: HeadersType): HttpMessage
     removeHeader(name: string): HttpMessage
-
     withBody(body: string): HttpMessage
-
     bodyString(): string
 
 }

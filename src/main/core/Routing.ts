@@ -1,12 +1,12 @@
-import {Res} from "./Res";
-import {HttpHandler, KeyValues, HeadersType} from "./HttpMessage";
+import {Res, ResOf} from "./Res";
+import {HttpHandler, HeadersType} from "./HttpMessage";
 import {Req} from "./Req";
 import {Uri} from "./Uri";
 import {Filter} from "./Filters";
 import {Http4jsServer} from "../servers/Server";
-import {ResOf} from "./Res";
 import {HttpClient} from "../client/HttpClient";
 import {HttpServer} from "../servers/NativeServer";
+import {Headers} from "./Headers";
 
 export type MountedHttpHandler = { path: string, method: string, headers: HeadersType, handler: HttpHandler, name: string }
 export type DescribingHttpHandler = { path: string, method: string, headers: HeadersType, name: string }

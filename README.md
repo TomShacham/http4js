@@ -97,8 +97,10 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 
 ## To dos
 
-- refactor req to not use clone
-- extract Form
+- HttpS client use inStream?
+- extract Form, Query, Headers?
+    - headers withHeaders test not override but merge
+    - Body.of instead of BodyOf
 - example app
 - withOptions on withPost
 - convenience response methods eg ok()

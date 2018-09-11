@@ -2,57 +2,47 @@ import {HttpMessage, HeadersType} from "./HttpMessage";
 import {Body} from "./Body";
 import {BodyOf} from "./Body";
 import {Readable} from "stream";
+import {Headers} from "./Headers";
 
 export class Res implements HttpMessage {
-    headers: HeadersType = {};
+    headers: HeadersType;
     body: Body;
     status: number;
 
     constructor(status: number = 200,
                 body: Body | Readable | string = '',
-                headers: HeadersType = {}) {
+                headers: Headers | HeadersType = Headers.of({})) {
         this.status = status;
         if (typeof body === 'string' || body instanceof Readable) {
             this.body = BodyOf(body);
         } else {
             this.body = body;
         }
-        this.headers = headers;
+        this.headers = headers instanceof Headers ? headers.asObject() : headers;
     }
 
     header(name: string): string {
-        return this.headers[name.toLowerCase()];
+        return Headers.of(this.headers).header(name);
     }
 
     withHeader(name: string, value: string): Res {
-        const headers: HeadersType = {...this.headers};
-        const lowercaseName = name.toLowerCase();
-        if (headers[lowercaseName] == null) {
-            headers[lowercaseName] = value;
-        } else if (typeof headers[lowercaseName] === "string") {
-            headers[lowercaseName] = [...headers[lowercaseName].split(', '), value].join(', ');
-        }
-        return new Res(this.status, this.body, headers);
+        return new Res(this.status, this.body, Headers.of(this.headers).withHeader(name, value));
     }
 
     withHeaders(headers: HeadersType): Res {
-        return new Res(this.status, this.body, {...this.headers, ...headers});
+        return new Res(this.status, this.body, Headers.of(this.headers).withHeaders(headers));
+    }
+
+    replaceHeader(name: string, value: string): Res {
+        return new Res(this.status, this.body, Headers.of(this.headers).replaceHeader(name, value));
     }
 
     replaceAllHeaders(headers: HeadersType): Res {
         return new Res(this.status, this.body, headers);
     }
 
-    replaceHeader(name: string, value: string): Res {
-        const headers = {...this.headers};
-        headers[name] = value;
-        return new Res(this.status, this.body, headers);
-    }
-
     removeHeader(name: string): Res {
-        const headers = {...this.headers};
-        delete headers[name];
-        return new Res(this.status, this.body, headers);
+        return new Res(this.status, this.body, Headers.of(this.headers).removeHeader(name));
     }
 
     withBody(body: Body | Readable | string): Res {
@@ -71,7 +61,7 @@ export class Res implements HttpMessage {
 
 export function ResOf(status: number = 200,
                       body: Body | Readable | string = '',
-                      headers: HeadersType = {}): Res {
+                      headers: Headers | HeadersType = Headers.of({})): Res {
     return new Res(status, body, headers);
 }
 

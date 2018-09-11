@@ -1,39 +1,92 @@
-export enum Headers {
+import {HeadersType} from "./HttpMessage";
+
+export class Headers {
+    private headers: HeadersType;
+
+    constructor(headers: HeadersType) {
+        this.headers = headers;
+    }
+
+    static of(headers: HeadersType): Headers {
+        return new Headers(headers);
+    }
+
+    asObject(): HeadersType {
+        return this.headers;
+    }
+
+    header(name: string): string {
+        return this.headers[name.toLowerCase()];
+    }
+
+    withHeader(name: string, value: string): Headers {
+        const headers: HeadersType = { ...this.asObject() };
+        const lowercaseName = name.toLowerCase();
+        if (headers[lowercaseName] == null) {
+            headers[lowercaseName] = value;
+        } else if (typeof headers[lowercaseName] === "string") {
+            headers[lowercaseName] = [...headers[lowercaseName].split(', '), value].join(', ');
+        }
+        return Headers.of(headers);
+    }
+
+    withHeaders(headers: HeadersType): Headers {
+        return Object.keys(headers).reduce((mergedHeaders: Headers, newHeaderKey: string) => {
+            return mergedHeaders.withHeader(newHeaderKey, headers[newHeaderKey])
+        }, this);
+    }
+
+    replaceHeader(name: string, value: string): Headers {
+        const headers = { ...this.headers };
+        headers[name] = value;
+        return Headers.of(headers)
+    }
+
+    replaceAllHeaders(headers: HeadersType): Headers {
+        return Headers.of(headers)
+    }
+
+    removeHeader(name: string): Headers {
+        const headers = { ...this.headers };
+        delete headers[name];
+        return Headers.of(headers)
+    }
+
     //Req headers
-    ACCEPT = "Accept",
-    ACCEPT_ENCODING = "Accept-Encoding",
-    ACCESS_CONTROL_REQUEST_METHOD = "Access-Control-Req-Method",
-    ACCESS_CONTROL_REQUEST_HEADERS = "Access-Control-Req-Headers",
-    ALLOW = "Allow",
-    AUTHORIZATION = "Authorization",
-    CACHE_CONTROL = "Cache-Control",
-    COOKIE = "Cookie",
-    CONTENT_LENGTH = "Content-Length",
-    CONTENT_TYPE = "Content-Type",
-    FORWARDED = "Forwarded",
-    HOST = "Host",
-    REFERER = "Referer",
-    USER_AGENT = "User-Agent",
-    X_FORWARDED_FOR = "X-Forwarded-For",
-    X_FORWARDED_Host = "X-Forwarded-Host",
-    X_CSRF_TOKEN = "X-Csrf-Token",
+    static ACCEPT: string = "Accept";
+    static ACCEPT_ENCODING: string = "Accept-Encoding";
+    static ACCESS_CONTROL_REQUEST_METHOD: string = "Access-Control-Req-Method";
+    static ACCESS_CONTROL_REQUEST_HEADERS: string = "Access-Control-Req-Headers";
+    static ALLOW: string = "Allow";
+    static AUTHORIZATION: string = "Authorization";
+    static CACHE_CONTROL: string = "Cache-Control";
+    static COOKIE: string = "Cookie";
+    static CONTENT_LENGTH: string = "Content-Length";
+    static CONTENT_TYPE: string = "Content-Type";
+    static FORWARDED: string = "Forwarded";
+    static HOST: string = "Host";
+    static REFERER: string = "Referer";
+    static USER_AGENT: string = "User-Agent";
+    static X_FORWARDED_FOR: string = "X-Forwarded-For";
+    static X_FORWARDED_Host: string = "X-Forwarded-Host";
+    static X_CSRF_TOKEN: string = "X-Csrf-Token";
 
         //Res headers
-    ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin",
-    ACCESS_CONTROL_ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials",
-    ACCESS_CONTROL_EXPOSE_HEADERS = "Access-Control-Expose-Headers",
-    ACCESS_CONTROL_MAX_AGE = "Access-Control-Max-Age",
-    ACCESS_CONTROL_ALLOW_METHODS = "Access-Control-Allow-Methods",
-    ACCESS_CONTROL_ALLOW_HEADERS = "Access-Control-Allow-Headers",
-    ETAG = "ETag",
-    EXPIRES = "Expires",
-    LAST_MODIFIED = "Last-Modified",
-    LOCATION = "Location",
-    SERVER = "Server",
-    SET_COOKIE = "Set-Cookie",
-    TRANSFER_ENCODING = "Transfer-Encoding",
-    VARY = "Vary",
-    WWW_AUTHENTICATE = "WWW-Authenticate",
+    static ACCESS_CONTROL_ALLOW_ORIGIN: string = "Access-Control-Allow-Origin";
+    static ACCESS_CONTROL_ALLOW_CREDENTIALS: string = "Access-Control-Allow-Credentials";
+    static ACCESS_CONTROL_EXPOSE_HEADERS: string = "Access-Control-Expose-Headers";
+    static ACCESS_CONTROL_MAX_AGE: string = "Access-Control-Max-Age";
+    static ACCESS_CONTROL_ALLOW_METHODS: string = "Access-Control-Allow-Methods";
+    static ACCESS_CONTROL_ALLOW_HEADERS: string = "Access-Control-Allow-Headers";
+    static ETAG: string = "ETag";
+    static EXPIRES: string = "Expires";
+    static LAST_MODIFIED: string = "Last-Modified";
+    static LOCATION: string = "Location";
+    static SERVER: string = "Server";
+    static SET_COOKIE: string = "Set-Cookie";
+    static TRANSFER_ENCODING: string = "Transfer-Encoding";
+    static VARY: string = "Vary";
+    static WWW_AUTHENTICATE: string = "WWW-Authenticate";
 }
 
 export enum HeaderValues {
