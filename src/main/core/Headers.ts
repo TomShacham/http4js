@@ -1,17 +1,17 @@
-import {HeadersType} from "./HttpMessage";
+import {HeadersJson} from "./HttpMessage";
 
 export class Headers {
-    private headers: HeadersType;
+    private headers: HeadersJson;
 
-    constructor(headers: HeadersType) {
+    constructor(headers: HeadersJson) {
         this.headers = headers;
     }
 
-    static of(headers: HeadersType): Headers {
+    static of(headers: HeadersJson): Headers {
         return new Headers(headers);
     }
 
-    asObject(): HeadersType {
+    asObject(): HeadersJson {
         return this.headers;
     }
 
@@ -20,7 +20,7 @@ export class Headers {
     }
 
     withHeader(name: string, value: string): Headers {
-        const headers: HeadersType = { ...this.asObject() };
+        const headers: HeadersJson = { ...this.asObject() };
         const lowercaseName = name.toLowerCase();
         if (headers[lowercaseName] == null) {
             headers[lowercaseName] = value;
@@ -30,7 +30,7 @@ export class Headers {
         return Headers.of(headers);
     }
 
-    withHeaders(headers: HeadersType): Headers {
+    withHeaders(headers: HeadersJson): Headers {
         return Object.keys(headers).reduce((mergedHeaders: Headers, newHeaderKey: string) => {
             return mergedHeaders.withHeader(newHeaderKey, headers[newHeaderKey])
         }, this);
@@ -42,7 +42,7 @@ export class Headers {
         return Headers.of(headers)
     }
 
-    replaceAllHeaders(headers: HeadersType): Headers {
+    replaceAllHeaders(headers: HeadersJson): Headers {
         return Headers.of(headers)
     }
 

@@ -1,5 +1,5 @@
 import {Res, ResOf} from "./Res";
-import {HttpHandler, HeadersType} from "./HttpMessage";
+import {HttpHandler, HeadersJson} from "./HttpMessage";
 import {Req} from "./Req";
 import {Uri} from "./Uri";
 import {Filter} from "./Filters";
@@ -8,8 +8,8 @@ import {HttpClient} from "../client/HttpClient";
 import {HttpServer} from "../servers/NativeServer";
 import {Headers} from "./Headers";
 
-export type MountedHttpHandler = { path: string, method: string, headers: HeadersType, handler: HttpHandler, name: string }
-export type DescribingHttpHandler = { path: string, method: string, headers: HeadersType, name: string }
+export type MountedHttpHandler = { path: string, method: string, headers: HeadersJson, handler: HttpHandler, name: string }
+export type DescribingHttpHandler = { path: string, method: string, headers: HeadersJson, name: string }
 
 export class Routing {
 
@@ -20,7 +20,7 @@ export class Routing {
 
     constructor(method: string,
                 path: string,
-                headers: HeadersType = {},
+                headers: HeadersJson = {},
                 handler: HttpHandler,
                 name: string = 'unnamed route') {
         const pathNoTrailingSlash = path.endsWith('/') && path !== "/" ? path.slice(0, -1) : path;
@@ -47,7 +47,7 @@ export class Routing {
         return this;
     }
 
-    withHandler(method: string, path: string, handler: HttpHandler, headers: HeadersType = {}, name = 'unnamed'): Routing {
+    withHandler(method: string, path: string, handler: HttpHandler, headers: HeadersJson = {}, name = 'unnamed'): Routing {
         this.handlers.push({path, method, headers, handler, name});
         return this;
     }
@@ -176,7 +176,7 @@ export class Routing {
 
 }
 
-export function routes(method: string, path: string, handler: HttpHandler, headers: HeadersType = {}): Routing {
+export function routes(method: string, path: string, handler: HttpHandler, headers: HeadersJson = {}): Routing {
     return new Routing(method, path, headers, handler);
 }
 
@@ -184,26 +184,26 @@ export function route(request: Req, handler: HttpHandler): Routing {
     return new Routing(request.method, request.uri.path(), request.headers, handler);
 }
 
-export function get(path: string, handler: HttpHandler, headers: HeadersType = {}, name: string = 'unnamed'): Routing {
+export function get(path: string, handler: HttpHandler, headers: HeadersJson = {}, name: string = 'unnamed'): Routing {
     return new Routing("GET", path, headers, handler, name);
 }
 
-export function post(path: string, handler: HttpHandler, headers: HeadersType = {}, name: string = 'unnamed'): Routing {
+export function post(path: string, handler: HttpHandler, headers: HeadersJson = {}, name: string = 'unnamed'): Routing {
     return new Routing("POST", path, headers, handler, name);
 }
 
-export function put(path: string, handler: HttpHandler, headers: HeadersType = {}, name: string = 'unnamed'): Routing {
+export function put(path: string, handler: HttpHandler, headers: HeadersJson = {}, name: string = 'unnamed'): Routing {
     return new Routing("PUT", path, headers, handler, name);
 }
 
-export function patch(path: string, handler: HttpHandler, headers: HeadersType = {}, name: string = 'unnamed'): Routing {
+export function patch(path: string, handler: HttpHandler, headers: HeadersJson = {}, name: string = 'unnamed'): Routing {
     return new Routing("PATCH", path, headers, handler, name);
 }
 
-export function options(path: string, handler: HttpHandler, headers: HeadersType = {}, name: string = 'unnamed'): Routing {
+export function options(path: string, handler: HttpHandler, headers: HeadersJson = {}, name: string = 'unnamed'): Routing {
     return new Routing("OPTIONS", path, headers, handler, name);
 }
 
-export function head(path: string, handler: HttpHandler, headers: HeadersType = {}, name: string = 'unnamed'): Routing {
+export function head(path: string, handler: HttpHandler, headers: HeadersJson = {}, name: string = 'unnamed'): Routing {
     return new Routing("HEAD", path, headers, handler, name);
 }

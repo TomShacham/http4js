@@ -1,5 +1,5 @@
 import * as https from "https";
-import {HeadersType, Req, Res, ResOf} from "../";
+import {HeadersJson, Req, Res, ResOf} from "../";
 import {Readable} from "stream";
 
 export async function HttpsClient(req: Req): Promise<Res> {
@@ -20,7 +20,7 @@ export async function HttpsClient(req: Req): Promise<Res> {
                 inStream.push(chunk);
             }).on('end', () => {
                 inStream.push(null); // No more data
-                return resolve(ResOf(res.statusCode, inStream, res.headers as HeadersType));
+                return resolve(ResOf(res.statusCode, inStream, res.headers as HeadersJson));
             });
         }).end();
     });

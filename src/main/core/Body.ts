@@ -1,11 +1,11 @@
 import {Readable} from "stream";
-import {BodyType} from "./HttpMessage";
+import {BodyContent} from "./HttpMessage";
 
 export class Body {
     private readStream: Readable | undefined;
     private bodystring: string | undefined;
 
-    constructor(data: BodyType) {
+    constructor(data: BodyContent) {
         if (typeof data === 'string') {
             this.bodystring = data;
         } else {
@@ -13,7 +13,7 @@ export class Body {
         }
     }
 
-    static of(data: BodyType): Body {
+    static of(data: BodyContent): Body {
         return new Body(data);
     }
 

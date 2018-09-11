@@ -1,5 +1,5 @@
 import {Req} from "./Req";
-import {HttpHandler, HeadersType} from "./HttpMessage";
+import {HttpHandler, HeadersJson} from "./HttpMessage";
 import {Res} from "./Res";
 import {ZipkinIdGenerator, IdGenerator, ZipkinHeaders} from "../zipkin/Zipkin";
 import {Clock} from "./Clock";
@@ -37,7 +37,7 @@ export function zipkinFilterBuilder(generator: IdGenerator): Filter {
         const debug = req.header(ZipkinHeaders.DEBUG);
         const sampled = req.header(ZipkinHeaders.SAMPLED);
         const isTopLevelRequest = req.header(ZipkinHeaders.PARENT_ID) === undefined;
-        const zipkinHeaders: HeadersType = {
+        const zipkinHeaders: HeadersJson = {
             [ZipkinHeaders.PARENT_ID]: req.header(ZipkinHeaders.PARENT_ID) || generator.newId(16),
             [ZipkinHeaders.SPAN_ID]: req.header(ZipkinHeaders.SPAN_ID) || generator.newId(16),
             [ZipkinHeaders.TRACE_ID]: req.header(ZipkinHeaders.TRACE_ID) || generator.newId(32),

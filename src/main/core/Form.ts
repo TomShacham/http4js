@@ -1,13 +1,13 @@
-import {FormType, FormField} from "./HttpMessage";
+import {FormJson, FormField} from "./HttpMessage";
 
 export class Form {
-    private form: FormType;
+    private form: FormJson;
 
-    constructor(form: FormType) {
+    constructor(form: FormJson) {
         this.form = form;
     }
 
-    static of(form: FormType) {
+    static of(form: FormJson) {
         return new Form(form);
     }
 
@@ -43,14 +43,14 @@ export class Form {
         return Form.of(form)
     }
 
-    withForm(newForm: FormType): Form {
+    withForm(newForm: FormJson): Form {
         const existingForm = Form.of({...this.form});
         return Object.keys(newForm).reduce((form: Form, fieldName: string) => {
             return form.withFormField(fieldName, newForm[fieldName]);
         }, existingForm);
     }
 
-    asObject(): FormType {
+    asObject(): FormJson {
         return this.form;
     }
 

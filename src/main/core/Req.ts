@@ -1,26 +1,26 @@
 import {Uri} from "./Uri";
 import {isNullOrUndefined} from "util";
 import {Headers, HeaderValues} from "./Headers";
-import {HttpMessage, HeadersType, KeyValues, FormField, BodyType} from "./HttpMessage";
+import {HttpMessage, HeadersJson, KeyValues, FormField, BodyContent} from "./HttpMessage";
 import {Body} from "./Body";
 import {Readable} from "stream";
-import {FormType} from "./HttpMessage";
+import {FormJson} from "./HttpMessage";
 import {Form} from "./Form";
 
 export class Req implements HttpMessage {
 
     uri: Uri;
     method: string;
-    headers: HeadersType;
+    headers: HeadersJson;
     body: Body;
     queries: KeyValues = {};
     pathParams: KeyValues = {};
-    private form: FormType = {};
+    private form: FormJson = {};
 
     constructor(method: string,
                 uri: Uri | string,
-                body: Body | BodyType = '',
-                headers: Headers | HeadersType = {}) {
+                body: Body | BodyContent = '',
+                headers: Headers | HeadersJson = {}) {
         this.method = method.toUpperCase();
         if (typeof uri == "string") {
             const uriNoTrailingSlash = uri.endsWith('/') && uri !== "/" ? uri.slice(0, -1) : uri;
@@ -50,7 +50,7 @@ export class Req implements HttpMessage {
         return new Req(this.method, this.uri, this.body, Headers.of(this.headers).withHeader(name, value));
     }
 
-    withHeaders(headers: HeadersType): Req {
+    withHeaders(headers: HeadersJson): Req {
         return new Req(this.method, this.uri, this.body, Headers.of(this.headers).withHeaders(headers));
     }
 
@@ -58,7 +58,7 @@ export class Req implements HttpMessage {
         return new Req(this.method, this.uri, this.body, Headers.of(this.headers).replaceHeader(name, value));
     }
 
-    replaceAllHeaders(headers: HeadersType): Req {
+    replaceAllHeaders(headers: HeadersJson): Req {
         return new Req(this.method, this.uri, this.body, Headers.of(this.headers).replaceAllHeaders(headers));
     }
 
@@ -66,7 +66,7 @@ export class Req implements HttpMessage {
         return new Req(this.method, this.uri, this.body, Headers.of(this.headers).removeHeader(name));
     }
 
-    withBody(body: Body | BodyType): Req {
+    withBody(body: Body | BodyContent): Req {
         return new Req(this.method, this.uri, body, this.headers);
     }
 
@@ -76,7 +76,7 @@ export class Req implements HttpMessage {
             .replaceHeader(Headers.CONTENT_TYPE, HeaderValues.FORM);
     }
 
-    withForm(form: FormType): Req {
+    withForm(form: FormJson): Req {
         return ReqOf(this.method, this.uri, Form.of(this.bodyForm()).withForm(form).formBodyString(), this.headers)
             .replaceHeader(Headers.CONTENT_TYPE, HeaderValues.FORM);
     }
@@ -93,7 +93,7 @@ export class Req implements HttpMessage {
         return this.body.bodyStream();
     }
 
-    bodyForm(): FormType {
+    bodyForm(): FormJson {
         return Form.fromBodyString(this.bodyString()).asObject();
     }
 
@@ -134,7 +134,7 @@ export class Req implements HttpMessage {
 
 export function ReqOf(method: string,
                     uri: Uri | string,
-                    body: Body | BodyType = '',
+                    body: Body | BodyContent = '',
                     headers = {}): Req {
     return new Req(method, uri, body, headers);
 }

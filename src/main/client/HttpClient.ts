@@ -3,7 +3,7 @@ import {IncomingMessage} from "http";
 import {Res, ResOf} from "../core/Res";
 import {Req} from "../core/Req";
 import {Headers, HeaderValues} from "../core/Headers";
-import {HeadersType} from "../core/HttpMessage";
+import {HeadersJson} from "../core/HttpMessage";
 
 export function HttpClient(request: Req): Promise<Res> {
     switch (request.method) {
@@ -24,7 +24,7 @@ function get(request: Req): Promise<Res> {
 
     return new Promise(resolve => {
         http.request(requestOptions, (res: IncomingMessage) => {
-            return resolve(ResOf(res.statusCode, res, res.headers as HeadersType));
+            return resolve(ResOf(res.statusCode, res, res.headers as HeadersJson));
         }).end();
     });
 }
@@ -42,7 +42,7 @@ function wire(req: Req): Promise<Res> {
 
     return new Promise(resolve => {
         const clientRequest = http.request(requestOptions, (res: IncomingMessage) => {
-            return resolve(ResOf(res.statusCode, res, res.headers as HeadersType));
+            return resolve(ResOf(res.statusCode, res, res.headers as HeadersJson));
         });
         if (req.bodyStream()){
             req.bodyStream()!.pipe(clientRequest);

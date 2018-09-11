@@ -1,11 +1,11 @@
-import {HeadersType, HttpHandler} from "../core/HttpMessage";
+import {HeadersJson, HttpHandler} from "../core/HttpMessage";
 import {Req} from "../core/Req";
 import {HttpClient} from "./HttpClient";
 import {ZipkinHeaders} from "../zipkin/Zipkin";
 
 export class Client {
 
-    static withHeaders(headers: HeadersType): HttpHandler {
+    static withHeaders(headers: HeadersJson): HttpHandler {
         return (req: Req) => HttpClient(req.withHeaders(headers));
     }
 

@@ -1,17 +1,17 @@
-import {HttpMessage, HeadersType} from "./HttpMessage";
+import {HttpMessage, HeadersJson} from "./HttpMessage";
 import {Body} from "./Body";
 import {Readable} from "stream";
 import {Headers} from "./Headers";
-import {BodyType} from "./HttpMessage";
+import {BodyContent} from "./HttpMessage";
 
 export class Res implements HttpMessage {
-    headers: HeadersType;
+    headers: HeadersJson;
     body: Body;
     status: number;
 
     constructor(status: number = 200,
-                body: Body | BodyType = '',
-                headers: Headers | HeadersType = Headers.of({})) {
+                body: Body | BodyContent = '',
+                headers: Headers | HeadersJson = Headers.of({})) {
         this.status = status;
         if (typeof body === 'string' || body instanceof Readable) {
             this.body = Body.of(body);
@@ -29,7 +29,7 @@ export class Res implements HttpMessage {
         return new Res(this.status, this.body, Headers.of(this.headers).withHeader(name, value));
     }
 
-    withHeaders(headers: HeadersType): Res {
+    withHeaders(headers: HeadersJson): Res {
         return new Res(this.status, this.body, Headers.of(this.headers).withHeaders(headers));
     }
 
@@ -37,7 +37,7 @@ export class Res implements HttpMessage {
         return new Res(this.status, this.body, Headers.of(this.headers).replaceHeader(name, value));
     }
 
-    replaceAllHeaders(headers: HeadersType): Res {
+    replaceAllHeaders(headers: HeadersJson): Res {
         return new Res(this.status, this.body, headers);
     }
 
@@ -45,7 +45,7 @@ export class Res implements HttpMessage {
         return new Res(this.status, this.body, Headers.of(this.headers).removeHeader(name));
     }
 
-    withBody(body: Body | BodyType): Res {
+    withBody(body: Body | BodyContent): Res {
         return ResOf(this.status, body, this.headers);
     }
 
@@ -57,79 +57,79 @@ export class Res implements HttpMessage {
         return this.body.bodyStream();
     }
 
-    static OK(body: BodyType, headers: {} = {}): Res {
+    static OK(body: BodyContent, headers: {} = {}): Res {
         return new Res(200, body, headers)
     }
 
-    static Created(body: BodyType, headers: {} = {}): Res {
+    static Created(body: BodyContent, headers: {} = {}): Res {
         return new Res(201, body, headers)
     }
 
-    static NoContent(body: BodyType, headers: {} = {}): Res {
+    static NoContent(body: BodyContent, headers: {} = {}): Res {
         return new Res(204, body, headers)
     }
 
-    static Redirect(status: number = 301, path: string, body: BodyType = '', headers: HeadersType = {}): Res {
+    static Redirect(status: number = 301, path: string, body: BodyContent = '', headers: HeadersJson = {}): Res {
         return new Res(status, body, headers).withHeader("Location", path);
     }
 
-    static MovedPermanently(status: number = 301, body: BodyType = '', path: string, headers: HeadersType = {}): Res {
+    static MovedPermanently(status: number = 301, body: BodyContent = '', path: string, headers: HeadersJson = {}): Res {
         return new Res(status, body, headers).withHeader("Location", path);
     }
 
-    static Found(status: number = 302, body: BodyType = '', path: string, headers: HeadersType = {}): Res {
+    static Found(status: number = 302, body: BodyContent = '', path: string, headers: HeadersJson = {}): Res {
         return new Res(status, body, headers).withHeader("Location", path);
     }
 
-    static SeeOther(status: number = 303, body: BodyType = '', path: string, headers: HeadersType = {}): Res {
+    static SeeOther(status: number = 303, body: BodyContent = '', path: string, headers: HeadersJson = {}): Res {
         return new Res(status, body, headers).withHeader("Location", path);
     }
 
-    static NotModified(status: number = 304, body: BodyType = '', path: string, headers: HeadersType = {}): Res {
+    static NotModified(status: number = 304, body: BodyContent = '', path: string, headers: HeadersJson = {}): Res {
         return new Res(status, body, headers).withHeader("Location", path);
     }
 
-    static TemporaryRedirect(status: number = 307, body: BodyType = '', path: string, headers: HeadersType = {}): Res {
+    static TemporaryRedirect(status: number = 307, body: BodyContent = '', path: string, headers: HeadersJson = {}): Res {
         return new Res(status, body, headers).withHeader("Location", path);
     }
 
-    static BadRequest(status: number = 400, body: BodyType = '', path: string, headers: HeadersType = {}): Res {
+    static BadRequest(status: number = 400, body: BodyContent = '', path: string, headers: HeadersJson = {}): Res {
         return new Res(status, body, headers).withHeader("Location", path);
     }
 
-    static Unauthorized(status: number = 401, body: BodyType = '', path: string, headers: HeadersType = {}): Res {
+    static Unauthorized(status: number = 401, body: BodyContent = '', path: string, headers: HeadersJson = {}): Res {
         return new Res(status, body, headers).withHeader("Location", path);
     }
 
-    static Forbidden(status: number = 403, body: BodyType = '', path: string, headers: HeadersType = {}): Res {
+    static Forbidden(status: number = 403, body: BodyContent = '', path: string, headers: HeadersJson = {}): Res {
         return new Res(status, body, headers).withHeader("Location", path);
     }
 
-    static NotFound(body: BodyType, headers: {} = {}): Res {
+    static NotFound(body: BodyContent, headers: {} = {}): Res {
         return new Res(404, body, headers) ;
     }
 
-    static InternalServerError(body: BodyType, headers: {} = {}): Res {
+    static InternalServerError(body: BodyContent, headers: {} = {}): Res {
         return new Res(500, body, headers) ;
     }
 
-    static BadGateway(body: BodyType, headers: {} = {}): Res {
+    static BadGateway(body: BodyContent, headers: {} = {}): Res {
         return new Res(502, body, headers) ;
     }
 
-    static ServiceUnavailable(body: BodyType, headers: {} = {}): Res {
+    static ServiceUnavailable(body: BodyContent, headers: {} = {}): Res {
         return new Res(503, body, headers) ;
     }
 
-    static GatewayTimeout(body: BodyType, headers: {} = {}): Res {
+    static GatewayTimeout(body: BodyContent, headers: {} = {}): Res {
         return new Res(504, body, headers) ;
     }
 
 }
 
 export function ResOf(status: number = 200,
-                      body: Body | BodyType = '',
-                      headers: Headers | HeadersType = Headers.of({})): Res {
+                      body: Body | BodyContent = '',
+                      headers: Headers | HeadersJson = Headers.of({})): Res {
     return new Res(status, body, headers);
 }
 

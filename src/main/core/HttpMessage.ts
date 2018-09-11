@@ -5,19 +5,19 @@ import {Readable} from "stream";
 
 export type KeyValues = {[key:string]: string};
 export type FormField = string|string[];
-export type FormType = {[key:string]: FormField};
-export type HeadersType = {[key:string]: string};
-export type BodyType = Readable | string;
+export type FormJson = {[key:string]: FormField};
+export type HeadersJson = {[key:string]: string};
+export type BodyContent = Readable | string;
 
 
 export interface HttpMessage {
-    headers: HeadersType;
+    headers: HeadersJson;
     body: Body;
 
     header(name: string): string;
     withHeader(name: string, value: string): HttpMessage;
     replaceHeader(name: string, value: string): HttpMessage
-    replaceAllHeaders(headers: HeadersType): HttpMessage
+    replaceAllHeaders(headers: HeadersJson): HttpMessage
     removeHeader(name: string): HttpMessage
     withBody(body: string): HttpMessage
     bodyString(): string
