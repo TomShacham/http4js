@@ -6,7 +6,6 @@ import {Filter} from "./Filters";
 import {Http4jsServer} from "../servers/Server";
 import {HttpClient} from "../client/HttpClient";
 import {HttpServer} from "../servers/NativeServer";
-import {Headers} from "./Headers";
 
 export type MountedHttpHandler = { path: string, method: string, headers: HeadersJson, handler: HttpHandler, name: string }
 export type DescribingHttpHandler = { path: string, method: string, headers: HeadersJson, name: string }
@@ -66,10 +65,10 @@ export class Routing {
         this.server.stop();
     }
 
-    async serveE2E(request: Req): Promise<Res> {
+    async serveE2E(req: Req): Promise<Res> {
         if (!this.server) return ResOf(400, 'Routing does not have a server');
         await this.start();
-        const response = await HttpClient(request.withUri(`http://localhost:${this.server.port}${request.uri.path()}`));
+        const response = await HttpClient(req.withUri(`http://localhost:${this.server.port}${req.uri.path()}`));
         await this.stop();
         return response;
     }
@@ -77,14 +76,13 @@ export class Routing {
     serve(req: Req): Promise<Res> {
         const matchedRouting = [this, ...this.nestedRouting].map(routing => routing.matchRouting(req))
             .filter(it => it.handler !== it.routing.mountedNotFoundHandler);
-        const match = matchedRouting[0] || {routing: this, handler: undefined};
-        const matchedHandler = match.handler || this.mountedNotFoundHandler;
-        const hasPathParam = matchedHandler.path.includes("{");
-        if (hasPathParam) req.pathParams = Uri.of(matchedHandler.path).extract(req.uri.path()).matches;
-        const filtered = match.routing.filters.reduce((prev, next) => {
+        const routingAndHandler = matchedRouting[0] || {routing: this, handler: undefined};
+        const matchedHandler = routingAndHandler.handler || this.mountedNotFoundHandler;
+        const reqWithPathParams = Routing.withPathParams(req, matchedHandler.path);
+        const filtered = routingAndHandler.routing.filters.reduce((prev, next) => {
             return next(prev)
         }, matchedHandler.handler);
-        return filtered(req);
+        return filtered(reqWithPathParams);
     }
 
     matchRouting(req: Req): { routing: Routing, handler: MountedHttpHandler } {
@@ -95,21 +93,33 @@ export class Routing {
     }
 
     match(req: Req): MountedHttpHandler {
-        const handlersMostPreciseFirst = this.handlersMostPreciseFirst();
-        const exactMatch = handlersMostPreciseFirst.find(it => {
-            return req.uri.exactMatch(it.path) &&
-                req.method.match(it.method) != null &&
-                (JSON.stringify(req.headers) === JSON.stringify(it.headers) || JSON.stringify(it.headers) === JSON.stringify({}));
+        const matchedHandler = this.handlersMostPreciseFirst().find((handler: MountedHttpHandler) => {
+            const fuzzyOrExactMatch = handler.path.includes("{")
+                ? Routing.fuzzyMatch(req, handler.path)
+                : req.uri.exactMatch(handler.path);
+            return fuzzyOrExactMatch
+                && Routing.methodsMatch(req, handler)
+                && Routing.headersMatch(req, handler);
         });
-        if (exactMatch) return exactMatch;
-        const fuzzyMatch = handlersMostPreciseFirst.find(it => {
-            if (it.path == "/") return false;
-            return it.path.includes("{") &&
-                Uri.of(it.path).templateMatch(req.uri.path()) &&
-                req.method.match(it.method) != null &&
-                (JSON.stringify(req.headers) === JSON.stringify(it.headers) || JSON.stringify(it.headers) === JSON.stringify({}));
-        });
-        return fuzzyMatch || this.mountedNotFoundHandler;
+
+        return matchedHandler || this.mountedNotFoundHandler;
+    }
+
+    private static fuzzyMatch(req: Req, path: string): boolean {
+        if (path == "/") return false;
+        return Uri.of(path).templateMatch(req.uri.path())
+    }
+
+    private static methodsMatch(req: Req, it: MountedHttpHandler) {
+        return req.method.match(it.method) != null;
+    }
+
+    handlerByName(name: string): MountedHttpHandler | undefined {
+        return this.handlers.find(it => it.name === name);
+    }
+
+    handlerByPath(path: string): MountedHttpHandler | undefined {
+        return this.handlers.find(it => it.path === path);
     }
 
     withGet(path: string, handler: HttpHandler): Routing {
@@ -139,7 +149,6 @@ export class Routing {
     withHead(path: string, handler: HttpHandler): Routing {
         return this.withHandler("HEAD", path, handler);
     }
-
     routes(): DescribingHttpHandler[] {
         return this.handlers.map(handler => ({
             method: handler.method,
@@ -149,7 +158,7 @@ export class Routing {
         }))
     }
 
-    mountedNotFoundHandler: MountedHttpHandler = {
+    private mountedNotFoundHandler: MountedHttpHandler = {
         path: ".*",
         method: ".*",
         headers: {},
@@ -160,12 +169,12 @@ export class Routing {
         name: 'default not found'
     };
 
-    handlerByName(name: string): MountedHttpHandler | undefined {
-        return this.handlers.find(it => it.name === name);
+    private static headersMatch(req: Req, it: MountedHttpHandler): boolean {
+        return (JSON.stringify(req.headers) === JSON.stringify(it.headers) || JSON.stringify(it.headers) === JSON.stringify({}));
     }
-    
-    handlerByPath(path: string): MountedHttpHandler | undefined {
-        return this.handlers.find(it => it.path === path);
+
+    private static withPathParams(req: Req, template: string): Req {
+        return req.withPathParamsFromTemplate(template);
     }
 
     private handlersMostPreciseFirst(): MountedHttpHandler[] {

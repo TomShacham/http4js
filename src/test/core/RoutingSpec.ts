@@ -79,6 +79,31 @@ describe('routing', async () => {
         equal(response.header('another'), 'filter2');
     });
 
+    it('ordering - filters apply in order they are declared', async () => {
+        const response = await get('/', async() => ResOf(200, 'hello, world!'))
+            .withFilter((handler) => async(req) => {
+                return handler(req).then(response => response.replaceHeader('person', 'tosh'));
+            }).withFilter((handler) => async(req) => {
+                return handler(req).then(response => response.replaceHeader('person', 'bosh'));
+            })
+            .serve(ReqOf('GET', '/'));
+
+        equal(response.header('person'), 'bosh');
+    });
+
+    it('can add stuff to request using filters', async () => {
+        const response = await get('/', async(req) => {
+            return ResOf(200, req.header('pre-filter' || 'hello, world!'));
+        }).withFilter((handler) => async(req) => {
+            return handler(req.withHeader('pre-filter', 'hello from pre-filter'))
+        })
+            .serve(ReqOf('GET', '/'));
+
+        equal(response.bodyString(), 'hello from pre-filter');
+    });
+
+
+
     it('withRoutes mounts handlers but not filters', async () => {
         const nested = get('/nested', async () => {
             return ResOf(200).withBody('hi there deeply.')
@@ -130,39 +155,6 @@ describe('routing', async () => {
         equal(response.bodyString(), 'GET to /family/123 did not match routes');
     });
 
-    it('extracts path param', async () => {
-        const response = await get('/{name}/test', async(req) => ResOf(200, req.pathParams['name']))
-            .serve(ReqOf('GET', '/tom-param/test'));
-
-        equal(response.bodyString(), 'tom-param');
-    });
-
-    it('extracts multiple path params', async () => {
-        const response = await get('/{name}/test/{age}/bob/{personality}/fred', async(req) => {
-            return ResOf(200, `${req.pathParams['name']}, ${req.pathParams['age']}, ${req.pathParams['personality']}`)
-        })
-            .serve(ReqOf('GET', '/tom/test/26/bob/odd/fred'));
-
-        const pathParams = response.bodyString().split(', ');
-        equal(pathParams[0], 'tom');
-        equal(pathParams[1], '26');
-        equal(pathParams[2], 'odd');
-    });
-
-    it('extracts query params', async () => {
-        const response = await get('/test', async(req) => {
-            const queries = [
-                req.query('tosh'),
-                req.query('bosh'),
-                req.query('losh'),
-            ];
-            return ResOf(200, queries.join('|'));
-        })
-            .serve(ReqOf('GET', '/test?tosh=rocks&bosh=pwns&losh=killer'));
-
-        equal(response.bodyString(), 'rocks|pwns|killer');
-    });
-
     it('unknown route returns a 404', async () => {
         const response = await get('/', async() => ResOf(200, 'hello, world!'))
             .serve(ReqOf('GET', '/unknown'));
@@ -187,29 +179,6 @@ describe('routing', async () => {
         equal(response.status, 404);
         equal(response.bodyString(), 'Page not found');
 
-    });
-
-    it('ordering - filters apply in order they are declared', async () => {
-        const response = await get('/', async() => ResOf(200, 'hello, world!'))
-            .withFilter((handler) => async(req) => {
-                return handler(req).then(response => response.replaceHeader('person', 'tosh'));
-            }).withFilter((handler) => async(req) => {
-                return handler(req).then(response => response.replaceHeader('person', 'bosh'));
-            })
-            .serve(ReqOf('GET', '/'));
-
-        equal(response.header('person'), 'bosh');
-    });
-
-    it('can add stuff to request using filters', async () => {
-        const response = await get('/', async(req) => {
-            return ResOf(200, req.header('pre-filter' || 'hello, world!'));
-        }).withFilter((handler) => async(req) => {
-            return handler(req.withHeader('pre-filter', 'hello from pre-filter'))
-        })
-            .serve(ReqOf('GET', '/'));
-
-        equal(response.bodyString(), 'hello from pre-filter');
     });
 
     it('exact match beats fuzzy match', async () => {
@@ -324,7 +293,7 @@ describe('routing', async () => {
         equal(response.bodyString(), 'Cool beans.');
     });
 
-    it('serves a request e2e is you have a server attached', async () => {
+    it('serves a request e2e if you have a server attached', async () => {
         const response = await get('/', async() => ResOf()).asServer(HttpServer(3004))
             .serveE2E(ReqOf('GET', '/'));
         equal(response.status, 200);

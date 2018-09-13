@@ -163,6 +163,12 @@ describe('in mem request', () => {
             'tom=tosh&ben=bosh')
     });
 
+    it('extracts query params', async () => {
+        const req = ReqOf('GET', '/test?tosh=rocks&bosh=pwns&losh=killer');
+
+        deepEqual(req.queries, {tosh: 'rocks', bosh: 'pwns', losh: 'killer'});
+    });
+
     it('get header is case insensitive', () => {
         equal(
             ReqOf('GET', 'some/url')
@@ -207,11 +213,26 @@ describe('in mem request', () => {
             undefined);
     });
 
+    it('extracts path param', async () => {
+        const req = ReqOf('GET', '/tom-param/test').withPathParamsFromTemplate('/{name}/test');
+
+        equal(req.pathParams.name, 'tom-param');
+    });
+
+    it('extracts multiple path params', async () => {
+        const req = ReqOf('GET', '/tom/test/27/bob/180/fred')
+            .withPathParamsFromTemplate('/{name}/test/{age}/bob/{height}/fred');
+
+        equal(req.pathParams.name, 'tom');
+        equal(req.pathParams.age, '27');
+        equal(req.pathParams.height, '180');
+    });
+
     it('gives value malformed uri component if query is malformed', () => {
         equal(
             ReqOf('GET', 'some/url?tosh=a%20b%20c%20%20^%20*%20%%20$%20%C2%A3')
                 .query('tosh'),
             'Malformed URI component');
-    })
+    });
 
 });

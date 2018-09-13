@@ -1,6 +1,6 @@
 import {Uri} from "./Uri";
 import {Headers, HeaderValues} from "./Headers";
-import {HttpMessage, HeadersJson, KeyValues, FormField, BodyContent, FormJson, Queries, QueryField} from "./HttpMessage";
+import {HttpMessage, HeadersJson, KeyValues, FormField, BodyContent, FormJson, Queries, QueryField, PathParams} from "./HttpMessage";
 import {Body} from "./Body";
 import {Readable} from "stream";
 import {Form} from "./Form";
@@ -13,12 +13,13 @@ export class Req implements HttpMessage {
     body: Body;
     queries: Queries = {};
     pathParams: KeyValues = {};
-    private form: FormJson = {};
 
     constructor(method: string,
                 uri: Uri | string,
                 body: Body | BodyContent = '',
-                headers: Headers | HeadersJson = {}) {
+                headers: Headers | HeadersJson = {},
+                pathParams: PathParams = {}
+    ) {
         this.method = method.toUpperCase();
         if (typeof uri == "string") {
             const uriNoTrailingSlash = uri.endsWith('/') && uri !== "/" ? uri.slice(0, -1) : uri;
@@ -33,6 +34,7 @@ export class Req implements HttpMessage {
         }
         this.headers = headers instanceof Headers ? headers.asObject() : headers;
         this.queries = this.uri.queryParams();
+        this.pathParams = pathParams;
         return this;
     }
 
@@ -93,6 +95,10 @@ export class Req implements HttpMessage {
 
     bodyForm(): FormJson {
         return Form.fromBodyString(this.bodyString()).asObject();
+    }
+
+    withPathParamsFromTemplate(template: string): Req {
+        return new Req(this.method, this.uri, this.body, this.headers, Uri.of(template).extract(this.uri.path()).matches);
     }
 
     withQuery(name: string, value: string): Req {

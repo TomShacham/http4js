@@ -4,6 +4,7 @@ import {Body} from "./Body";
 import {Readable} from "stream";
 
 export type KeyValues = {[key:string]: string};
+export type PathParams = {[key:string]: string}
 export type QueryField = string|string[];
 export type Queries = {[key:string]: QueryField};
 export type FormField = string|string[];

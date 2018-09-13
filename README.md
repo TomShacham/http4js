@@ -102,10 +102,13 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 
 ## To dos
 
-- extract Query
+- Uri construct new self each time.
+- refactor routing 
+    - match nested routing more elegantly
+    - initialise path params in req not in routing
+- generalise routing to an interface use totallylazy to implement new types of routing
 - example app
     - withOptions on withPost
-- generalise routing to an interface, use totallylazy to implement new types of routing
 - reversible routing
   - what happens if names conflict?
   - what if multiple handlers match by path
