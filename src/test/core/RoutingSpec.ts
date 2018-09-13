@@ -103,39 +103,43 @@ describe('routing', async () => {
     });
 
     it('withRoutes mounts handlers but not filters except for top level filters which apply to all routes', async () => {
-        const nestedTwice = get('/nested/twice', async () => {
+        const threeDeepRoutes = get('/nested/thrice', async () => {
+            return ResOf(200).withBody('hi there nested thrice.')
+        }).withFilter((handler) => {
+            return (req) => handler(req).then(response => response.withHeader('nested-thrice', 'true'))
+        });
+
+        const twoDeepRootsWithThreeDeepRoutes = get('/nested/twice', async () => {
             return ResOf(200).withBody('hi there nested twice.')
         }).withFilter((handler) => {
             return (req) => handler(req).then(response => response.withHeader('nested-twice', 'true'))
-        });
+        })
+        .withRoutes(threeDeepRoutes);
 
-        const nestedOnce = get('/nested/once', async () => {
+        const routesWithNestedRoutes = get('/nested/once', async () => {
             return ResOf(200).withBody('hi there nested once.')
         }).withFilter((handler) => {
             return (req) => handler(req).then(response => response.withHeader('nested-once', 'true'))
-        })
-        .withRoutes(nestedTwice);
+        }).withRoutes(twoDeepRootsWithThreeDeepRoutes);
 
-        const anotherNestedOnce = get('/another/nested/once', async () => {
+        const oneDeepRoutes = get('/another/nested/once', async () => {
             return ResOf(200).withBody('hi there another nested once.')
         }).withFilter((handler) => {
             return (req) => handler(req).then(response => response.withHeader('another-nested-once', 'true'))
         });
 
         const composedRoutes = get('/', async() => ResOf(200, 'top level'))
-            .withRoutes(nestedOnce)
-            .withRoutes(anotherNestedOnce)
+            .withRoutes(oneDeepRoutes)
+            .withRoutes(routesWithNestedRoutes)
             .withFilter((handler) => {
                 return (req) => handler(req).then(response => response.withHeader('top-level', 'true'))
             });
 
         const topLevelResponse = await composedRoutes.serve(ReqOf('GET', '/'));
-        console.log('nested response ********************************')
-        const nestedResponse = await composedRoutes.serve(ReqOf('GET', '/nested/once'));
-        console.log('another nested response ********************************')
-        const anotherNestedOnceResponse = await composedRoutes.serve(ReqOf('GET', '/another/nested/once'));
-        console.log('nested twice response ********************************')
-        const nestedTwiceResponse = await composedRoutes.serve(ReqOf('GET', '/nested/twice'));
+        const topOfThreeDeepResponse = await composedRoutes.serve(ReqOf('GET', '/nested/once'));
+        const twoDeepResponse = await composedRoutes.serve(ReqOf('GET', '/nested/twice'));
+        const threeDeepResponse = await composedRoutes.serve(ReqOf('GET', '/nested/thrice'));
+        const oneDeepResponse = await composedRoutes.serve(ReqOf('GET', '/another/nested/once'));
 
         equal(topLevelResponse.header('top-level'), 'true');
         equal(topLevelResponse.header('nested-once'), undefined);
@@ -143,22 +147,33 @@ describe('routing', async () => {
         equal(topLevelResponse.header('nested-twice'), undefined);
         equal(topLevelResponse.bodyString(), 'top level');
 
-        equal(nestedResponse.header('top-level'), 'true');
-        equal(nestedResponse.header('nested-once'), 'true');
-        equal(nestedResponse.header('another-nested-once'), undefined);
-        equal(nestedResponse.header('nested-twice'), undefined);
-        equal(nestedResponse.bodyString(), 'hi there nested once.');
+        equal(topOfThreeDeepResponse.header('top-level'), 'true');
+        equal(topOfThreeDeepResponse.header('nested-once'), 'true');
+        equal(topOfThreeDeepResponse.header('nested-twice'), undefined);
+        equal(topOfThreeDeepResponse.header('nested-thrice'), undefined);
+        equal(topOfThreeDeepResponse.header('another-nested-once'), undefined);
+        equal(topOfThreeDeepResponse.bodyString(), 'hi there nested once.');
 
-        equal(anotherNestedOnceResponse.header('top-level'), 'true');
-        // equal(anotherNestedOnceResponse.header('another-nested-once'), 'true');
-        equal(anotherNestedOnceResponse.header('nested-once'), undefined);
-        // equal(anotherNestedOnceResponse.bodyString(), 'hi there another nested once.');
+        equal(twoDeepResponse.header('top-level'), 'true');
+        equal(twoDeepResponse.header('nested-once'), 'true');
+        equal(twoDeepResponse.header('nested-twice'), 'true');
+        equal(twoDeepResponse.header('nested-thrice'), undefined);
+        equal(twoDeepResponse.header('another-nested-once'), undefined);
+        equal(twoDeepResponse.bodyString(), 'hi there nested twice.');
 
-        equal(nestedTwiceResponse.header('top-level'), 'true');
-        equal(nestedTwiceResponse.header('nested-once'), 'true');
-        equal(nestedTwiceResponse.header('nested-twice'), 'true');
-        equal(nestedTwiceResponse.header('another-nested-once'), undefined);
-        equal(nestedTwiceResponse.bodyString(), 'hi there nested twice.');
+        equal(threeDeepResponse.header('top-level'), 'true');
+        equal(threeDeepResponse.header('nested-once'), 'true');
+        equal(threeDeepResponse.header('nested-twice'), 'true');
+        equal(threeDeepResponse.header('nested-thrice'), 'true');
+        equal(threeDeepResponse.header('another-nested-once'), undefined);
+        equal(threeDeepResponse.bodyString(), 'hi there nested thrice.');
+
+        equal(oneDeepResponse.header('top-level'), 'true');
+        equal(oneDeepResponse.header('another-nested-once'), 'true');
+        equal(oneDeepResponse.header('nested-once'), undefined);
+        equal(oneDeepResponse.header('nested-twice'), undefined);
+        equal(oneDeepResponse.bodyString(), 'hi there another nested once.');
+
     });
 
     it('nested routes when not found, filters only through top level filters', async () => {
@@ -267,12 +282,12 @@ describe('routing', async () => {
 
     it('more precise routing beats less precise', async () => {
         const response = await get('/', async() => ResOf(200, 'root'))
-            .withHandler('GET', '/family/{name}', async() => ResOf(200, 'least precise'))
-            .withHandler('GET', '/family/{name}/then/more', async() => ResOf(200, 'most precise'))
+            .withHandler('GET', '/family/{name}', async() => ResOf(200, 'least precise but declared first'))
+            .withHandler('GET', '/family/{name}/then/more', async() => ResOf(200, 'most precise but declared later'))
             .withHandler('POST', '/family/{name}/less', async() => ResOf(200, 'medium precise'))
             .serve(ReqOf('GET', '/family/shacham/then/more'));
 
-        equal(response.bodyString(), 'most precise');
+        equal(response.bodyString(), 'least precise but declared first');
     });
 
     it('withX convenience method', async () => {
