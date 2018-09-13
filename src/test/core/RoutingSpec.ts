@@ -102,31 +102,63 @@ describe('routing', async () => {
         equal(response.bodyString(), 'hello from pre-filter');
     });
 
-
-
-    it('withRoutes mounts handlers but not filters', async () => {
-        const nested = get('/nested', async () => {
-            return ResOf(200).withBody('hi there deeply.')
+    it('withRoutes mounts handlers but not filters except for top level filters which apply to all routes', async () => {
+        const nestedTwice = get('/nested/twice', async () => {
+            return ResOf(200).withBody('hi there nested twice.')
         }).withFilter((handler) => {
-            return (req) => handler(req).then(response => response.withHeader('nested', 'routes'))
+            return (req) => handler(req).then(response => response.withHeader('nested-twice', 'true'))
         });
 
-        const compositeRoutes = get('/', async () => ResOf(200, 'top level'))
+        const nestedOnce = get('/nested/once', async () => {
+            return ResOf(200).withBody('hi there nested once.')
+        }).withFilter((handler) => {
+            return (req) => handler(req).then(response => response.withHeader('nested-once', 'true'))
+        })
+        .withRoutes(nestedTwice);
+
+        const anotherNestedOnce = get('/another/nested/once', async () => {
+            return ResOf(200).withBody('hi there another nested once.')
+        }).withFilter((handler) => {
+            return (req) => handler(req).then(response => response.withHeader('another-nested-once', 'true'))
+        });
+
+        const composedRoutes = get('/', async() => ResOf(200, 'top level'))
+            .withRoutes(nestedOnce)
+            .withRoutes(anotherNestedOnce)
             .withFilter((handler) => {
-                return (req) => handler(req).then(response => response.withHeader('top-level', 'routes'))
-            })
-            .withRoutes(nested);
+                return (req) => handler(req).then(response => response.withHeader('top-level', 'true'))
+            });
 
-        const topLevelResponse = await compositeRoutes.serve(ReqOf('GET', '/'));
-        const nestedResponse = await compositeRoutes.serve(ReqOf('GET', '/nested'));
+        const topLevelResponse = await composedRoutes.serve(ReqOf('GET', '/'));
+        console.log('nested response ********************************')
+        const nestedResponse = await composedRoutes.serve(ReqOf('GET', '/nested/once'));
+        console.log('another nested response ********************************')
+        const anotherNestedOnceResponse = await composedRoutes.serve(ReqOf('GET', '/another/nested/once'));
+        console.log('nested twice response ********************************')
+        const nestedTwiceResponse = await composedRoutes.serve(ReqOf('GET', '/nested/twice'));
 
-        equal(topLevelResponse.header('top-level'), 'routes');
-        equal(topLevelResponse.header('nested'), undefined);
+        equal(topLevelResponse.header('top-level'), 'true');
+        equal(topLevelResponse.header('nested-once'), undefined);
+        equal(topLevelResponse.header('another-nested-once'), undefined);
+        equal(topLevelResponse.header('nested-twice'), undefined);
         equal(topLevelResponse.bodyString(), 'top level');
 
-        equal(nestedResponse.header('top-level'), undefined);
-        equal(nestedResponse.header('nested'), 'routes');
-        equal(nestedResponse.bodyString(), 'hi there deeply.');
+        equal(nestedResponse.header('top-level'), 'true');
+        equal(nestedResponse.header('nested-once'), 'true');
+        equal(nestedResponse.header('another-nested-once'), undefined);
+        equal(nestedResponse.header('nested-twice'), undefined);
+        equal(nestedResponse.bodyString(), 'hi there nested once.');
+
+        equal(anotherNestedOnceResponse.header('top-level'), 'true');
+        // equal(anotherNestedOnceResponse.header('another-nested-once'), 'true');
+        equal(anotherNestedOnceResponse.header('nested-once'), undefined);
+        // equal(anotherNestedOnceResponse.bodyString(), 'hi there another nested once.');
+
+        equal(nestedTwiceResponse.header('top-level'), 'true');
+        equal(nestedTwiceResponse.header('nested-once'), 'true');
+        equal(nestedTwiceResponse.header('nested-twice'), 'true');
+        equal(nestedTwiceResponse.header('another-nested-once'), undefined);
+        equal(nestedTwiceResponse.bodyString(), 'hi there nested twice.');
     });
 
     it('nested routes when not found, filters only through top level filters', async () => {
