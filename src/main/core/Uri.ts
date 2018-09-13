@@ -131,7 +131,7 @@ export class Uri {
     }
 
     templateMatch(matchingOnPath: string): boolean {
-        return Uri.uriTemplateToPathParamCapturingRegex(this.path()).exec(matchingOnPath) != null;
+        return Uri.uriTemplateToPathParamCapturingRegex(matchingOnPath).exec(this.path()) != null;
     }
 
     extract(uri: string): Uri {

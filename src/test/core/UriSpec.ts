@@ -38,8 +38,8 @@ describe("uri", () => {
     });
 
     it("matches paths", () => {
-        equal(Uri.of("/tom/{is}/goodness")
-                .templateMatch("/tom/is the sugar/goodness/gracious/me"),
+        equal(Uri.of("/tom/is the sugar/goodness/gracious/me")
+                .templateMatch("/tom/{is}/goodness"),
             true)
     });
 

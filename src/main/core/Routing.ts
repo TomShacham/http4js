@@ -78,7 +78,8 @@ export class Routing {
             .filter(it => it.handler !== it.routing.mountedNotFoundHandler);
         const routingAndHandler = matchedRouting[0] || {routing: this, handler: undefined};
         const matchedHandler = routingAndHandler.handler || this.mountedNotFoundHandler;
-        const reqWithPathParams = Routing.withPathParams(req, matchedHandler.path);
+        const reqWithPathParams = req.withPathParamsFromTemplate(matchedHandler.path);
+
         const filtered = routingAndHandler.routing.filters.reduce((prev, next) => {
             return next(prev)
         }, matchedHandler.handler);
@@ -94,8 +95,8 @@ export class Routing {
 
     match(req: Req): MountedHttpHandler {
         const matchedHandler = this.handlersMostPreciseFirst().find((handler: MountedHttpHandler) => {
-            const fuzzyOrExactMatch = handler.path.includes("{")
-                ? Routing.fuzzyMatch(req, handler.path)
+            const fuzzyOrExactMatch = handler.path.includes("{") && handler.path != '/'
+                ? req.uri.templateMatch(handler.path)
                 : req.uri.exactMatch(handler.path);
             return fuzzyOrExactMatch
                 && Routing.methodsMatch(req, handler)
@@ -103,15 +104,6 @@ export class Routing {
         });
 
         return matchedHandler || this.mountedNotFoundHandler;
-    }
-
-    private static fuzzyMatch(req: Req, path: string): boolean {
-        if (path == "/") return false;
-        return Uri.of(path).templateMatch(req.uri.path())
-    }
-
-    private static methodsMatch(req: Req, it: MountedHttpHandler) {
-        return req.method.match(it.method) != null;
     }
 
     handlerByName(name: string): MountedHttpHandler | undefined {
@@ -169,12 +161,13 @@ export class Routing {
         name: 'default not found'
     };
 
-    private static headersMatch(req: Req, it: MountedHttpHandler): boolean {
-        return (JSON.stringify(req.headers) === JSON.stringify(it.headers) || JSON.stringify(it.headers) === JSON.stringify({}));
+    private static methodsMatch(req: Req, it: MountedHttpHandler) {
+        return req.method.match(it.method) != null;
     }
 
-    private static withPathParams(req: Req, template: string): Req {
-        return req.withPathParamsFromTemplate(template);
+    private static headersMatch(req: Req, it: MountedHttpHandler): boolean {
+        return JSON.stringify(req.headers) === JSON.stringify(it.headers)
+            || JSON.stringify(it.headers) === JSON.stringify({});
     }
 
     private handlersMostPreciseFirst(): MountedHttpHandler[] {
