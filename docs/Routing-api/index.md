@@ -122,6 +122,23 @@ await route(requestAcceptText, async() => ResOf(200, "Accepted text"))
 
 ```
 
+## Filters passed through
+
+Top level filters apply to all routes. But only those filters within a group
+of routes and only as deep as the matched handler will be applied.
+E.g. matching handler `E` in the following will only apply filters 
+attached to `E`, `D` and `A`.
+
+```text
+        __A__
+       /  \  \
+      B    D  G
+     /      \  
+    C        E
+              \
+               F
+```
+
 ## Symmetry of routing and serving
 
 We can also declare a route using a Req object: 
