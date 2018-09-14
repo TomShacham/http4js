@@ -23,7 +23,8 @@ View [full release notes](/http4js/Release-notes/#release-notes)
 # Intro
 
 http4js is a thin layer around node http. 
-Within this layer we can happily unit test our routing logic and easily spin up any function `(Request) => Promise<Response>` as a server.  
+Within this layer we can happily unit test our routing logic and easily spin up 
+any function `(Req) => Promise<Res>` as a server.  
 
 ## Basic Server
 

@@ -58,22 +58,57 @@ const hotels = {
 
 ## Matching handler path
 
-The most specific handler is matched first:
+Routes are matched **left to right and deepest first**. Declaring separate groups 
+of routes and then combining them later helps make your code modular 
+and more clearly testable. Eg. we might declare a few groups like so:
 
 ```typescript
-return get("/family/{name}", async () => {
-    return ResOf(200, "least precise");
-}).withGet("/family/{name}/then/more", async () => {
-    return ResOf(200, "most precise");
-}).withPost("/family/{name}/less", async () => {
-    return ResOf(200, "medium precise");
-})
-    .serve(ReqOf("GET", "/family/shacham/then/more"))
-    .then(response => equal(response.bodyString(), "most precise"))
+const houseKeeping =  get("/home", async () => {
+    return ResOf(200, "home page");
+}).withGet("/about", async () => {
+    return ResOf(200, "about us");
+});
+
+const userSignUp = get("/register", async () => {
+   return ResOf(200, "register");
+}).withPost("/register", async (req: Req) => {
+    const {username, password} = req.bodyForm();
+    const saved = await userService.register(username, password);
+    return ResOf(saved ? 200 : 400, saved ? "Welcome!" : "Try again.");
+});
+
+const combinedRoutes = houseKeeping
+    .withRoutes(userSignUp)
 ```
 
-so despite the handler at `/family/{name}/then/more` being declared after the more
-generic handler at `/family/{name}` it is matched first.
+In the above case, `userSignUp` routes will be recursed through first. 
+
+The general case, "left to right and deepest first" looks like: 
+
+```text
+        __A__
+       /  \  \
+      B    D  G
+     /      \  
+    C        E
+              \
+               F
+```
+
+Which we achieve by writing 
+
+```typescript
+A.withRoutes(
+    B.withRoutes(C)
+).withRoutes(
+    D.withRoutes(
+        E.withRoutes(F)
+    )
+).withRoutes(G)
+```
+
+And the result would be that we match on `C` then `B` then `F` then 
+`E` then `D` then `G` then `A`
 
 ## Matching on a header
 

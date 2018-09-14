@@ -173,7 +173,51 @@ describe('routing', async () => {
         equal(oneDeepResponse.header('nested-once'), undefined);
         equal(oneDeepResponse.header('nested-twice'), undefined);
         equal(oneDeepResponse.bodyString(), 'hi there another nested once.');
+    });
 
+    it('order of matching nested routes is left to right and deepest first', async () => {
+        /*
+         __A__
+         /  \  \
+        B   D  G
+       /     \
+      C       E
+               \
+                F
+         */
+        // by making a req to /A it will not match A and so on.
+        const A = get('/[^A]*', async() => ResOf(200, 'A'));
+        const B = get('/[^B]*', async() => ResOf(200, 'B'));
+        const C = get('/[^C]*', async() => ResOf(200, 'C'));
+        const D = get('/[^D]*', async() => ResOf(200, 'D'));
+        const E = get('/[^E]*', async() => ResOf(200, 'E'));
+        const F = get('/[^F]*', async() => ResOf(200, 'F'));
+        const G = get('/[^G]*', async() => ResOf(200, 'G'));
+
+        const composedRoutes = A.withRoutes(
+            B.withRoutes(C)
+        ).withRoutes(
+            D.withRoutes(
+                E.withRoutes(F)
+            )
+        ).withRoutes(G);
+
+        // req to '/' will match all routes
+        const leftMostDeepestResponse = await composedRoutes.serve(ReqOf('GET', '/'));
+        const leftMostSecondDeepestResponse = await composedRoutes.serve(ReqOf('GET', '/C'));
+        const oneFromLeftDeepestResponse = await composedRoutes.serve(ReqOf('GET', '/CB'));
+        const oneFromLeftSecondDeepestResponse = await composedRoutes.serve(ReqOf('GET', '/CBF'));
+        const oneFromLeftThirdDeepestResponse = await composedRoutes.serve(ReqOf('GET', '/CBFE'));
+        const rightMostResponse = await composedRoutes.serve(ReqOf('GET', '/CBFED'));
+        const topLevelResponse = await composedRoutes.serve(ReqOf('GET', '/CBFEDG'));
+
+        equal(leftMostDeepestResponse.bodyString(), 'C');
+        equal(leftMostSecondDeepestResponse.bodyString(), 'B');
+        equal(oneFromLeftDeepestResponse.bodyString(), 'F');
+        equal(oneFromLeftSecondDeepestResponse.bodyString(), 'E');
+        equal(oneFromLeftThirdDeepestResponse.bodyString(), 'D');
+        equal(rightMostResponse.bodyString(), 'G');
+        equal(topLevelResponse.bodyString(), 'A');
     });
 
     it('nested routes when not found, filters only through top level filters', async () => {
