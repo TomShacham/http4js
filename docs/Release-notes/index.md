@@ -6,6 +6,23 @@
 
 # Release notes
 
+### 4.2.0: Breaking change: Most precise handler no longer beats first declared match. Fix: Composed routes filter as expected.
+
+To find a matching handler for a `Req`, we recurse **"left to right and deepest 
+first"** through nested routes, ie. routes attached to top level routes 
+using `withRoutes(routes)`, ending finally with the top level routes e.g.
+
+```typescript
+get('/', async()=> ResOf())
+    .withRoutes(
+        routes.withRoutes(furtherNestedRoutes)
+    )
+```
+
+`furtherNestedRoutes` is traversed followed by `routes` then finally the top 
+ level routes. 
+ Further [docs here](https://tomshacham.github.io/http4js/Routing-api/#matching-handler-path)
+
 ### 4.1.3: Breaking change: Res Convenience methods for responding
 
 `Redirect` is now a static method `Res.Redirect` as we provide a number of 

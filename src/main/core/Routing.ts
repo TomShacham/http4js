@@ -1,7 +1,6 @@
 import {Res, ResOf} from "./Res";
 import {HttpHandler, HeadersJson} from "./HttpMessage";
 import {Req} from "./Req";
-import {Uri} from "./Uri";
 import {Filter} from "./Filters";
 import {Http4jsServer} from "../servers/Server";
 import {HttpClient} from "../client/HttpClient";
@@ -9,10 +8,11 @@ import {HttpServer} from "../servers/NativeServer";
 
 export type MountedHttpHandler = { path: string, method: string, headers: HeadersJson, handler: HttpHandler, name: string }
 export type DescribingHttpHandler = { path: string, method: string, headers: HeadersJson, name: string }
+export type Route = {handler: MountedHttpHandler, filters: Filter[]}
 
 export class Routing {
 
-    server: Http4jsServer;
+    private server: Http4jsServer;
     private handlers: MountedHttpHandler[] = [];
     private filters: Array<(httpHandler: HttpHandler) => HttpHandler> = [];
     private nestedRouting: Routing[] = [];
@@ -74,27 +74,35 @@ export class Routing {
     }
 
     serve(req: Req): Promise<Res> {
-        const matchedRouting = [this, ...this.nestedRouting].map(routing => routing.matchRouting(req))
-            .filter(it => it.handler !== it.routing.mountedNotFoundHandler);
-        const routingAndHandler = matchedRouting[0] || {routing: this, handler: undefined};
-        const matchedHandler = routingAndHandler.handler || this.mountedNotFoundHandler;
-        const reqWithPathParams = req.withPathParamsFromTemplate(matchedHandler.path);
+        const matchedRoute = this.match(req);
+        const matchedHandler = matchedRoute ? matchedRoute.handler : this.mountedNotFoundHandler;
+        const matchedFilters = matchedRoute ? matchedRoute.filters : this.filters;
 
-        const filtered = routingAndHandler.routing.filters.reduce((prev, next) => {
+        const filteringHandler = matchedFilters.reduce((prev, next) => {
             return next(prev)
         }, matchedHandler.handler);
-        return filtered(reqWithPathParams);
+
+        return filteringHandler(req.withPathParamsFromTemplate(matchedHandler.path));
     }
 
-    matchRouting(req: Req): { routing: Routing, handler: MountedHttpHandler } {
-        return {
-            routing: this,
-            handler: this.match(req),
-        };
+    match(req: Req): Route | undefined {
+        for (const routing of this.nestedRouting) {
+            const matchedRouting = routing.match(req);
+            if (matchedRouting){
+                return {
+                    handler: matchedRouting.handler,
+                    filters: [...this.filters, ...matchedRouting.filters]
+                };
+            }
+        }
+        const matchThisRouting = this.matchThisRouting(req);
+        return matchThisRouting
+            ? { handler: matchThisRouting, filters: this.filters }
+            : undefined;
     }
 
-    match(req: Req): MountedHttpHandler {
-        const matchedHandler = this.handlersMostPreciseFirst().find((handler: MountedHttpHandler) => {
+    matchThisRouting(req: Req): MountedHttpHandler | undefined {
+        return this.handlers.find((handler: MountedHttpHandler) => {
             const fuzzyOrExactMatch = handler.path.includes("{") && handler.path != '/'
                 ? req.uri.templateMatch(handler.path)
                 : req.uri.exactMatch(handler.path);
@@ -102,8 +110,6 @@ export class Routing {
                 && Routing.methodsMatch(req, handler)
                 && Routing.headersMatch(req, handler);
         });
-
-        return matchedHandler || this.mountedNotFoundHandler;
     }
 
     handlerByName(name: string): MountedHttpHandler | undefined {
@@ -141,13 +147,17 @@ export class Routing {
     withHead(path: string, handler: HttpHandler): Routing {
         return this.withHandler("HEAD", path, handler);
     }
+
     routes(): DescribingHttpHandler[] {
-        return this.handlers.map(handler => ({
+        const routes = this.handlers.map(handler => ({
             method: handler.method,
             path: handler.path,
             headers: handler.headers,
             name: handler.name,
-        }))
+        }));
+        return this.nestedRouting.reduce((allRoutes: DescribingHttpHandler[], nestedRouting: Routing) => {
+            return allRoutes.concat(nestedRouting.routes())
+        }, []).concat(routes);
     }
 
     private mountedNotFoundHandler: MountedHttpHandler = {
@@ -168,12 +178,6 @@ export class Routing {
     private static headersMatch(req: Req, it: MountedHttpHandler): boolean {
         return JSON.stringify(req.headers) === JSON.stringify(it.headers)
             || JSON.stringify(it.headers) === JSON.stringify({});
-    }
-
-    private handlersMostPreciseFirst(): MountedHttpHandler[] {
-        return this.handlers.sort((h1, h2) => {
-            return h1.path.split("/").length > h2.path.split("/").length ? -1 : 1;
-        });
     }
 
 }
