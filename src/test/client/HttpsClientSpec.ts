@@ -17,6 +17,9 @@ describe('httpsclient', () => {
         .asServer(HttpsServer(3014, certs));
 
     before(() => {
+        require('ssl-root-cas')
+            .inject()
+            .addFile('src/ssl/my-root-ca.cert.pem');
         server.start();
     });
 
