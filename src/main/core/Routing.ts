@@ -6,7 +6,7 @@ import {Http4jsServer} from "../servers/Server";
 import {HttpClient} from "../client/HttpClient";
 import {HttpServer} from "../servers/NativeServer";
 
-export type MountedHttpHandler = { path: string, method: string, headers: HeadersJson, handler: HttpHandler, name: string }
+export type MountedHttpHandler = { path: string, method: string, handler: HttpHandler, headers: HeadersJson, name: string }
 export type DescribingHttpHandler = { path: string, method: string, headers: HeadersJson, name: string }
 export type Route = {handler: MountedHttpHandler, filters: Filter[]}
 
@@ -16,19 +16,21 @@ export class Routing {
     private handlers: MountedHttpHandler[] = [];
     private filters: Array<(httpHandler: HttpHandler) => HttpHandler> = [];
     private nestedRouting: Routing[] = [];
+    private readonly unnamedHandlerName = 'unnamed';
 
     constructor(method: string,
                 path: string,
-                headers: HeadersJson = {},
                 handler: HttpHandler,
-                name: string = 'unnamed route') {
+                headers?: HeadersJson,
+                name?: string) {
         const pathNoTrailingSlash = path.endsWith('/') && path !== "/" ? path.slice(0, -1) : path;
+        const handlerName = name || handler.name || this.unnamedHandlerName;
         this.handlers.push({
             path: pathNoTrailingSlash,
             method: method.toUpperCase(),
-            headers,
             handler,
-            name});
+            headers: headers || {},
+            name: handlerName});
     }
 
     withRoutes(routes: Routing): Routing {
@@ -46,8 +48,8 @@ export class Routing {
         return this;
     }
 
-    withHandler(method: string, path: string, handler: HttpHandler, headers: HeadersJson = {}, name = 'unnamed'): Routing {
-        this.handlers.push({path, method, headers, handler, name});
+    withHandler(method: string, path: string, handler: HttpHandler, headers: HeadersJson = {}, name?: string): Routing {
+        this.handlers.push({path, method, headers, handler, name: name || this.unnamedHandlerName});
         return this;
     }
 
@@ -182,34 +184,38 @@ export class Routing {
 
 }
 
-export function routes(method: string, path: string, handler: HttpHandler, headers: HeadersJson = {}): Routing {
-    return new Routing(method, path, headers, handler);
+export function routes(method: string, path: string, handler: HttpHandler, headers: HeadersJson = {}, name?: string): Routing {
+    return rootOf(method, path, handler, headers, name);
 }
 
-export function route(request: Req, handler: HttpHandler): Routing {
-    return new Routing(request.method, request.uri.path(), request.headers, handler);
+export function route(request: Req, handler: HttpHandler, name?: string): Routing {
+    return rootOf(request.method, request.uri.path(), handler, request.headers, name);
 }
 
-export function get(path: string, handler: HttpHandler, headers: HeadersJson = {}, name: string = 'unnamed'): Routing {
-    return new Routing("GET", path, headers, handler, name);
+export function get(path: string, handler: HttpHandler, headers: HeadersJson = {}, name?: string): Routing {
+    return rootOf("GET", path, handler, headers, name);
 }
 
-export function post(path: string, handler: HttpHandler, headers: HeadersJson = {}, name: string = 'unnamed'): Routing {
-    return new Routing("POST", path, headers, handler, name);
+export function post(path: string, handler: HttpHandler, headers: HeadersJson = {}, name?: string): Routing {
+    return rootOf("POST", path, handler, headers, name);
 }
 
-export function put(path: string, handler: HttpHandler, headers: HeadersJson = {}, name: string = 'unnamed'): Routing {
-    return new Routing("PUT", path, headers, handler, name);
+export function put(path: string, handler: HttpHandler, headers: HeadersJson = {}, name?: string): Routing {
+    return rootOf("PUT", path, handler, headers, name);
 }
 
-export function patch(path: string, handler: HttpHandler, headers: HeadersJson = {}, name: string = 'unnamed'): Routing {
-    return new Routing("PATCH", path, headers, handler, name);
+export function patch(path: string, handler: HttpHandler, headers: HeadersJson = {}, name?: string): Routing {
+    return rootOf("PATCH", path, handler, headers, name);
 }
 
-export function options(path: string, handler: HttpHandler, headers: HeadersJson = {}, name: string = 'unnamed'): Routing {
-    return new Routing("OPTIONS", path, headers, handler, name);
+export function options(path: string, handler: HttpHandler, headers: HeadersJson = {}, name?: string): Routing {
+    return rootOf("OPTIONS", path, handler, headers, name);
 }
 
-export function head(path: string, handler: HttpHandler, headers: HeadersJson = {}, name: string = 'unnamed'): Routing {
-    return new Routing("HEAD", path, headers, handler, name);
+export function head(path: string, handler: HttpHandler, headers: HeadersJson = {}, name?: string): Routing {
+    return rootOf("HEAD", path, handler, headers, name);
+}
+
+function rootOf(method: string, path: string, handler: HttpHandler, headers: HeadersJson = {}, name?: string): Routing {
+    return new Routing(method, path, handler, headers, name);
 }

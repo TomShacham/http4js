@@ -118,6 +118,8 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 
 ## To dos
 
+- why is https server test failing? :/ 
+  -  Uncaught Error: self signed certificate in certificate chain
 - generalise routing to an interface 
   - use totallylazy to implement new types of routing
 - reversible routing

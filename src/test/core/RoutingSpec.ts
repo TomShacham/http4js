@@ -408,6 +408,16 @@ describe('routing', async () => {
         equal(handler.name, 'root');
     });
 
+    it('uses function name for handler name if named function used and not route not specifically named', async() => {
+        const namedFunction = async() => ResOf(200, 'OK path');
+        const handler = get('/path', namedFunction, {'Cache-control': 'private'})
+            .handlerByName('namedFunction') as MountedHttpHandler;
+        equal(handler.path, '/path');
+        equal(handler.method, 'GET');
+        deepEqual(handler.headers, {'Cache-control': 'private'});
+        equal(handler.name, 'namedFunction');
+    });
+
     it('reverses routing: get handler by path', async() => {
         const handler = get('/path', async() => ResOf(200, 'OK path'), {'Cache-control': 'private'})
             .handlerByPath('/path') as MountedHttpHandler;
