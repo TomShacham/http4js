@@ -118,14 +118,13 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 
 ## To dos
 
-- Uri construct new self each time
-- generalise routing to an interface use totallylazy to implement new types of routing
+- generalise routing to an interface 
+  - use totallylazy to implement new types of routing
+- reversible routing
+  - named functions will have route named as such
+- client side httpclient (from stu)
 - example app
     - withOptions on withPost
-- reversible routing
-  - what happens if names conflict?
-  - what if multiple handlers match by path
-- client side httpclient (from stu)
   
 ## Running HTTPS Server tests
 
