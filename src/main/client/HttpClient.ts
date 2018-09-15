@@ -1,17 +1,21 @@
 import * as http from "http";
 import {IncomingMessage} from "http";
 import {Res, ResOf} from "../core/Res";
-import {Req} from "../core/Req";
+import {Req, ReqOf} from "../core/Req";
 import {Headers, HeaderValues} from "../core/Headers";
 import {HeadersJson} from "../core/HttpMessage";
+import {ReqOptions} from "./Client";
 
-export function HttpClient(request: Req): Promise<Res> {
-    switch (request.method) {
+export function HttpClient(request: Req | ReqOptions): Promise<Res> {
+    const req = request instanceof Req
+        ? request
+        : ReqOf(request.method, request.uri, request.body, request.headers);
+    switch (req.method) {
         case "GET":
-            return get(request);
+            return get(req);
 
         default:
-            return wire(request)
+            return wire(req)
 
     }
 }

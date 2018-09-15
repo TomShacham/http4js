@@ -159,6 +159,23 @@ get("/", async (req) => ResOf(200, "Hello, world!"))
 HttpClient(ReqOf("GET", "http://localhost:3000/")).then(res=>console.log(res));
 ```
 
+Alternatively you can use the `HttpClient` interface using `ReqOptions`:
+
+```typescript
+const response = await HttpClient({method: 'GET', uri: 'http://localhost:3013/'});
+```
+
+where `ReqOptions` is just an object representing a `Req`:
+
+```typescript
+interface ReqOptions {
+    method: string;
+    uri: Uri | string;
+    body?: Body | BodyContent;
+    headers?: Headers | HeadersJson;
+}
+```
+
 We also have `Res` helpers to be succinct
 
 ```typescript

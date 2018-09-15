@@ -1,8 +1,14 @@
 import * as https from "https";
 import {HeadersJson, Req, Res, ResOf} from "../";
 import {Readable} from "stream";
+import {ReqOptions} from "./Client";
+import {ReqOf} from "../core/Req";
 
-export async function HttpsClient(req: Req): Promise<Res> {
+export async function HttpsClient(request: Req | ReqOptions): Promise<Res> {
+    const req = request instanceof Req
+        ? request
+        : ReqOf(request.method, request.uri, request.body, request.headers);
+
     const options = req.uri.asNativeNodeRequest;
     const reqOptions = {
         ...options,

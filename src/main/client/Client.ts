@@ -2,6 +2,18 @@ import {HeadersJson, HttpHandler} from "../core/HttpMessage";
 import {Req} from "../core/Req";
 import {HttpClient} from "./HttpClient";
 import {ZipkinHeaders} from "../zipkin/Zipkin";
+import {Headers} from "../core/Headers";
+import {BodyContent} from "../core/HttpMessage";
+import {Body} from "../core/Body";
+import {Uri} from "../core/Uri";
+
+
+export interface ReqOptions {
+    method: string;
+    uri: Uri | string;
+    body?: Body | BodyContent;
+    headers?: Headers | HeadersJson;
+}
 
 export class Client {
 
