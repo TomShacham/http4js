@@ -148,8 +148,8 @@ used in `new Res(200, req.body)` because `Req` is immutable.
 
 ## API
 
-We provide builder functions `Req` and `Res` because `Req` and `Res` 
-conflict with other libraries using the same name, so you might write:
+We provide builder functions `Req` and `Res` because their full names `Request` and `Response` 
+conflict with other libraries using the same names. So you might write:
 
 ```typescript
 get("/", async (req) => ResOf(200, "Hello, world!"))
@@ -176,7 +176,7 @@ interface ReqOptions {
 }
 ```
 
-We also have `Res` helpers to be succinct
+We also have `Res` helpers to be more descriptive
 
 ```typescript
 Res.OK
@@ -197,7 +197,8 @@ Res.BadGateway
 Res.ServiceUnavailable
 Res.GatewayTimeout
 ```
-which is just sugar for `ResOf(302).withHeader("Location", "/somewhere/else")`
+which is just sugar, for eg. `Res.SeeOther(location)` is sugar for 
+`ResOf(302).withHeader("Location", "/somewhere/else")`
 
 The full api is as follows:
 

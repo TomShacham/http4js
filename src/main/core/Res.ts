@@ -73,36 +73,36 @@ export class Res implements HttpMessage {
         return new Res(status, body, headers).withHeader("Location", path);
     }
 
-    static MovedPermanently(status: number = 301, body: BodyContent = '', path: string, headers: HeadersJson = {}): Res {
-        return new Res(status, body, headers).withHeader("Location", path);
+    static MovedPermanently(path: string, body: BodyContent = '', headers: HeadersJson = {}): Res {
+        return new Res(301, body, headers).withHeader("Location", path);
     }
 
-    static Found(status: number = 302, body: BodyContent = '', path: string, headers: HeadersJson = {}): Res {
-        return new Res(status, body, headers).withHeader("Location", path);
+    static Found(path: string, body: BodyContent = '', headers: HeadersJson = {}): Res {
+        return new Res(302, body, headers).withHeader("Location", path);
     }
 
-    static SeeOther(status: number = 303, body: BodyContent = '', path: string, headers: HeadersJson = {}): Res {
-        return new Res(status, body, headers).withHeader("Location", path);
+    static SeeOther(path: string, body: BodyContent = '', headers: HeadersJson = {}): Res {
+        return new Res(303, body, headers).withHeader("Location", path);
     }
 
-    static NotModified(status: number = 304, body: BodyContent = '', path: string, headers: HeadersJson = {}): Res {
-        return new Res(status, body, headers).withHeader("Location", path);
+    static NotModified(path: string, body: BodyContent = '', headers: HeadersJson = {}): Res {
+        return new Res(304, body, headers).withHeader("Location", path);
     }
 
-    static TemporaryRedirect(status: number = 307, body: BodyContent = '', path: string, headers: HeadersJson = {}): Res {
-        return new Res(status, body, headers).withHeader("Location", path);
+    static TemporaryRedirect(path: string, body: BodyContent = '', headers: HeadersJson = {}): Res {
+        return new Res(307, body, headers).withHeader("Location", path);
     }
 
-    static BadRequest(status: number = 400, body: BodyContent = '', path: string, headers: HeadersJson = {}): Res {
-        return new Res(status, body, headers).withHeader("Location", path);
+    static BadRequest(body: BodyContent = '', headers: HeadersJson = {}): Res {
+        return new Res(400, body, headers);
     }
 
-    static Unauthorized(status: number = 401, body: BodyContent = '', path: string, headers: HeadersJson = {}): Res {
-        return new Res(status, body, headers).withHeader("Location", path);
+    static Unauthorized(body: BodyContent = '', headers: HeadersJson = {}): Res {
+        return new Res(401, body, headers);
     }
 
-    static Forbidden(status: number = 403, body: BodyContent = '', path: string, headers: HeadersJson = {}): Res {
-        return new Res(status, body, headers).withHeader("Location", path);
+    static Forbidden(body: BodyContent = '', headers: HeadersJson = {}): Res {
+        return new Res(403, body, headers);
     }
 
     static NotFound(body: BodyContent, headers: {} = {}): Res {
