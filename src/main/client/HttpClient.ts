@@ -10,34 +10,17 @@ export function HttpClient(request: Req | ReqOptions): Promise<Res> {
     const req = request instanceof Req
         ? request
         : ReqOf(request.method, request.uri, request.body, request.headers);
-    switch (req.method) {
-        case "GET":
-            return get(req);
 
-        default:
-            return wire(req)
-
-    }
-}
-
-function get(request: Req): Promise<Res> {
-    const requestOptions = {
-        ...request.uri.asNativeNodeRequest,
-        headers: request.headers
-    };
-
-    return new Promise(resolve => {
-        http.request(requestOptions, (res: IncomingMessage) => {
-            return resolve(ResOf(res.statusCode, res, res.headers as HeadersJson));
-        }).end();
-    });
+    return wire(req)
 }
 
 function wire(req: Req): Promise<Res> {
     const options = req.uri.asNativeNodeRequest;
+
     const headers = req.bodyStream()
         ? {...req.headers, [Headers.TRANSFER_ENCODING]: HeaderValues.CHUNKED}
         : req.headers;
+
     const requestOptions = {
         ...options,
         headers,
