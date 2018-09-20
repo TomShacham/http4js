@@ -391,6 +391,16 @@ describe('routing', async () => {
         equal(response.bodyString(), '{"phil":"reallycool"}');
     });
 
+    it('serves 500 on handler exception', async () => {
+        const response = await get('/', async () => {
+            throw new Error('BANG!');
+            return ResOf(500, 'internal server error');
+        })
+            .asServer(HttpServer(3004))
+            .serveE2E(ReqOf('GET', '/'));
+        equal(response.status, 500);
+    });
+
     it('res body is a stream if req body is a stream', async () => {
         const readable = new Readable({read(){}});
         readable.push('some body');
