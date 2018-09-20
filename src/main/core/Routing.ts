@@ -70,7 +70,7 @@ export class Routing {
     async serveE2E(req: Req): Promise<Res> {
         if (!this.server) return ResOf(400, 'Routing does not have a server');
         await this.start();
-        const response = await HttpClient(req.withUri(`http://localhost:${this.server.port}${req.uri.path()}`));
+        const response = await HttpClient(req.withUri(`http://localhost:${this.server.port}${req.uri.asUriString()}`));
         await this.stop();
         return response;
     }

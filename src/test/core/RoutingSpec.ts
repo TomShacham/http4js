@@ -385,9 +385,10 @@ describe('routing', async () => {
     });
 
     it('serves a request e2e if you have a server attached', async () => {
-        const response = await get('/', async() => ResOf()).asServer(HttpServer(3004))
-            .serveE2E(ReqOf('GET', '/'));
+        const response = await get('/', async (req: Req) => ResOf(200, JSON.stringify(req.queries))).asServer(HttpServer(3004))
+            .serveE2E(ReqOf('GET', '/?phil=reallycool'));
         equal(response.status, 200);
+        equal(response.bodyString(), '{"phil":"reallycool"}');
     });
 
     it('res body is a stream if req body is a stream', async () => {
