@@ -13,7 +13,7 @@ describe("native node over the wire", () => {
     const baseUrl = "http://localhost:" + port;
 
     const server = get("/", async(req) => {
-        const query = req.query("tomQuery");
+        const query = req.query("tomQuery") as string;
         return ResOf(200, req.bodyString())
             .withHeaders(req.headers)
             .withHeader("tomQuery", query || "no tom query");
