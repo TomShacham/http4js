@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+mkdir -p src/ssl
+
 pushd src/ssl
 
 # create your own CA key

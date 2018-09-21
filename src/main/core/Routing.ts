@@ -68,10 +68,16 @@ export class Routing {
     }
 
     async serveE2E(req: Req): Promise<Res> {
+        const modifiedRequest = req.withUri(`http://localhost:${this.server.port}${req.uri.asUriString()}`);
+
         if (!this.server) return ResOf(400, 'Routing does not have a server');
+        
         await this.start();
-        const response = await HttpClient(req.withUri(`http://localhost:${this.server.port}${req.uri.path()}`));
+        
+        const response = await HttpClient(modifiedRequest);
+        
         await this.stop();
+
         return response;
     }
 
@@ -84,7 +90,7 @@ export class Routing {
             return next(prev)
         }, matchedHandler.handler);
 
-        return filteringHandler(req.withPathParamsFromTemplate(matchedHandler.path));
+        return filteringHandler(req.withPathParamsFromTemplate(matchedHandler.path)).catch(e => ResOf(500));
     }
 
     match(req: Req): Route | undefined {
