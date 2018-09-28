@@ -53,6 +53,8 @@ HttpClient(ReqOf(Method.GET, "http://localhost:3000/any/path"))
 
 [Full Release Notes here](https://tomshacham.github.io/http4js/Release-notes/#release-notes)
 
+### 4.2.1 Query params are now passed to `serveE2E`
+
 ### 4.2.0: Breaking change: Most precise handler no longer beats first declared match. Fix: Composed routes filter as expected.
 
 To find a matching handler for a `Req`, we recurse **"left to right and deepest 
@@ -118,10 +120,10 @@ Early ideas and influence from [Daniel Bodart](https://github.com/bodar)'s [Utte
 
 ## To dos
 
-- generalise routing to an interface
-- client side httpclient (from stu)
 - example app
     - withOptions on withPost
+- generalise routing to an interface
+- client side httpclient (from stu)
   
 ## Running HTTPS Server tests
 

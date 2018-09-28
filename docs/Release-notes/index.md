@@ -6,6 +6,8 @@
 
 # Release notes
 
+### 4.2.1 Query params are now passed to `serveE2E`
+
 ### 4.2.0: Breaking change: Most precise handler no longer beats first declared match. Fix: Composed routes filter as expected.
 
 To find a matching handler for a `Req`, we recurse **"left to right and deepest 
