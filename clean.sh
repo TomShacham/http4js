@@ -1,3 +1,3 @@
-find src/main/ | grep d.ts | xargs rm
-find src/main/ | grep js | xargs rm 
+find src/{main,test}/ | grep d.ts | xargs rm
+find src/{main,test}/ | grep js | xargs rm 
 

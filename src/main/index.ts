@@ -21,7 +21,3 @@ export * from "./client/HttpClient";
 export * from "./client/HttpsClient";
 
 export * from "./zipkin/Zipkin";
-
-get('/', async() => Res.OK('hello, world'))
-    .asServer(HttpServer(3001))
-    .start();
