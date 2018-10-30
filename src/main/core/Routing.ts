@@ -12,7 +12,7 @@ export type Route = {handler: MountedHttpHandler, filters: Filter[]}
 
 export class Routing {
 
-    private server: Http4jsServer;
+    private server?: Http4jsServer;
     private handlers: MountedHttpHandler[] = [];
     private filters: Array<(httpHandler: HttpHandler) => HttpHandler> = [];
     private nestedRouting: Routing[] = [];
@@ -60,15 +60,18 @@ export class Routing {
     }
 
     start(): void {
+        if (!this.server) throw new Error('No server...');
         this.server.start();
     }
 
     stop(): void {
+      if (!this.server) throw new Error('No server...');
         this.server.stop();
     }
 
     async serveE2E(req: Req): Promise<Res> {
-        const reqWithFqdn = req.withUri(`http://localhost:${this.server.port}${req.uri.asUriString()}`);
+      if (!this.server) throw new Error('No server...');
+      const reqWithFqdn = req.withUri(`http://localhost:${this.server.port}${req.uri.asUriString()}`);
         if (!this.server) return ResOf(400, 'Routing does not have a server');
         await this.start();
         const response = await HttpClient(reqWithFqdn);
