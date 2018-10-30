@@ -60,16 +60,25 @@ which sets a header on every incoming `Req`.
 We expose a few typically useful filters:
 
 ```typescript
-static UPGRADE_TO_HTTPS: Filter = (handler: HttpHandler) => (req: Request) => {
-    return handler(req.withUri(req.uri.withProtocol("https")));
+static UPGRADE_TO_HTTPS: Filter = (handler: HttpHandler) => async (req: Req) => {
+    if (req.header('x-forwarded-proto') !== 'https') {
+        return Res.Redirect(301, `https://${req.uri.hostname()}:${req.uri.port()}${req.uri.path()}`)
+    } else {
+        return handler(req);
+    }
 };
 
 static TIMING: Filter = (handler: HttpHandler) => (req: Request) => {
-    const start = Date.now();
-    return handler(req).then(response => {
-        const total = Date.now() - start;
-        return response.withHeader("Total-Time", total.toString())
-    });
+    return (handler: HttpHandler) => async (req: Req) => {
+        const start = new Date();
+        const response = await handler(req);
+        const end = new Date();
+        const total = end - start;
+        return response
+            .withHeader("Total-Time", total.toString())
+            .withHeader("Start-Time", start.toString())
+            .withHeader("End-Time", end.toString());
+    };
 };
 
 static DEBUG: Filter = (handler: HttpHandler) => (req: Request) => {
@@ -78,6 +87,37 @@ static DEBUG: Filter = (handler: HttpHandler) => (req: Request) => {
        console.log(`${req.method} to ${req.uri.href} with response ${response.status}`);
        return response;
    });
+};
+
+static ZIPKIN: Filter = (handler: HttpHandler) => (req: Request) => {
+    return (handler: HttpHandler) => async (req: Req) => {
+        const generator = new ZipkinIdGenerator();
+        const debug = req.header(ZipkinHeaders.DEBUG);
+        const sampled = req.header(ZipkinHeaders.SAMPLED);
+        const isTopLevelRequest = req.header(ZipkinHeaders.PARENT_ID) === undefined;
+        const zipkinHeaders: HeadersJson = {
+            [ZipkinHeaders.PARENT_ID]: req.header(ZipkinHeaders.PARENT_ID) || generator.newId(16),
+            [ZipkinHeaders.SPAN_ID]: req.header(ZipkinHeaders.SPAN_ID) || generator.newId(16),
+            [ZipkinHeaders.TRACE_ID]: req.header(ZipkinHeaders.TRACE_ID) || generator.newId(32),
+        };
+        const reqWithZipkinHeaders = req
+            .replaceHeader(ZipkinHeaders.PARENT_ID, zipkinHeaders[ZipkinHeaders.PARENT_ID])
+            .replaceHeader(ZipkinHeaders.SPAN_ID, zipkinHeaders[ZipkinHeaders.SPAN_ID])
+            .replaceHeader(ZipkinHeaders.TRACE_ID, zipkinHeaders[ZipkinHeaders.TRACE_ID]);
+        const response = await handler(reqWithZipkinHeaders);
+        if (debug !== undefined && !debug && sampled === '0') return response;
+        return Object.keys(zipkinHeaders).reduce((finalResponse: Res, headerKey: string) => {
+            if (zipkinHeaders[headerKey]) {
+                if (headerKey === ZipkinHeaders.PARENT_ID && isTopLevelRequest) {
+                    return finalResponse;
+                } else {
+                    return finalResponse.withHeader(headerKey, zipkinHeaders[headerKey])
+                }
+            } else {
+                return finalResponse
+            }
+        } , response)
+    }
 }
 ```
 
