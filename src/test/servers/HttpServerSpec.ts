@@ -2,10 +2,11 @@ import {get} from "../../main/core/Routing";
 import {Req} from "../../main/core/Req";
 import {deepEqual, equal} from "assert";
 import {HttpClient} from "../../main/client/HttpClient";
-import {HeaderValues, ReqOf, ResOf} from "../../main";
+import {Filters, HeaderValues, ReqOf, ResOf} from "../../main";
 import {Readable} from "stream";
 import {Headers} from "../../main/core/Headers";
 import {NativeHttpServer} from "../../main/servers/NativeHttpServer";
+import * as zlib from 'zlib';
 
 describe("native node over the wire", () => {
 
@@ -24,12 +25,14 @@ describe("native node over the wire", () => {
         .withHandler("POST", "/body-stream", async (req) => ResOf(200, req.bodyStream()!))
         .withHandler("GET", "/get", async () => ResOf(200, "Done a GET request init?"))
         .withHandler("POST", "/post", async () => ResOf(200, "Done a POST request init?"))
+        .withHandler("POST", "/gzip", async (req: Req) => ResOf(200, req.bodyStream()))
         .withHandler("PUT", "/put", async () => ResOf(200, "Done a PUT request init?"))
         .withHandler("PATCH", "/patch", async () => ResOf(200, "Done a PATCH request init?"))
         .withHandler("DELETE", "/delete", async () => ResOf(200, "Done a DELETE request init?"))
         .withHandler("OPTIONS", "/options", async () => ResOf(200, "Done a OPTIONS request init?"))
         .withHandler("HEAD", "/head", async () => ResOf(200, "Done a HEAD request init?"))
         .withHandler("TRACE", "/trace", async () => ResOf(200, "Done a TRACE request init?"))
+          .withFilter(Filters.GZIP)
         .asServer(new NativeHttpServer(port));
 
     before(() => {
@@ -88,6 +91,19 @@ describe("native node over the wire", () => {
             .withHeader('Host', `${invalidCharacters}`);
         const response = await HttpClient(request);
         deepEqual(response.bodyString(), `http://localhost:${port}/url`)
+    });
+
+    it('ungzipped body', async () => {
+      const inStream = new Readable({
+        read() {}
+      });
+      inStream.push('ungzipped response');
+      inStream.push(null); // No more data
+      const gzippedBody = inStream.pipe(zlib.createGzip());
+      const gzippedReq = ReqOf("POST", `${baseUrl}/gzip`).withBody(gzippedBody).withHeader(Headers.CONTENT_ENCODING, 'gzip');
+      const response = await HttpClient(gzippedReq);
+
+      deepEqual(response.bodyString(), 'ungzipped response')
     });
 
     describe("supports client verbs", () => {

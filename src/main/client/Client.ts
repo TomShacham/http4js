@@ -6,6 +6,7 @@ import {Headers} from "../core/Headers";
 import {BodyContent} from "../core/HttpMessage";
 import {Body} from "../core/Body";
 import {Uri} from "../core/Uri";
+import {Filter, Filters} from "..";
 
 
 export interface ReqOptions {
@@ -26,5 +27,9 @@ export class Client {
             req.replaceHeader(ZipkinHeaders.PARENT_ID, incomingReq.header(ZipkinHeaders.SPAN_ID))
                 .replaceHeader(ZipkinHeaders.TRACE_ID, incomingReq.header(ZipkinHeaders.TRACE_ID))
         );
+    }
+
+    static gzip(): HttpHandler {
+        return Filters.GZIP(HttpClient)
     }
 }

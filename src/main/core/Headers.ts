@@ -63,6 +63,7 @@ export class Headers {
     static COOKIE: string = "Cookie";
     static CONTENT_LENGTH: string = "Content-Length";
     static CONTENT_TYPE: string = "Content-Type";
+    static CONTENT_ENCODING: string = "Content-Encoding";
     static FORWARDED: string = "Forwarded";
     static HOST: string = "Host";
     static REFERER: string = "Referer";

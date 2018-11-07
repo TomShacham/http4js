@@ -1,8 +1,10 @@
 import {Req} from "./Req";
-import {HttpHandler, HeadersJson} from "./HttpMessage";
+import {HeadersJson, HttpHandler} from "./HttpMessage";
 import {Res} from "./Res";
-import {ZipkinIdGenerator, IdGenerator, ZipkinHeaders} from "../zipkin/Zipkin";
+import {IdGenerator, ZipkinHeaders, ZipkinIdGenerator} from "../zipkin/Zipkin";
 import {Clock} from "./Clock";
+import {Headers} from "./Headers";
+import * as zlib from "zlib";
 
 export type Filter = (HttpHandler: HttpHandler) => HttpHandler
 
@@ -20,6 +22,15 @@ export class Filters {
     static DEBUG: Filter = debugFilterBuilder(console);
 
     static ZIPKIN: Filter = zipkinFilterBuilder(new ZipkinIdGenerator());
+
+    static GZIP: Filter = (handler: HttpHandler) => async (req: Req) => {
+          if (req.header(Headers.CONTENT_ENCODING) === 'gzip') {
+            const body = req.bodyStream()!.pipe(zlib.createGunzip());
+            return await handler(req.withBody(body));
+          } else {
+            return await handler(req);
+          }
+        }
 
 }
 

@@ -4,6 +4,10 @@ import {equal} from "assert";
 import {ResOf} from "../../main/core/Res";
 import {ReqOf, Req} from "../../main/core/Req";
 import {HttpServer} from "../../main/servers/NativeServer";
+import * as zlib from 'zlib';
+import * as fs from 'fs';
+const { Readable } = require('stream');
+import {Headers} from "../../main";
 
 describe("Built in filters", () => {
 
@@ -49,4 +53,38 @@ describe("Built in filters", () => {
         equal(logger.messages[0], 'GET to / gave status 200 with headers {}');
     });
 
+    it("gzip filter", async ()=> {
+      const inStream = new Readable({
+        read() {}
+      });
+      inStream.push('ungzipped response');
+      inStream.push(null); // No more data
+
+      const gzippedBody = inStream.pipe(zlib.createGzip());
+      const gzippedReq = ReqOf("POST", "/gzip").withBody(gzippedBody).withHeader(Headers.CONTENT_ENCODING, 'gzip');
+
+      const response = await routes("POST", "/gzip", async (req: Req) => {
+        return ResOf(200, req.bodyStream())
+      })
+        .withFilter(Filters.GZIP)
+        .serve(gzippedReq);
+
+      removeFile('./foo');
+
+      response.bodyStream()!.pipe(fs.createWriteStream('./foo'));
+      await new Promise(res => setTimeout(() => res(), 100));
+      const message = fs.readFileSync('./foo', 'utf-8');
+
+      equal(message, 'ungzipped response');
+      removeFile('./foo');
+    })
+
 });
+
+
+function removeFile(path: string) {
+  try {
+    fs.unlinkSync(path);
+  } catch (e) {
+  }
+}

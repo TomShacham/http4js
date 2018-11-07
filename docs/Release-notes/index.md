@@ -6,6 +6,8 @@
 
 # Release notes
 
+### 4.2.3 Adds gzip filter. Eg. `Filters.GZIP(HttpClient)` or `.withFilter(Filters.GZIP)`
+
 ### 4.2.2 throw if no server in Routing when calling start, stop, serveE2E.
 
 ### 4.2.1 Query params are now passed to `serveE2E`

@@ -53,6 +53,8 @@ HttpClient(ReqOf(Method.GET, "http://localhost:3000/any/path"))
 
 [Full Release Notes here](https://tomshacham.github.io/http4js/Release-notes/#release-notes)
 
+### 4.2.3 Adds gzip filter. Eg. `Filters.GZIP(HttpClient)` or `.withFilter(Filters.GZIP)`
+
 ### 4.2.2 throw if no server in Routing when calling start, stop, serveE2E.
 
 ### 4.2.1 Query params are now passed to `serveE2E`
