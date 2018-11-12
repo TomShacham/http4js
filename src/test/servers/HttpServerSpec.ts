@@ -7,6 +7,7 @@ import {Readable} from "stream";
 import {Headers} from "../../main/core/Headers";
 import {NativeHttpServer} from "../../main/servers/NativeHttpServer";
 import * as zlib from 'zlib';
+import * as fs from 'fs';
 
 describe("native node over the wire", () => {
 
@@ -22,7 +23,8 @@ describe("native node over the wire", () => {
         .withGet('/url', async(req: Req) => ResOf(200, req.uri.asUriString()))
         .withHandler("POST", "/post-body", async (req) => ResOf(200, req.bodyString()))
         .withHandler("POST", "/post-form-body", async (req) => ResOf(200, JSON.stringify(req.bodyForm())))
-        .withHandler("POST", "/body-stream", async (req) => ResOf(200, req.bodyStream()!))
+        .withHandler("POST", "/body-stream", async (req) => ResOf(200, req.bodyString()))
+        .withHandler("POST", "/big-body", async (req) => ResOf(200, req.bodyStream()!))
         .withHandler("GET", "/get", async () => ResOf(200, "Done a GET request init?"))
         .withHandler("POST", "/post", async () => ResOf(200, "Done a POST request init?"))
         .withHandler("POST", "/gzip", async (req: Req) => ResOf(200, req.bodyStream()))
@@ -65,6 +67,14 @@ describe("native node over the wire", () => {
 
         equal(response.header(Headers.TRANSFER_ENCODING), HeaderValues.CHUNKED);
         equal(response.bodyStream()!.read().toString('utf8'), 'some body');
+    });
+
+    it('handles big bodies', async() => {
+        const body = fs.readFileSync('./src/test/resources/big-file.txt').toString();
+        const request = ReqOf("POST", `${baseUrl}/big-body`, body);
+        const response = await HttpClient(request);
+
+        equal(await response.bigBodyString(), body);
     });
 
     it("sets query params", async() => {

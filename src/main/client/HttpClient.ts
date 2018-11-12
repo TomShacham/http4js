@@ -5,6 +5,7 @@ import {Req, ReqOf} from "../core/Req";
 import {Headers, HeaderValues} from "../core/Headers";
 import {HeadersJson} from "../core/HttpMessage";
 import {ReqOptions} from "./Client";
+import {Readable} from "stream";
 
 export function HttpClient(request: Req | ReqOptions): Promise<Res> {
     const req = request instanceof Req
@@ -34,8 +35,10 @@ function wire(req: Req): Promise<Res> {
         if (req.bodyStream()){
             req.bodyStream()!.pipe(clientRequest);
         } else {
-            clientRequest.write(req.bodyString());
-            clientRequest.end();
+            const bodyStream = new Readable({ read() {} });
+            bodyStream.push(req.bodyString());
+            bodyStream.push(null); // No more data
+            bodyStream.pipe(clientRequest);
         }
     });
 }

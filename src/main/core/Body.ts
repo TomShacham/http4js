@@ -31,4 +31,32 @@ export class Body {
         return this.readStream;
     }
 
+    async bigBodyString() {
+        if (this.bodystring !== undefined) {
+            return this.bodystring;
+        }
+        const bytes = await this.readBytes(this.readStream!, 99999999);
+        const string = bytes ? bytes.toString('utf-8') : '';
+        this.bodystring = string;
+        return string;
+    }
+
+    private async readable(rs: Readable): Promise<{}> {
+        return new Promise(r => rs.on('readable', r));
+    }
+
+    private async readBytes(readable: Readable, numberOfBytes: number = 0): Promise<Buffer> {
+        let buf = readable.read(numberOfBytes);
+        if (buf) {
+            return new Promise<Buffer>(r => r(buf));
+        }
+        else {
+            return new Promise<Buffer>(r => {
+                this.readable(readable).then(() => {
+                    this.readBytes(readable, numberOfBytes).then(b => r(b));
+                });
+            });
+        }
+    }
+
 }

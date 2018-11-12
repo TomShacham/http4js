@@ -1,6 +1,6 @@
 import * as http from "http";
-import * as https from "https";
 import {IncomingMessage, ServerResponse} from "http";
+import * as https from "https";
 import {Routing} from "../core/Routing";
 import {ReqOf} from "../core/Req";
 import {Http4jsServer} from "./Server";
@@ -40,8 +40,12 @@ export class NativeServer implements Http4jsServer {
                     if (bodyStream){
                         bodyStream.pipe(res);
                     } else {
-                        res.write(response.bodyString());
-                        res.end();
+                        const bodyString = response.bodyString();
+
+                        const bodyStream = new Readable({ read() {} });
+                        bodyStream.push(bodyString);
+                        bodyStream.push(null); // No more data
+                        bodyStream.pipe(res);
                     }
                 }).catch(rej => console.log(rej));
             })

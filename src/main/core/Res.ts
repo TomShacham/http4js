@@ -57,6 +57,10 @@ export class Res implements HttpMessage {
         return this.body.bodyStream();
     }
 
+    async bigBodyString(): Promise<string> {
+        return this.body.bigBodyString();
+    }
+
     static OK(body: BodyContent, headers: {} = {}): Res {
         return new Res(200, body, headers)
     }
