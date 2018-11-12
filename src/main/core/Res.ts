@@ -1,8 +1,7 @@
-import {HttpMessage, HeadersJson} from "./HttpMessage";
+import {BodyContent, HeadersJson, HttpMessage} from "./HttpMessage";
 import {Body} from "./Body";
 import {Readable} from "stream";
 import {Headers} from "./Headers";
-import {BodyContent} from "./HttpMessage";
 
 export class Res implements HttpMessage {
     headers: HeadersJson;
@@ -58,7 +57,7 @@ export class Res implements HttpMessage {
     }
 
     async bigBodyString(): Promise<string> {
-        return this.body.bigBodyString();
+        return this.body.fullBodyString();
     }
 
     static OK(body: BodyContent, headers: {} = {}): Res {

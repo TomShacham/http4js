@@ -1,5 +1,5 @@
 import {Res, ResOf} from "./Res";
-import {HttpHandler, HeadersJson} from "./HttpMessage";
+import {HeadersJson, HttpHandler} from "./HttpMessage";
 import {Req} from "./Req";
 import {Filter} from "./Filters";
 import {Http4jsServer} from "../servers/Server";
@@ -88,7 +88,7 @@ export class Routing {
             return next(prev)
         }, matchedHandler.handler);
 
-        return filteringHandler(req.withPathParamsFromTemplate(matchedHandler.path)).catch(e => ResOf(500));
+        return filteringHandler(req.withPathParamsFromTemplate(matchedHandler.path)).catch(() => ResOf(500));
     }
 
     match(req: Req): Route | undefined {

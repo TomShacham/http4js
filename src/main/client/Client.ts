@@ -1,12 +1,11 @@
-import {HeadersJson, HttpHandler} from "../core/HttpMessage";
+import {BodyContent, HeadersJson, HttpHandler} from "../core/HttpMessage";
 import {Req} from "../core/Req";
 import {HttpClient} from "./HttpClient";
 import {ZipkinHeaders} from "../zipkin/Zipkin";
 import {Headers} from "../core/Headers";
-import {BodyContent} from "../core/HttpMessage";
 import {Body} from "../core/Body";
 import {Uri} from "../core/Uri";
-import {Filter, Filters} from "..";
+import {Filters} from "..";
 
 
 export interface ReqOptions {

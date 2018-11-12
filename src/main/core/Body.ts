@@ -31,7 +31,7 @@ export class Body {
         return this.readStream;
     }
 
-    async bigBodyString() {
+    async fullBodyString() {
         if (this.bodystring !== undefined) {
             return this.bodystring;
         }
