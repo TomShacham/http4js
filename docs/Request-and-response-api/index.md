@@ -74,6 +74,17 @@ get('/proxy/bigfile', async() => {
     .start();
 ```
 
+## Large bodies
+
+As node presents bodies as a stream (and streams are asynchronous), we have an async convenience method
+for large bodies (>65kb) that wraps streaming the chunks. 
+
+```typescript
+await response.fullBodyString()
+```
+
+will return the full body. 
+
 ## Building a form
 
 We can build up the form on a `Req` easily.
