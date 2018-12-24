@@ -56,7 +56,7 @@ export class Res implements HttpMessage {
         return this.body.bodyStream();
     }
 
-    async bigBodyString(): Promise<string> {
+    async fullBodyString(): Promise<string> {
         return this.body.fullBodyString();
     }
 

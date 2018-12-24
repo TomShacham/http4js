@@ -74,7 +74,7 @@ describe("native node over the wire", () => {
         const request = ReqOf("POST", `${baseUrl}/big-body`, body);
         const response = await HttpClient(request);
 
-        equal(await response.bigBodyString(), body);
+        equal(await response.fullBodyString(), body);
     });
 
     it("sets query params", async() => {

@@ -28,9 +28,12 @@ function wire(req: Req): Promise<Res> {
         method: req.method,
     };
 
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
         const clientRequest = http.request(requestOptions, (res: IncomingMessage) => {
             return resolve(ResOf(res.statusCode, res, res.headers as HeadersJson));
+        });
+        clientRequest.on('error', (err) => {
+            reject(err);
         });
         if (req.bodyStream()){
             req.bodyStream()!.pipe(clientRequest);
