@@ -6,6 +6,8 @@
 
 # Release notes
 
+### 4.2.6 `fix HttpsClient: post body`
+
 ### 4.2.4 `res.fullBodyString() for bodies > 65kb`
 
 ### 4.2.3 Adds gzip filter. Eg. `Filters.GZIP(HttpClient)` or `.withFilter(Filters.GZIP)`
