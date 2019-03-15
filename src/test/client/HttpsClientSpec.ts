@@ -1,11 +1,10 @@
 import {equal} from "assert";
-import {Res} from "../../main/core/Res";
-import {get} from "../../main/core/Routing";
-import {HttpsServer} from "../../main/servers/NativeServer";
-import {HttpsClient} from "../../main/client/HttpsClient";
 import * as fs from 'fs';
+import {get, HttpsClient, HttpsServer, Method, Req, ReqOf, Res} from '../../main';
 
 describe('httpsclient', () => {
+
+    let lastPost: Req;
 
     const certs = {
         key: fs.readFileSync('src/ssl/key.pem'),
@@ -14,7 +13,10 @@ describe('httpsclient', () => {
     };
 
     const server = get('/', async() => Res.OK('ok'))
-        .asServer(HttpsServer(3014, certs));
+      .withPost('/', async(req: Req) => {
+          lastPost = req;
+          return Res.OK('ok')
+      }).asServer(HttpsServer(3014, certs));
 
     before(() => {
         require('ssl-root-cas')
@@ -31,4 +33,11 @@ describe('httpsclient', () => {
         const response = await HttpsClient({method: 'GET', uri: 'https://localhost:3014/'});
         equal(response.bodyString(), 'ok');
     });
+
+    it('posts body content to server', async () => {
+        lastPost = ReqOf(Method.GET, '/');
+        const response = await HttpsClient({method: 'POST', uri: 'https://localhost:3014/', body: 'some body'});
+        equal(response.bodyString(), 'ok');
+        equal(lastPost.bodyString(), 'some body');
+    })
 });

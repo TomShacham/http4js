@@ -18,7 +18,7 @@ export async function HttpsClient(request: Req | ReqOptions): Promise<Res> {
 
     // type system needs a hand
     const promise: Promise<Res> = new Promise(resolve => {
-        https.request(reqOptions, (res) => {
+        let clientRequest = https.request(reqOptions, (res) => {
             const inStream = new Readable({ read() {} });
             res.on('error', (err: any) => {
                 console.error(err);
@@ -28,7 +28,9 @@ export async function HttpsClient(request: Req | ReqOptions): Promise<Res> {
                 inStream.push(null); // No more data
                 return resolve(ResOf(res.statusCode, inStream, res.headers as HeadersJson));
             });
-        }).end();
+        });
+        clientRequest.write(req.bodyString());
+        clientRequest.end();
     });
 
     return promise;
