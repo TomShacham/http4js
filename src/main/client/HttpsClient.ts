@@ -1,8 +1,7 @@
 import * as https from "https";
-import {HeadersJson, Req, Res, ResOf} from "../";
+import {Headers, HeadersJson, HeaderValues, Req, Res, ResOf, ReqOf} from '../';
 import {Readable} from "stream";
 import {ReqOptions} from "./Client";
-import {ReqOf} from "../core/Req";
 
 export async function HttpsClient(request: Req | ReqOptions): Promise<Res> {
     const req = request instanceof Req
@@ -10,9 +9,14 @@ export async function HttpsClient(request: Req | ReqOptions): Promise<Res> {
         : ReqOf(request.method, request.uri, request.body, request.headers);
 
     const options = req.uri.asNativeNodeRequest;
+
+    const headers = req.bodyStream()
+      ? {...req.headers, [Headers.TRANSFER_ENCODING]: HeaderValues.CHUNKED}
+      : req.headers;
+
     const reqOptions = {
         ...options,
-        headers: req.headers,
+        headers,
         method: req.method,
     };
 

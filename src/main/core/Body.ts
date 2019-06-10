@@ -28,7 +28,13 @@ export class Body {
     }
 
     bodyStream() {
-        return this.readStream;
+        if(this.readStream !== undefined) {
+            return this.readStream;
+        }
+        const readable = new Readable({read(){}});
+        readable.push(this.bodystring);
+        readable.push(null);
+        return readable;
     }
 
     async fullBodyString() {

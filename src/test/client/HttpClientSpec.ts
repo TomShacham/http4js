@@ -3,8 +3,13 @@ import {get, HttpClient, HttpServer, Method, Req, ReqOf, Res} from '../../main';
 
 describe('httpclient', () => {
   let lastPost: Req;
+  let lastDelete: Req;
 
   const server = get('/', async () => Res.OK('ok'))
+    .withDelete('/', async (req: Req) => {
+      lastDelete = req;
+      return Res.OK('ok')
+    })
     .withPost('/', async (req: Req) => {
       lastPost = req;
       return Res.OK('ok')
@@ -29,5 +34,12 @@ describe('httpclient', () => {
     const response = await HttpClient({method: 'POST', uri: 'http://localhost:3013/', body: 'some body'});
     equal(response.bodyString(), 'ok');
     equal(lastPost.bodyString(), 'some body');
-  })
+  });
+
+  it('delete sends body content to server', async () => {
+    lastDelete = ReqOf(Method.GET, '/');
+    const response = await HttpClient({method: 'DELETE', uri: 'http://localhost:3013/', body: 'some body'});
+    equal(response.bodyString(), 'ok');
+    equal(lastDelete.bodyString(), 'some body');
+  });
 });
