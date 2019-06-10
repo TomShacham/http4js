@@ -28,3 +28,7 @@ export interface HttpMessage {
 }
 
 export type HttpHandler = (request: Req) => Promise<Res>
+
+export interface Handler {
+    handle(req: Req): Promise<Res>;
+}
