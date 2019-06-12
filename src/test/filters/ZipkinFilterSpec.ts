@@ -1,16 +1,16 @@
-import {get} from '../../main/core/Routing';
+import {asHandler, get} from '../../main/core/Routing';
 import {Filter, zipkinFilterBuilder} from '../../main/core/Filters';
 import {deepEqual, equal} from 'assert';
 import {ResOf} from '../../main/core/Res';
 import {Req, ReqOf} from '../../main/core/Req';
 import {HttpClient} from '../../main/client/HttpClient';
 import {Client} from '../../main/client/Client';
-import {ZipkinHeaders, ZipkinCollector, ZipkinSpan} from '../../main/zipkin/Zipkin';
+import {ZipkinCollector, ZipkinHeaders, ZipkinSpan} from '../../main/zipkin/Zipkin';
 import {isNullOrUndefined} from 'util';
-import {HttpHandler, timingFilterBuilder} from '../../main';
-import {FakeClock} from "../clock/FakeClock";
-import {DeterministicIdGenerator} from "./DeterministicIdGenerator";
-import {HttpServer} from "../../main/servers/NativeServer";
+import {Handler, timingFilterBuilder} from '../../main';
+import {FakeClock} from '../clock/FakeClock';
+import {DeterministicIdGenerator} from './DeterministicIdGenerator';
+import {HttpServer} from '../../main/servers/NativeServer';
 
 const upstream1BaseUrl = 'http://localhost:3032';
 const upstream2BaseUrl = 'http://localhost:3033';
@@ -19,8 +19,8 @@ const moreUpstreamBaseUrl = 'http://localhost:3034';
 const logLines: string[] = [];
 const deterministicZipkinFilter = zipkinFilterBuilder(new DeterministicIdGenerator());
 
-const loggingFilter: Filter = (handler: HttpHandler) => async(req: Req) => {
-    const res = await handler(req);
+const loggingFilter: Filter = (handler: Handler) => asHandler(async(req: Req) => {
+    const res = await handler.handle(req);
     const parentId = res.header(ZipkinHeaders.PARENT_ID);
     const spanId = res.header(ZipkinHeaders.SPAN_ID);
     const traceId = res.header(ZipkinHeaders.TRACE_ID);
@@ -29,7 +29,7 @@ const loggingFilter: Filter = (handler: HttpHandler) => async(req: Req) => {
     const line = `${parentId ? parentId : ''};${spanId};${traceId};${startTime};${endTime}`;
     logLines.push(line);
     return res;
-};
+});
 
 const fakeClock = new FakeClock();
 const deterministicTimingFilter: Filter = timingFilterBuilder(fakeClock);

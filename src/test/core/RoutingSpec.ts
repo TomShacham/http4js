@@ -1,7 +1,7 @@
 import {deepEqual, deepStrictEqual, equal} from 'assert';
-import {get, post, route, routes} from '../../main/core/Routing';
+import {asHandler, get, post, route, routes} from '../../main/core/Routing';
 import {Req, ReqOf} from '../../main/core/Req';
-import {HttpHandler} from '../../main/core/HttpMessage';
+import {Handler, HttpHandler} from '../../main/core/HttpMessage';
 import {Headers, HeaderValues} from '../../main/core/Headers';
 import {ResOf} from "../../main/core/Res";
 import {MountedHttpHandler} from "../../main/core/Routing";
@@ -32,9 +32,9 @@ describe('routing', async () => {
             return ResOf(200);
         })
             .withFilter(() => {
-                return async () => {
+                return asHandler(async () => {
                     return ResOf(200, 'filtered');
-                }
+                })
             })
             .serve(ReqOf('GET', '/test'));
 
@@ -44,13 +44,13 @@ describe('routing', async () => {
     it('chains filters', async () => {
         const response = await get('/test', async() => ResOf(200))
             .withFilter(() => {
-                return async() => ResOf(200, 'filtered');
+                return asHandler(async() => ResOf(200, 'filtered'));
             })
-            .withFilter((handler: HttpHandler) => {
-                return async(req: Req) => {
-                    const response = await handler(req);
+            .withFilter((handler: HttpHandler | Handler) => {
+                return asHandler(async(req: Req) => {
+                    const response = await asHandler(handler).handle(req);
                     return response.withHeader('another', 'filter');
-                }
+                })
             })
             .serve(ReqOf('GET', '/test'));
 
@@ -62,15 +62,15 @@ describe('routing', async () => {
     it('chains filters and handlers', async () => {
         const response = await get('/test', async() => ResOf(200))
             .withHandler('GET', '/nest', async() => ResOf(200, 'nested'))
-            .withFilter((handler: HttpHandler) => {
-                return (req: Req) => {
-                    return handler(req).then(response => response.withHeader('a', 'filter1'));
-                }
+            .withFilter((handler: HttpHandler | Handler) => {
+                return asHandler((req: Req) => {
+                    return asHandler(handler).handle(req).then(response => response.withHeader('a', 'filter1'));
+                })
             })
-            .withFilter((handler: HttpHandler) => {
-                return (req: Req) => {
-                    return handler(req).then(response => response.withHeader('another', 'filter2'));
-                }
+            .withFilter((handler: HttpHandler | Handler) => {
+                return asHandler((req: Req) => {
+                    return asHandler(handler).handle(req).then(response => response.withHeader('another', 'filter2'));
+                })
             })
             .serve(ReqOf('GET', '/nest'));
 
@@ -81,11 +81,11 @@ describe('routing', async () => {
 
     it('ordering - filters apply in order they are declared', async () => {
         const response = await get('/', async() => ResOf(200, 'hello, world!'))
-            .withFilter((handler) => async(req) => {
-                return handler(req).then(response => response.replaceHeader('person', 'tosh'));
-            }).withFilter((handler) => async(req) => {
-                return handler(req).then(response => response.replaceHeader('person', 'bosh'));
-            })
+            .withFilter((handler) => asHandler(async(req) => {
+                return asHandler(handler).handle(req).then(response => response.replaceHeader('person', 'tosh'));
+            })).withFilter((handler) => asHandler(async(req) => {
+                return asHandler(handler).handle(req).then(response => response.replaceHeader('person', 'bosh'));
+            }))
             .serve(ReqOf('GET', '/'));
 
         equal(response.header('person'), 'bosh');
@@ -94,9 +94,9 @@ describe('routing', async () => {
     it('can add stuff to request using filters', async () => {
         const response = await get('/', async(req) => {
             return ResOf(200, req.header('pre-filter' || 'hello, world!'));
-        }).withFilter((handler) => async(req) => {
-            return handler(req.withHeader('pre-filter', 'hello from pre-filter'))
-        })
+        }).withFilter((handler) => asHandler(async(req) => {
+            return asHandler(handler).handle(req.withHeader('pre-filter', 'hello from pre-filter'))
+        }))
             .serve(ReqOf('GET', '/'));
 
         equal(response.bodyString(), 'hello from pre-filter');
@@ -106,33 +106,33 @@ describe('routing', async () => {
         const threeDeepRoutes = get('/nested/thrice', async () => {
             return ResOf(200).withBody('hi there nested thrice.')
         }).withFilter((handler) => {
-            return (req) => handler(req).then(response => response.withHeader('nested-thrice', 'true'))
+            return asHandler((req) => asHandler(handler).handle(req).then(response => response.withHeader('nested-thrice', 'true')))
         });
 
         const twoDeepRootsWithThreeDeepRoutes = get('/nested/twice', async () => {
             return ResOf(200).withBody('hi there nested twice.')
         }).withFilter((handler) => {
-            return (req) => handler(req).then(response => response.withHeader('nested-twice', 'true'))
+            return asHandler((req) => asHandler(handler).handle(req).then(response => response.withHeader('nested-twice', 'true')))
         })
         .withRoutes(threeDeepRoutes);
 
         const routesWithNestedRoutes = get('/nested/once', async () => {
             return ResOf(200).withBody('hi there nested once.')
         }).withFilter((handler) => {
-            return (req) => handler(req).then(response => response.withHeader('nested-once', 'true'))
+            return asHandler((req) => asHandler(handler).handle(req).then(response => response.withHeader('nested-once', 'true')))
         }).withRoutes(twoDeepRootsWithThreeDeepRoutes);
 
         const oneDeepRoutes = get('/another/nested/once', async () => {
             return ResOf(200).withBody('hi there another nested once.')
         }).withFilter((handler) => {
-            return (req) => handler(req).then(response => response.withHeader('another-nested-once', 'true'))
+            return asHandler((req) => asHandler(handler).handle(req).then(response => response.withHeader('another-nested-once', 'true')))
         });
 
         const composedRoutes = get('/', async() => ResOf(200, 'top level'))
             .withRoutes(oneDeepRoutes)
             .withRoutes(routesWithNestedRoutes)
             .withFilter((handler) => {
-                return (req) => handler(req).then(response => response.withHeader('top-level', 'true'))
+                return asHandler((req) => asHandler(handler).handle(req).then(response => response.withHeader('top-level', 'true')))
             });
 
         const topLevelResponse = await composedRoutes.serve(ReqOf('GET', '/'));
@@ -224,12 +224,12 @@ describe('routing', async () => {
         const nested = get('/nested', async () => {
             return ResOf(200).withBody('hi there deeply.')
         }).withFilter((handler) => {
-            return (req) => handler(req).then(response => response.withHeader('nested', 'routes'))
+            return asHandler((req) => asHandler(handler).handle(req).then(response => response.withHeader('nested', 'routes')))
         });
 
         const response = await get('/', async () => ResOf(200))
             .withFilter((handler) => {
-                return (req) => handler(req).then(response => response.withHeader('top-level', 'routes'))
+                return asHandler((req) => asHandler(handler).handle(req).then(response => response.withHeader('top-level', 'routes')))
             })
             .withRoutes(nested)
             .serve(ReqOf('GET', '/unknown-path'));
@@ -255,15 +255,15 @@ describe('routing', async () => {
 
     it('custom 404s using filters', async () => {
         const response = await get('/', async() => ResOf(200, 'hello, world!'))
-            .withFilter((handler: HttpHandler) => {
-                return async (req: Req) => {
-                    const response = await handler(req);
+            .withFilter((handler: HttpHandler | Handler) => {
+                return asHandler(async (req: Req) => {
+                    const response = await asHandler(handler).handle(req);
                     if (response.status == 404) {
                         return ResOf(404, 'Page not found');
                     } else {
                         return response;
                     }
-                }
+                })
             })
             .serve(ReqOf('GET', '/unknown'));
 
@@ -417,16 +417,6 @@ describe('routing', async () => {
         equal(handler.method, 'GET');
         deepEqual(handler.headers, {'Cache-control': 'private'});
         equal(handler.name, 'root');
-    });
-
-    it('uses function name for handler name if named function used and not route not specifically named', async() => {
-        const namedFunction = async() => ResOf(200, 'OK path');
-        const handler = get('/path', namedFunction, {'Cache-control': 'private'})
-            .handlerByName('namedFunction') as MountedHttpHandler;
-        equal(handler.path, '/path');
-        equal(handler.method, 'GET');
-        deepEqual(handler.headers, {'Cache-control': 'private'});
-        equal(handler.name, 'namedFunction');
     });
 
     it('reverses routing: get handler by path', async() => {

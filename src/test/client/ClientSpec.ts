@@ -1,4 +1,4 @@
-import {ResOf, get, Req, ReqOf, Headers, HttpClient, Filters} from "../../main";
+import {ResOf, get, Req, ReqOf, Headers, HttpClient, Filters, asHandler} from '../../main';
 import {Client} from "../../main/client/Client";
 import {deepEqual, equal} from "assert";
 import {HttpServer} from "../../main/servers/NativeServer";
@@ -48,7 +48,7 @@ describe('client', () => {
     inStream.push(null); // No more data
     const gzippedBody = inStream.pipe(zlib.createGzip());
     const gzippedReq = ReqOf("POST", `${baseUrl}/gzip`).withBody(gzippedBody).withHeader(Headers.CONTENT_ENCODING, 'gzip');
-    const response = await Filters.GZIP(HttpClient)(gzippedReq);
+    const response = await Filters.GZIP(asHandler(HttpClient)).handle(gzippedReq);
 
     deepEqual(response.bodyString(), 'ungzipped response')
   });

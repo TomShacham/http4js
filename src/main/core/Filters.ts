@@ -1,21 +1,22 @@
 import {Req} from "./Req";
-import {HeadersJson, HttpHandler} from "./HttpMessage";
+import {Handler, HeadersJson, HttpHandler} from './HttpMessage';
 import {Res} from "./Res";
 import {IdGenerator, ZipkinHeaders, ZipkinIdGenerator} from "../zipkin/Zipkin";
 import {Clock} from "./Clock";
 import {Headers} from "./Headers";
 import * as zlib from "zlib";
+import {asHandler} from './Routing';
 
-export type Filter = (HttpHandler: HttpHandler) => HttpHandler
+export type Filter = (handler: Handler | HttpHandler) => Handler
 
 export class Filters {
-    static UPGRADE_TO_HTTPS: Filter = (handler: HttpHandler) => async (req: Req) => {
+    static UPGRADE_TO_HTTPS: Filter = (handler: Handler | HttpHandler) => asHandler(async (req: Req) => {
         if (req.header('x-forwarded-proto') !== 'https') {
             return Res.Redirect(301, `https://${req.uri.hostname()}:${req.uri.port()}${req.uri.path()}`)
         } else {
-            return handler(req);
+            return asHandler(handler).handle(req);
         }
-    };
+    });
 
     static TIMING: Filter = timingFilterBuilder(Date);
 
@@ -23,19 +24,19 @@ export class Filters {
 
     static ZIPKIN: Filter = zipkinFilterBuilder(new ZipkinIdGenerator());
 
-    static GZIP: Filter = (handler: HttpHandler) => async (req: Req) => {
+    static GZIP: Filter = (handler: Handler | HttpHandler) => asHandler(async (req: Req) => {
           if (req.header(Headers.CONTENT_ENCODING) === 'gzip') {
             const body = req.bodyStream()!.pipe(zlib.createGunzip());
-            return await handler(req.withBody(body));
+            return await asHandler(handler).handle(req.withBody(body));
           } else {
-            return await handler(req);
+            return await asHandler(handler).handle(req);
           }
-        }
+        })
 
 }
 
 export function zipkinFilterBuilder(generator: IdGenerator): Filter {
-    return (handler: HttpHandler) => async (req: Req) => {
+    return (handler: Handler | HttpHandler) => asHandler(async (req: Req) => {
         const debug = req.header(ZipkinHeaders.DEBUG);
         const sampled = req.header(ZipkinHeaders.SAMPLED);
         const isTopLevelRequest = req.header(ZipkinHeaders.PARENT_ID) === undefined;
@@ -48,7 +49,7 @@ export function zipkinFilterBuilder(generator: IdGenerator): Filter {
             .replaceHeader(ZipkinHeaders.PARENT_ID, zipkinHeaders[ZipkinHeaders.PARENT_ID])
             .replaceHeader(ZipkinHeaders.SPAN_ID, zipkinHeaders[ZipkinHeaders.SPAN_ID])
             .replaceHeader(ZipkinHeaders.TRACE_ID, zipkinHeaders[ZipkinHeaders.TRACE_ID]);
-        const response = await handler(reqWithZipkinHeaders);
+        const response = await asHandler(handler).handle(reqWithZipkinHeaders);
         if (debug !== undefined && !debug && sampled === '0') return response;
         return Object.keys(zipkinHeaders).reduce((finalResponse: Res, headerKey: string) => {
             if (zipkinHeaders[headerKey]) {
@@ -61,20 +62,20 @@ export function zipkinFilterBuilder(generator: IdGenerator): Filter {
                 return finalResponse
             }
         } , response)
-    }
+    });
 }
 
 export function timingFilterBuilder(clock: Clock): Filter {
-    return (handler: HttpHandler) => async (req: Req) => {
+    return (handler: Handler | HttpHandler) => asHandler(async (req: Req) => {
         const start = clock.now();
-        const response = await handler(req);
+        const response = await asHandler(handler).handle(req);
         const end = clock.now();
         const total = end - start;
         return response
             .withHeader("Total-Time", total.toString())
             .withHeader("Start-Time", start.toString())
             .withHeader("End-Time", end.toString());
-    };
+    });
 
 }
 
@@ -82,9 +83,9 @@ const defaultMessageFrom = (req: Req, res: Res) => (`${req.method} to ${req.uri.
     ` with headers ${JSON.stringify(res.headers)}`);
 
 export function debugFilterBuilder(out: any, messageFrom: (req: Req, res: Res)=>string = (req, res)=> defaultMessageFrom(req, res)): Filter {
-    return (handler: HttpHandler) => async (req: Req) => {
-        const res = await handler(req);
+    return (handler: Handler | HttpHandler) => asHandler(async (req: Req) => {
+        const res = await asHandler(handler).handle(req);
         out.log(messageFrom(req, res));
         return res;
-    }
+    })
 }

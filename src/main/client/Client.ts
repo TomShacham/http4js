@@ -1,11 +1,11 @@
-import {BodyContent, HeadersJson, HttpHandler} from "../core/HttpMessage";
+import {BodyContent, Handler, HeadersJson, HttpHandler} from '../core/HttpMessage';
 import {Req} from "../core/Req";
 import {HttpClient} from "./HttpClient";
 import {ZipkinHeaders} from "../zipkin/Zipkin";
 import {Headers} from "../core/Headers";
 import {Body} from "../core/Body";
 import {Uri} from "../core/Uri";
-import {Filters} from "..";
+import {asHandler, Filters} from '..';
 
 
 export interface ReqOptions {
@@ -28,7 +28,7 @@ export class Client {
         );
     }
 
-    static gzip(): HttpHandler {
-        return Filters.GZIP(HttpClient)
+    static gzip(): Handler {
+        return Filters.GZIP(asHandler(HttpClient))
     }
 }
