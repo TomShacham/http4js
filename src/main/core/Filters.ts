@@ -1,11 +1,10 @@
 import {Req} from "./Req";
-import {Handler, HeadersJson, HttpHandler} from './HttpMessage';
+import {asHandler, Handler, HeadersJson, HttpHandler} from './HttpMessage';
 import {Res} from "./Res";
 import {IdGenerator, ZipkinHeaders, ZipkinIdGenerator} from "../zipkin/Zipkin";
 import {Clock} from "./Clock";
 import {Headers} from "./Headers";
 import * as zlib from "zlib";
-import {asHandler} from './Routing';
 
 export type Filter = (handler: Handler | HttpHandler) => Handler
 

@@ -1,7 +1,7 @@
 import {deepEqual, deepStrictEqual, equal} from 'assert';
-import {asHandler, get, post, route, routes} from '../../main/core/Routing';
+import {get, post, route, routes} from '../../main/core/Routing';
 import {Req, ReqOf} from '../../main/core/Req';
-import {Handler, HttpHandler} from '../../main/core/HttpMessage';
+import {asHandler, Handler, HttpHandler} from '../../main/core/HttpMessage';
 import {Headers, HeaderValues} from '../../main/core/Headers';
 import {ResOf} from "../../main/core/Res";
 import {MountedHttpHandler} from "../../main/core/Routing";

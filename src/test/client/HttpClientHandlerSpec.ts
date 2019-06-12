@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import {get, HttpServer, HttpsServer, Req, ReqOf, Res} from '../../main';
+import {get, HttpServer, HttpsServer, ReqOf, Res} from '../../main';
 import {equal} from 'assert';
 import {HttpClientHandler} from '../../main/client/HttpClientHandler';
 

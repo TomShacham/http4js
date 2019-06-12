@@ -1,5 +1,5 @@
 import {Res, ResOf} from './Res';
-import {Handler, HeadersJson, HttpHandler} from './HttpMessage';
+import {asHandler, Handler, HeadersJson, HttpHandler} from './HttpMessage';
 import {Req} from './Req';
 import {Filter} from './Filters';
 import {Http4jsServer} from '../servers/Server';
@@ -9,14 +9,6 @@ import {HttpServer} from '../servers/NativeServer';
 export type MountedHttpHandler = { path: string, method: string, handler: Handler, headers: HeadersJson, name: string }
 export type DescribingHttpHandler = { path: string, method: string, headers: HeadersJson, name: string }
 export type Route = { handler: MountedHttpHandler, filters: Filter[] }
-
-export function asHandler(handler: HttpHandler | Handler): Handler {
-  return (typeof handler) === 'function' ? new class implements Handler {
-    handle(req: Req): Promise<Res> {
-      return (handler as HttpHandler)(req);
-    }
-  } : handler as Handler;
-}
 
 export class Routing {
 
