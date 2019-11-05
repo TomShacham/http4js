@@ -2,7 +2,7 @@
 
 A lightweight HTTP framework for Typescript / JS, with zero dependencies
 
-# >> [read the docs :)](https://tomshacham.github.io/http4js/) <<
+# [read the docs :)](https://tomshacham.github.io/http4js/) 
 
 ## Use http4js in your project
 
@@ -52,6 +52,8 @@ HttpClient(ReqOf(Method.GET, "http://localhost:3000/any/path"))
 ## Latest features
 
 [Full Release Notes here](https://tomshacham.github.io/http4js/Release-notes/#release-notes)
+
+### 5.0.0 `move to HttpHandler interface`
 
 ### 4.2.6 `fix HttpsClient: post body`
 
